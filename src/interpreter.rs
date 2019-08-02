@@ -82,7 +82,7 @@ impl Interpreter {
                                             self.run(quote)?;
                                         }
                                         None => {
-                                            return Err(Error::UnexpectedWord(
+                                            return Err(Error::UnknownFunction(
                                                 word.to_string())
                                             );
                                         }
@@ -122,7 +122,7 @@ enum State {
 
 pub enum Error {
     UnexpectedToken(Token),
-    UnexpectedWord(String),
+    UnknownFunction(String),
     Stack(stack::Error),
 }
 
@@ -140,7 +140,7 @@ impl fmt::Display for Error {
             Error::UnexpectedToken(token) => {
                 write!(f, "Unexpected token: \"{}\"", token)?;
             }
-            Error::UnexpectedWord(word) => {
+            Error::UnknownFunction(word) => {
                 write!(f, "Unexpected word: \"{}\"", word)?;
             }
             Error::Stack(stack::Error::TypeError { expected, actual }) => {
