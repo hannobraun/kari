@@ -5,6 +5,7 @@ use crate::tokenizer::Token;
 
 pub struct Interpreter<Tokens> {
     tokens: Tokens,
+    state:  State,
     stack:  Vec<String>,
 }
 
@@ -12,24 +13,31 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
     pub fn new(tokens: Tokens) -> Self {
         Interpreter {
             tokens,
+            state: State::TopLevel,
             stack: Vec::new(),
         }
     }
 
     pub fn run(mut self) -> Result<(), Error> {
         for token in self.tokens {
-            match token {
-                Token::String(string) => {
-                    self.stack.push(string);
-                }
-                Token::Word(word) => {
-                    match word.as_str() {
-                        "print" => {
-                            let arg = self.stack.pop().unwrap();
-                            print!("{}", arg);
+            match &mut self.state {
+                State::TopLevel => {
+                    match token {
+                        Token::String(string) => {
+                            self.stack.push(string);
                         }
-                        word => {
-                            return Err(Error::UnexpectedWord(word.to_string()));
+                        Token::Word(word) => {
+                            match word.as_str() {
+                                "print" => {
+                                    let arg = self.stack.pop().unwrap();
+                                    print!("{}", arg);
+                                }
+                                word => {
+                                    return Err(Error::UnexpectedWord(
+                                        word.to_string())
+                                    );
+                                }
+                            }
                         }
                     }
                 }
@@ -38,6 +46,11 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
 
         Ok(())
     }
+}
+
+
+enum State {
+    TopLevel,
 }
 
 
