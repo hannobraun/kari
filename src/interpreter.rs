@@ -172,6 +172,12 @@ pub enum Error {
     Stack(stack::Error),
 }
 
+impl From<stack::Error> for Error {
+    fn from(from: stack::Error) -> Self {
+        Error::Stack(from)
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\n")?;
