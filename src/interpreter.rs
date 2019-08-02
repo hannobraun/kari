@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::tokenizer::Token;
 
 
@@ -14,7 +16,7 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
         }
     }
 
-    pub fn run(mut self) {
+    pub fn run(mut self) -> Result<(), Error> {
         for token in self.tokens {
             match token {
                 Token::String(string) => {
@@ -27,11 +29,30 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
                             print!("{}", arg);
                         }
                         word => {
-                            panic!("Unexpected word: {}", word);
+                            return Err(Error::UnexpectedWord(word.to_string()));
                         }
                     }
                 }
             }
         }
+
+        Ok(())
+    }
+}
+
+
+pub enum Error {
+    UnexpectedWord(String),
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::UnexpectedWord(word) => {
+                write!(f, "\nUnexpected word: \"{}\"\n\n", word)?;
+            }
+        }
+
+        Ok(())
     }
 }

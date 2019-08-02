@@ -8,5 +8,7 @@ fn main() {
     let tokenizer   = tokenizer::Tokenizer::new(program.chars());
     let interpreter = interpreter::Interpreter::new(tokenizer);
 
-    interpreter.run();
+    if let Err(error) = interpreter.run() {
+        print!("{}", error);
+    }
 }
