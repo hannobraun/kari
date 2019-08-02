@@ -23,7 +23,7 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
                 TokenState::Nothing => {
                     match c {
                         '"' => {
-                            self.state = TokenState::String;
+                            self.state = TokenState::String(StringState::Char);
                         }
                         c if c.is_whitespace() => {
                             ()
@@ -34,7 +34,7 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
                         }
                     }
                 }
-                TokenState::String => {
+                TokenState::String(StringState::Char) => {
                     match c {
                         '"' => {
                             self.state = TokenState::Nothing;
@@ -44,8 +44,24 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
 
                             return Some(token);
                         }
+                        '\\' => {
+                            self.state = TokenState::String(
+                                StringState::Escape
+                            );
+                        }
                         c => {
                             self.token.push(c);
+                        }
+                    }
+                }
+                TokenState::String(StringState::Escape) => {
+                    match c {
+                        'n' => {
+                            self.token.push('\n');
+                            self.state = TokenState::String(StringState::Char);
+                        }
+                        c => {
+                            panic!("Unexpected escape sequence: {}", c);
                         }
                     }
                 }
@@ -74,9 +90,15 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
 
 enum TokenState {
     Nothing,
-    String,
+    String(StringState),
     Word,
 }
+
+enum StringState {
+    Char,
+    Escape,
+}
+
 
 pub enum Token {
     String(String),
