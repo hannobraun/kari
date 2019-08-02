@@ -17,7 +17,7 @@ impl Interpreter {
     }
 
     pub fn run<Tokens>(&mut self, tokens: Tokens) -> Result<(), Error>
-        where Tokens: Iterator<Item=Token>
+        where Tokens: IntoIterator<Item=Token>
     {
         for token in tokens {
             // Can't panic, as we have at least the top-level state on the state
