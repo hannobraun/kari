@@ -43,7 +43,7 @@ impl fmt::Display for Value {
                 write!(f, "]")?;
             }
             Value::String(string) => {
-                write!(f, "{}", string)?;
+                string.fmt(f)?;
             }
         }
 
