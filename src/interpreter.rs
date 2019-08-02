@@ -53,7 +53,7 @@ impl Interpreter {
                         Token::Word(word) => {
                             match word.as_str() {
                                 "run" => {
-                                    let arg = self.stack.pop().unwrap();
+                                    let arg = self.stack.pop()?;
                                     match arg {
                                         Value::Quote(quote) => {
                                             self.run(quote)?;
@@ -148,6 +148,9 @@ impl fmt::Display for Error {
                     expected,
                     actual,
                 )?;
+            }
+            Error::Stack(stack::Error::StackEmpty) => {
+                write!(f, "Tried to pop value from empty stack")?;
             }
         }
 

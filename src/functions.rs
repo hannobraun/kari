@@ -55,7 +55,7 @@ pub type Builtin = Fn(&mut Stack, &mut Functions) -> Result<(), stack::Error>;
 
 
 pub fn print(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
-    let arg = stack.pop().unwrap();
+    let arg = stack.pop()?;
     print!("{}", arg);
 
     Ok(())
@@ -64,7 +64,7 @@ pub fn print(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
 pub fn define(stack: &mut Stack, functions: &mut Functions)
     -> Result<(), stack::Error>
 {
-    let name = stack.pop().unwrap();
+    let name = stack.pop()?;
     let name = match name {
         Value::Quote(mut quote) => {
             assert_eq!(quote.len(), 1);
@@ -89,7 +89,7 @@ pub fn define(stack: &mut Stack, functions: &mut Functions)
         }
     };
 
-    let body = stack.pop().unwrap();
+    let body = stack.pop()?;
     let body = match body {
         Value::Quote(quote) => {
             quote

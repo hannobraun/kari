@@ -14,8 +14,11 @@ impl Stack {
         self.0.push(value)
     }
 
-    pub fn pop(&mut self) -> Option<Value> {
-        self.0.pop()
+    pub fn pop(&mut self) -> Result<Value, Error> {
+        match self.0.pop() {
+            Some(value) => Ok(value),
+            None        => Err(Error::StackEmpty),
+        }
     }
 }
 
@@ -52,5 +55,6 @@ pub enum Error {
     TypeError {
         expected: &'static str,
         actual:   Value,
-    }
+    },
+    StackEmpty,
 }
