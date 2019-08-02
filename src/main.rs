@@ -18,11 +18,11 @@ fn main() {
             runner::run(io::stdin().lock())
         },
         2 => {
-            let name    = env::args().skip(1).next().unwrap();
-            let path    = format!("examples/{}.kr", name);
-            let program = File::open(path).unwrap();
+            let name = env::args().skip(1).next().unwrap();
+            let path = format!("examples/{}.kr", name);
+            let file = File::open(path).unwrap();
 
-            runner::run(program)
+            runner::run(file)
         }
         _ => {
             print!("ERROR: Expecting zero or one arguments");
