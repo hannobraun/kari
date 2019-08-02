@@ -1,7 +1,10 @@
 use std::fmt;
 
 use crate::{
-    functions::Functions,
+    functions::{
+        Functions,
+        Quote,
+    },
     tokenizer::Token,
 };
 
@@ -141,12 +144,12 @@ impl Interpreter {
 
 enum State {
     TopLevel,
-    Quote(Vec<Token>),
+    Quote(Quote),
 }
 
 
 pub enum Value {
-    Quote(Vec<Token>),
+    Quote(Quote),
     String(String),
 }
 
