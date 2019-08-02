@@ -100,6 +100,7 @@ enum StringState {
 }
 
 
+#[derive(Clone)]
 pub enum Token {
     String(String),
     Word(String),
