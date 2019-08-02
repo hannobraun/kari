@@ -28,6 +28,7 @@ impl Functions {
 }
 
 
+#[derive(Clone)]
 pub enum Function {
     Quote(Quote),
 }
