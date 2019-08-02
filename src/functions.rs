@@ -16,8 +16,18 @@ pub struct Functions(HashMap<String, Function>);
 impl Functions {
     pub fn new() -> Self {
         let mut functions = HashMap::new();
-        functions.insert(String::from("print"),  Function::Builtin(&print));
-        functions.insert(String::from("define"), Function::Builtin(&define));
+
+        macro_rules! insert {
+            ($name:expr, $builtin:expr) => {
+                functions.insert(
+                    String::from($name),
+                    Function::Builtin(&$builtin)
+                );
+            }
+        }
+
+        insert!("print",  print);
+        insert!("define", define);
 
         Self(functions)
     }
