@@ -18,8 +18,8 @@ fn main() {
             runner::run(io::stdin().lock())
         },
         2 => {
-            let program = env::args().skip(1).next().unwrap();
-            let file    = format!("examples/{}.kr", program);
+            let name    = env::args().skip(1).next().unwrap();
+            let file    = format!("examples/{}.kr", name);
             let program = File::open(file).unwrap();
 
             runner::run(program)
