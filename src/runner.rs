@@ -18,9 +18,9 @@ pub fn run<Program>(program: Program) -> Result<(), Error>
 {
     let mut reader      = Reader::new(program);
     let     tokenizer   = Tokenizer::new(&mut reader);
-    let     interpreter = Interpreter::new(tokenizer);
+    let mut interpreter = Interpreter::new();
 
-    let result = interpreter.run();
+    let result = interpreter.run(tokenizer);
 
     if let Some(error) = reader.error() {
         return Err(Error::Reader(error));

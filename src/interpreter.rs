@@ -3,23 +3,23 @@ use std::fmt;
 use crate::tokenizer::Token;
 
 
-pub struct Interpreter<Tokens> {
-    tokens: Tokens,
+pub struct Interpreter {
     states: Vec<State>,
     stack:  Vec<Value>,
 }
 
-impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
-    pub fn new(tokens: Tokens) -> Self {
+impl Interpreter {
+    pub fn new() -> Self {
         Interpreter {
-            tokens,
             states: vec![State::TopLevel],
             stack:  Vec::new(),
         }
     }
 
-    pub fn run(mut self) -> Result<(), Error> {
-        for token in self.tokens {
+    pub fn run<Tokens>(&mut self, tokens: Tokens) -> Result<(), Error>
+        where Tokens: Iterator<Item=Token>
+    {
+        for token in tokens {
             // Can't panic, as we have at least the top-level state on the state
             // stack.
             let state = self.states.last_mut().unwrap();
