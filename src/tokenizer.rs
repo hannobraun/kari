@@ -3,16 +3,12 @@ use std::fmt;
 
 pub struct Tokenizer<Chars> {
     chars: Chars,
-    state: TokenState,
-    token: String,
 }
 
 impl<Chars> Tokenizer<Chars> {
     pub fn new(chars: Chars) -> Self {
         Tokenizer {
             chars,
-            state: TokenState::Nothing,
-            token: String::new(),
         }
     }
 }
@@ -21,91 +17,56 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
-        while let Some(c) = self.chars.next() {
-            match self.state {
-                TokenState::Nothing => {
-                    match c {
-                        '[' => {
-                            return Some(Token::QuoteOpen);
-                        }
-                        ']' => {
-                            return Some(Token::QuoteClose);
-                        }
-                        '"' => {
-                            self.state = TokenState::String(StringState::Char);
-                        }
-                        c if c.is_whitespace() => {
-                            ()
-                        }
-                        c => {
-                            self.state = TokenState::Word;
-                            self.token.push(c);
-                        }
-                    }
-                }
-                TokenState::String(StringState::Char) => {
-                    match c {
-                        '"' => {
-                            self.state = TokenState::Nothing;
+        let mut token = String::new();
 
-                            let token = Token::String(self.token.clone());
-                            self.token.clear();
+        let start = self.chars.find(|c| !c.is_whitespace())?;
 
-                            return Some(token);
-                        }
-                        '\\' => {
-                            self.state = TokenState::String(
-                                StringState::Escape
-                            );
-                        }
-                        c => {
-                            self.token.push(c);
-                        }
-                    }
-                }
-                TokenState::String(StringState::Escape) => {
-                    match c {
-                        'n' => {
-                            self.token.push('\n');
-                            self.state = TokenState::String(StringState::Char);
-                        }
-                        c => {
-                            panic!("Unexpected escape sequence: {}", c);
-                        }
-                    }
-                }
-                TokenState::Word => {
-                    match c {
-                        c if c.is_whitespace() => {
-                            self.state = TokenState::Nothing;
-
-                            let token = Token::Word(self.token.clone());
-                            self.token.clear();
-
-                            return Some(token);
-                        }
-                        c => {
-                            self.token.push(c);
-                        }
-                    }
-                }
-            }
+        if start == '"' {
+            consume_string(&mut token, self.chars.by_ref());
+            return Some(Token::String(token));
         }
 
-        None
+        token.push(start);
+        token.extend(
+            self.chars
+                .by_ref()
+                .take_while(|c| !c.is_whitespace())
+        );
+
+        match token.as_str() {
+            "[" => return Some(Token::QuoteOpen),
+            "]" => return Some(Token::QuoteClose),
+            _   => return Some(Token::Word(token)),
+        }
     }
 }
 
 
-enum TokenState {
-    Nothing,
-    String(StringState),
-    Word,
-}
+fn consume_string<S>(token: &mut String, mut string: S)
+    where S: Iterator<Item=char>
+{
+    let mut escape = false;
 
-enum StringState {
-    Char,
-    Escape,
+    while let Some(c) = string.next() {
+        if escape {
+            match c {
+                'n' => {
+                    token.push('\n');
+                    escape = false;
+                }
+                c => {
+                    panic!("Unexpected escape sequence: {}", c);
+                }
+            }
+        }
+        else {
+            match c {
+                '"'  => return,
+                '\\' => escape = true,
+                c    => token.push(c),
+            }
+        }
+    }
 }
 
 
