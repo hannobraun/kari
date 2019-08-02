@@ -39,7 +39,7 @@ fn main() {
             runner::run(file)
         }
         _ => {
-            print!("ERROR: Expecting zero or one arguments");
+            print!("\nERROR: Expecting zero or one arguments\n\n");
             return;
         }
     };
