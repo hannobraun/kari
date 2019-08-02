@@ -6,7 +6,7 @@ use crate::tokenizer::Token;
 pub struct Interpreter<Tokens> {
     tokens: Tokens,
     states: Vec<State>,
-    stack:  Vec<String>,
+    stack:  Vec<Value>,
 }
 
 impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
@@ -28,7 +28,7 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
                 State::TopLevel => {
                     match token {
                         Token::String(string) => {
-                            self.stack.push(string);
+                            self.stack.push(Value::String(string));
                         }
                         Token::Word(word) => {
                             match word.as_str() {
@@ -55,6 +55,19 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
 
 enum State {
     TopLevel,
+}
+
+
+enum Value {
+    String(String),
+}
+
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Value::String(string) => write!(f, "{}", string),
+        }
+    }
 }
 
 
