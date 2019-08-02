@@ -1,31 +1,31 @@
 fn main() {
     let mut program = include_str!("../examples/hello_world.kr").chars();
 
-    let mut state = State::Nothing;
+    let mut state = TokenState::Nothing;
 
     let mut tokens  = Vec::new();
     let mut current = String::new();
 
     while let Some(c) = program.next() {
         match state {
-            State::Nothing => {
+            TokenState::Nothing => {
                 match c {
                     '"' => {
-                        state = State::String;
+                        state = TokenState::String;
                     }
                     c if c.is_whitespace() => {
                         ()
                     }
                     c => {
-                        state = State::Word;
+                        state = TokenState::Word;
                         current.push(c);
                     }
                 }
             }
-            State::String => {
+            TokenState::String => {
                 match c {
                     '"' => {
-                        state = State::Nothing;
+                        state = TokenState::Nothing;
                         tokens.push(Token::String(current.clone()));
                         current.clear();
                     }
@@ -34,10 +34,10 @@ fn main() {
                     }
                 }
             }
-            State::Word => {
+            TokenState::Word => {
                 match c {
                     c if c.is_whitespace() => {
-                        state = State::Nothing;
+                        state = TokenState::Nothing;
                         tokens.push(Token::Word(current.clone()));
                         current.clear();
                     }
@@ -72,7 +72,7 @@ fn main() {
 }
 
 
-enum State {
+enum TokenState {
     Nothing,
     String,
     Word,
