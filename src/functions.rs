@@ -31,6 +31,7 @@ impl Functions {
         insert!("define", define);
 
         insert!("+", add);
+        insert!("*", mul);
 
         Self(functions)
     }
@@ -95,6 +96,15 @@ pub fn add(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
     let a = stack.pop::<Number>()?;
 
     stack.push(Value::Number(a + b));
+
+    Ok(())
+}
+
+pub fn mul(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
+    let b = stack.pop::<Number>()?;
+    let a = stack.pop::<Number>()?;
+
+    stack.push(Value::Number(a * b));
 
     Ok(())
 }
