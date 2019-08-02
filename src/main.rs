@@ -1,3 +1,4 @@
+mod functions;
 mod interpreter;
 mod reader;
 mod runner;

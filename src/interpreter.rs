@@ -1,15 +1,15 @@
-use std::{
-    collections::HashMap,
-    fmt,
-};
+use std::fmt;
 
-use crate::tokenizer::Token;
+use crate::{
+    functions::Functions,
+    tokenizer::Token,
+};
 
 
 pub struct Interpreter {
     states:    Vec<State>,
     stack:     Vec<Value>,
-    functions: HashMap<String, Vec<Token>>,
+    functions: Functions,
 }
 
 impl Interpreter {
@@ -17,7 +17,7 @@ impl Interpreter {
         Interpreter {
             states:    vec![State::TopLevel],
             stack:     Vec::new(),
-            functions: HashMap::new(),
+            functions: Functions::new(),
         }
     }
 
@@ -100,7 +100,7 @@ impl Interpreter {
                                         }
                                     };
 
-                                    self.functions.insert(name, body);
+                                    self.functions.define(name, body);
                                 }
                                 word => match self.functions.get(word) {
                                     Some(quote) => {
