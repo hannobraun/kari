@@ -47,6 +47,9 @@ impl Interpreter {
                         Token::QuoteClose => {
                             return Err(Error::UnexpectedToken(token));
                         }
+                        Token::Number(number) => {
+                            self.stack.push(Value::Number(number));
+                        }
                         Token::String(string) => {
                             self.stack.push(Value::String(string));
                         }

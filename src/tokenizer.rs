@@ -36,7 +36,14 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
         match token.as_str() {
             "[" => return Some(Token::QuoteOpen),
             "]" => return Some(Token::QuoteClose),
-            _   => return Some(Token::Word(token)),
+
+            _ => {
+                if let Ok(number) = token.parse::<u32>() {
+                    return Some(Token::Number(number));
+                }
+
+                return Some(Token::Word(token))
+            }
         }
     }
 }
@@ -72,6 +79,7 @@ fn consume_string<S>(token: &mut String, mut string: S)
 
 #[derive(Clone)]
 pub enum Token {
+    Number(u32),
     QuoteOpen,
     QuoteClose,
     String(String),
@@ -81,6 +89,7 @@ pub enum Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Token::Number(number) => number.fmt(f),
             Token::QuoteOpen      => write!(f, "["),
             Token::QuoteClose     => write!(f, "]"),
             Token::String(string) => write!(f, "{}", string),

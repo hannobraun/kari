@@ -24,6 +24,7 @@ impl Stack {
 
 
 pub enum Value {
+    Number(u32),
     Quote(Quote),
     String(String),
 }
@@ -31,6 +32,9 @@ pub enum Value {
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Value::Number(number) => {
+                number.fmt(f)?;
+            }
             Value::Quote(quote) => {
                 write!(f, "[ ")?;
                 for value in quote {
