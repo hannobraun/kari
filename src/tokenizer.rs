@@ -1,3 +1,6 @@
+use std::fmt;
+
+
 pub struct Tokenizer<Chars> {
     chars: Chars,
     state: TokenState,
@@ -22,6 +25,12 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
             match self.state {
                 TokenState::Nothing => {
                     match c {
+                        '[' => {
+                            return Some(Token::QuoteOpen);
+                        }
+                        ']' => {
+                            return Some(Token::QuoteClose);
+                        }
                         '"' => {
                             self.state = TokenState::String(StringState::Char);
                         }
@@ -102,6 +111,19 @@ enum StringState {
 
 #[derive(Clone)]
 pub enum Token {
+    QuoteOpen,
+    QuoteClose,
     String(String),
     Word(String),
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Token::QuoteOpen      => write!(f, "["),
+            Token::QuoteClose     => write!(f, "]"),
+            Token::String(string) => write!(f, "{}", string),
+            Token::Word(word)     => write!(f, "{}", word),
+        }
+    }
 }
