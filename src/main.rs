@@ -19,8 +19,8 @@ fn main() {
         },
         2 => {
             let name    = env::args().skip(1).next().unwrap();
-            let file    = format!("examples/{}.kr", name);
-            let program = File::open(file).unwrap();
+            let path    = format!("examples/{}.kr", name);
+            let program = File::open(path).unwrap();
 
             runner::run(program)
         }
