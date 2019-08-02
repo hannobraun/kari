@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::{
     functions::{
+        Function,
         Functions,
         Quote,
     },
@@ -106,7 +107,7 @@ impl Interpreter {
                                     self.functions.define(name, body);
                                 }
                                 word => match self.functions.get(word) {
-                                    Some(quote) => {
+                                    Some(Function::Quote(quote)) => {
                                         let quote = quote.clone();
                                         self.run(quote)?;
                                     }
