@@ -14,9 +14,9 @@ impl Stack {
         self.0.push(value)
     }
 
-    pub fn pop(&mut self) -> Result<Value, Error> {
+    pub fn pop<T>(&mut self) -> Result<T, Error> where T: Type {
         match self.0.pop() {
-            Some(value) => Ok(value),
+            Some(value) => T::check(value),
             None        => Err(Error::StackEmpty),
         }
     }
@@ -49,6 +49,33 @@ impl fmt::Display for Value {
 
 
 pub type Quote = Vec<Token>;
+
+
+pub trait Type : Sized {
+    fn check(value: Value) -> Result<Self, Error>;
+}
+
+impl Type for Value {
+    fn check(value: Value) -> Result<Self, Error> {
+        Ok(value)
+    }
+}
+
+impl Type for Quote {
+    fn check(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Quote(quote) => {
+                Ok(quote)
+            }
+            value => {
+                Err(Error::TypeError {
+                    expected: "quote",
+                    actual:   value,
+                })
+            }
+        }
+    }
+}
 
 
 pub enum Error {
