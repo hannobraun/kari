@@ -6,6 +6,7 @@ use crate::{
         Functions,
     },
     stack::{
+        self,
         Quote,
         Stack,
         Value,
@@ -62,10 +63,14 @@ impl Interpreter {
                                             self.run(quote)?;
                                         }
                                         arg => {
-                                            return Err(Error::TypeError {
-                                                expected: "quote",
-                                                actual:   arg,
-                                            });
+                                            return Err(
+                                                Error::Stack(
+                                                    stack::Error::TypeError {
+                                                        expected: "quote",
+                                                        actual:   arg,
+                                                    }
+                                                )
+                                            );
                                         }
                                     };
                                 }
@@ -77,10 +82,14 @@ impl Interpreter {
                                             quote.pop().unwrap()
                                         }
                                         arg => {
-                                            return Err(Error::TypeError {
-                                                expected: "quote",
-                                                actual:   arg,
-                                            });
+                                            return Err(
+                                                Error::Stack(
+                                                    stack::Error::TypeError {
+                                                        expected: "quote",
+                                                        actual:   arg,
+                                                    }
+                                                )
+                                            );
                                         }
                                     };
                                     let name = match name {
@@ -101,10 +110,14 @@ impl Interpreter {
                                             quote
                                         }
                                         arg => {
-                                            return Err(Error::TypeError {
-                                                expected: "quote",
-                                                actual:   arg,
-                                            });
+                                            return Err(
+                                                Error::Stack(
+                                                    stack::Error::TypeError {
+                                                        expected: "quote",
+                                                        actual:   arg,
+                                                    }
+                                                )
+                                            );
                                         }
                                     };
 
@@ -156,10 +169,7 @@ enum State {
 pub enum Error {
     UnexpectedToken(Token),
     UnexpectedWord(String),
-    TypeError {
-        expected: &'static str,
-        actual:   Value,
-    }
+    Stack(stack::Error),
 }
 
 impl fmt::Display for Error {
@@ -173,7 +183,7 @@ impl fmt::Display for Error {
             Error::UnexpectedWord(word) => {
                 write!(f, "Unexpected word: \"{}\"", word)?;
             }
-            Error::TypeError { expected, actual } => {
+            Error::Stack(stack::Error::TypeError { expected, actual }) => {
                 write!(
                     f,
                     "Expected value of type \"{}\", found {}",

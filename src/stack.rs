@@ -32,3 +32,11 @@ impl fmt::Display for Value {
 
 
 pub type Quote = Vec<Token>;
+
+
+pub enum Error {
+    TypeError {
+        expected: &'static str,
+        actual:   Value,
+    }
+}
