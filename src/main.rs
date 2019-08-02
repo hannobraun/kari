@@ -15,5 +15,10 @@ fn main() {
     let file    = format!("examples/{}.kr", program);
     let program = File::open(file).unwrap();
 
-    runner::run(program);
+    if let Err(error) = runner::run(program) {
+        match error {
+            runner::Error::Reader(error)      => print!("{:?}", error),
+            runner::Error::Interpreter(error) => print!("{}", error),
+        }
+    }
 }
