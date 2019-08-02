@@ -1,12 +1,12 @@
 mod interpreter;
 mod reader;
+mod runner;
 mod tokenizer;
 
 
 use std::{
     env,
     fs::File,
-    io,
 };
 
 
@@ -15,21 +15,5 @@ fn main() {
     let file    = format!("examples/{}.kr", program);
     let program = File::open(file).unwrap();
 
-    run(program);
-}
-
-
-fn run<Program>(program: Program) where Program: io::Read {
-    let mut reader      = reader::Reader::new(program);
-    let     tokenizer   = tokenizer::Tokenizer::new(&mut reader);
-    let     interpreter = interpreter::Interpreter::new(tokenizer);
-
-    let result = interpreter.run();
-
-    if let Some(error) = reader.error() {
-        print!("{:?}", error);
-    }
-    if let Err(error) = result {
-        print!("{}", error);
-    }
+    runner::run(program);
 }
