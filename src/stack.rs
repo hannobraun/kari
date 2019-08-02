@@ -61,37 +61,32 @@ impl Type for Value {
     }
 }
 
-impl Type for Number {
-    fn check(value: Value) -> Result<Self, Error> {
-        match value {
-            Value::Number(number) => {
-                Ok(number)
+macro_rules! impl_type {
+    ($($type:ident, $name:expr;)*) => {
+        $(
+            impl Type for $type {
+                fn check(value: Value) -> Result<Self, Error> {
+                    match value {
+                        Value::$type(value) => {
+                            Ok(value)
+                        }
+                        value => {
+                            Err(Error::TypeError {
+                                expected: $name,
+                                actual:   value,
+                            })
+                        }
+                    }
+                }
             }
-            value => {
-                Err(Error::TypeError {
-                    expected: "number",
-                    actual:   value,
-                })
-            }
-        }
+        )*
     }
 }
 
-impl Type for Quote {
-    fn check(value: Value) -> Result<Self, Error> {
-        match value {
-            Value::Quote(quote) => {
-                Ok(quote)
-            }
-            value => {
-                Err(Error::TypeError {
-                    expected: "quote",
-                    actual:   value,
-                })
-            }
-        }
-    }
-}
+impl_type!(
+    Number, "number";
+    Quote,  "quote";
+);
 
 
 pub enum Error {
