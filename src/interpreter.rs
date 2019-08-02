@@ -5,7 +5,7 @@ use crate::tokenizer::Token;
 
 pub struct Interpreter<Tokens> {
     tokens: Tokens,
-    state:  State,
+    states: Vec<State>,
     stack:  Vec<String>,
 }
 
@@ -13,14 +13,18 @@ impl<Tokens> Interpreter<Tokens> where Tokens: Iterator<Item=Token> {
     pub fn new(tokens: Tokens) -> Self {
         Interpreter {
             tokens,
-            state: State::TopLevel,
-            stack: Vec::new(),
+            states: vec![State::TopLevel],
+            stack:  Vec::new(),
         }
     }
 
     pub fn run(mut self) -> Result<(), Error> {
         for token in self.tokens {
-            match &mut self.state {
+            // Can't panic, as we have at least the top-level state on the state
+            // stack.
+            let state = self.states.last_mut().unwrap();
+
+            match state {
                 State::TopLevel => {
                     match token {
                         Token::String(string) => {
