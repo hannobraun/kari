@@ -32,22 +32,17 @@ pub enum Value {
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Value::Number(number) => {
-                number.fmt(f)?;
-            }
+            Value::Number(number) => number.fmt(f),
+            Value::String(string) => string.fmt(f),
+
             Value::Quote(quote) => {
                 write!(f, "[ ")?;
                 for value in quote {
                     write!(f, "{} ", value)?;
                 }
-                write!(f, "]")?;
-            }
-            Value::String(string) => {
-                string.fmt(f)?;
+                write!(f, "]")
             }
         }
-
-        Ok(())
     }
 }
 
