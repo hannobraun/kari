@@ -18,7 +18,9 @@ fn main() {
             runner::run(io::stdin().lock())
         },
         2 => {
+            // Can't panic, as we just verified that there are two arguments.
             let name = env::args().skip(1).next().unwrap();
+
             let path = format!("examples/{}.kr", name);
             let file = File::open(path).unwrap();
 
