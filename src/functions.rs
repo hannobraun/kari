@@ -22,8 +22,10 @@ impl Functions {
         self.0.insert(name, Function::Quote(body));
     }
 
-    pub fn get(&self, name: &str) -> Option<&Function> {
-        self.0.get(name)
+    pub fn get(&self, name: &str) -> Option<Function> {
+        self.0
+            .get(name)
+            .cloned()
     }
 }
 

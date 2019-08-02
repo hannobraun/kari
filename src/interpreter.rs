@@ -82,7 +82,6 @@ impl Interpreter {
                                 }
                                 word => match self.functions.get(word) {
                                     Some(Function::Quote(quote)) => {
-                                        let quote = quote.clone();
                                         self.run(quote)?;
                                     }
                                     None => {
