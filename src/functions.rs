@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use crate::{
     stack::{
         self,
+        Number,
         Quote,
         Stack,
         Value,
@@ -28,6 +29,8 @@ impl Functions {
 
         insert!("print",  print);
         insert!("define", define);
+
+        insert!("+", plus);
 
         Self(functions)
     }
@@ -83,6 +86,15 @@ pub fn define(stack: &mut Stack, functions: &mut Functions)
     let body = stack.pop::<Quote>()?;
 
     functions.define(name, body);
+
+    Ok(())
+}
+
+pub fn plus(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
+    let b = stack.pop::<Number>()?;
+    let a = stack.pop::<Number>()?;
+
+    stack.push(Value::Number(a + b));
 
     Ok(())
 }

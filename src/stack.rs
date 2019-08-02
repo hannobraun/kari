@@ -47,7 +47,8 @@ impl fmt::Display for Value {
 }
 
 
-pub type Quote = Vec<Token>;
+pub type Number = u32;
+pub type Quote  = Vec<Token>;
 
 
 pub trait Type : Sized {
@@ -57,6 +58,22 @@ pub trait Type : Sized {
 impl Type for Value {
     fn check(value: Value) -> Result<Self, Error> {
         Ok(value)
+    }
+}
+
+impl Type for Number {
+    fn check(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Number(number) => {
+                Ok(number)
+            }
+            value => {
+                Err(Error::TypeError {
+                    expected: "number",
+                    actual:   value,
+                })
+            }
+        }
     }
 }
 
