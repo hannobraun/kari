@@ -70,20 +70,22 @@ impl Interpreter {
                                         }
                                     };
                                 }
-                                word => match self.functions.get(word) {
-                                    Some(Function::Builtin(builtin)) => {
-                                        builtin(
-                                            &mut self.stack,
-                                            &mut self.functions,
-                                        )?;
-                                    }
-                                    Some(Function::Quote(quote)) => {
-                                        self.run(quote)?;
-                                    }
-                                    None => {
-                                        return Err(Error::UnexpectedWord(
-                                            word.to_string())
-                                        );
+                                word => {
+                                    match self.functions.get(word) {
+                                        Some(Function::Builtin(builtin)) => {
+                                            builtin(
+                                                &mut self.stack,
+                                                &mut self.functions,
+                                            )?;
+                                        }
+                                        Some(Function::Quote(quote)) => {
+                                            self.run(quote)?;
+                                        }
+                                        None => {
+                                            return Err(Error::UnexpectedWord(
+                                                word.to_string())
+                                            );
+                                        }
                                     }
                                 }
                             }
