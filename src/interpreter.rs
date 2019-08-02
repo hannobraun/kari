@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::{
     functions::{
+        self,
         Function,
         Functions,
     },
@@ -53,8 +54,7 @@ impl Interpreter {
                         Token::Word(word) => {
                             match word.as_str() {
                                 "print" => {
-                                    let arg = self.stack.pop().unwrap();
-                                    print!("{}", arg);
+                                    functions::print(&mut self.stack)?;
                                 }
                                 "run" => {
                                     let arg = self.stack.pop().unwrap();
@@ -75,53 +75,10 @@ impl Interpreter {
                                     };
                                 }
                                 "define" => {
-                                    let name = self.stack.pop().unwrap();
-                                    let name = match name {
-                                        Value::Quote(mut quote) => {
-                                            assert_eq!(quote.len(), 1);
-                                            quote.pop().unwrap()
-                                        }
-                                        arg => {
-                                            return Err(
-                                                Error::Stack(
-                                                    stack::Error::TypeError {
-                                                        expected: "quote",
-                                                        actual:   arg,
-                                                    }
-                                                )
-                                            );
-                                        }
-                                    };
-                                    let name = match name {
-                                        Token::Word(word) => {
-                                            word
-                                        }
-                                        token => {
-                                            panic!(
-                                                "Unexpected token: {}\n",
-                                                token,
-                                            );
-                                        }
-                                    };
-
-                                    let body = self.stack.pop().unwrap();
-                                    let body = match body {
-                                        Value::Quote(quote) => {
-                                            quote
-                                        }
-                                        arg => {
-                                            return Err(
-                                                Error::Stack(
-                                                    stack::Error::TypeError {
-                                                        expected: "quote",
-                                                        actual:   arg,
-                                                    }
-                                                )
-                                            );
-                                        }
-                                    };
-
-                                    self.functions.define(name, body);
+                                    functions::define(
+                                        &mut self.stack,
+                                        &mut self.functions,
+                                    )?;
                                 }
                                 word => match self.functions.get(word) {
                                     Some(Function::Quote(quote)) => {
