@@ -92,8 +92,8 @@ impl fmt::Display for Token {
             Token::Number(number) => number.fmt(f),
             Token::QuoteOpen      => write!(f, "["),
             Token::QuoteClose     => write!(f, "]"),
-            Token::String(string) => write!(f, "{}", string),
-            Token::Word(word)     => write!(f, "{}", word),
+            Token::String(string) => string.fmt(f),
+            Token::Word(word)     => word.fmt(f),
         }
     }
 }
