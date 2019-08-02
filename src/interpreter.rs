@@ -1,18 +1,23 @@
-use std::fmt;
+use std::{
+    collections::HashMap,
+    fmt,
+};
 
 use crate::tokenizer::Token;
 
 
 pub struct Interpreter {
-    states: Vec<State>,
-    stack:  Vec<Value>,
+    states:    Vec<State>,
+    stack:     Vec<Value>,
+    functions: HashMap<String, Vec<Token>>,
 }
 
 impl Interpreter {
     pub fn new() -> Self {
         Interpreter {
-            states: vec![State::TopLevel],
-            stack:  Vec::new(),
+            states:    vec![State::TopLevel],
+            stack:     Vec::new(),
+            functions: HashMap::new(),
         }
     }
 
@@ -56,10 +61,57 @@ impl Interpreter {
                                         }
                                     };
                                 }
-                                word => {
-                                    return Err(Error::UnexpectedWord(
-                                        word.to_string())
-                                    );
+                                "define" => {
+                                    let name = self.stack.pop().unwrap();
+                                    let name = match name {
+                                        Value::Quote(mut quote) => {
+                                            assert_eq!(quote.len(), 1);
+                                            quote.pop().unwrap()
+                                        }
+                                        arg => {
+                                            return Err(Error::TypeError {
+                                                expected: "quote",
+                                                actual:   arg,
+                                            });
+                                        }
+                                    };
+                                    let name = match name {
+                                        Token::Word(word) => {
+                                            word
+                                        }
+                                        token => {
+                                            panic!(
+                                                "Unexpected token: {}\n",
+                                                token,
+                                            );
+                                        }
+                                    };
+
+                                    let body = self.stack.pop().unwrap();
+                                    let body = match body {
+                                        Value::Quote(quote) => {
+                                            quote
+                                        }
+                                        arg => {
+                                            return Err(Error::TypeError {
+                                                expected: "quote",
+                                                actual:   arg,
+                                            });
+                                        }
+                                    };
+
+                                    self.functions.insert(name, body);
+                                }
+                                word => match self.functions.get(word) {
+                                    Some(quote) => {
+                                        let quote = quote.clone();
+                                        self.run(quote)?;
+                                    }
+                                    None => {
+                                        return Err(Error::UnexpectedWord(
+                                            word.to_string())
+                                        );
+                                    }
                                 }
                             }
                         }
