@@ -3,7 +3,21 @@ use std::fmt;
 use crate::tokenizer::Token;
 
 
-pub type Stack = Vec<Value>;
+pub struct Stack(Vec<Value>);
+
+impl Stack {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn push(&mut self, value: Value) {
+        self.0.push(value)
+    }
+
+    pub fn pop(&mut self) -> Option<Value> {
+        self.0.pop()
+    }
+}
 
 
 pub enum Value {

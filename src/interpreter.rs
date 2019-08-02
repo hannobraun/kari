@@ -25,7 +25,7 @@ impl Interpreter {
     pub fn new() -> Self {
         Interpreter {
             states:    vec![State::TopLevel],
-            stack:     Vec::new(),
+            stack:     Stack::new(),
             functions: Functions::new(),
         }
     }
