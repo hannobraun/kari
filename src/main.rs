@@ -22,7 +22,19 @@ fn main() {
             let name = env::args().skip(1).next().unwrap();
 
             let path = format!("examples/{}.kr", name);
-            let file = File::open(path).unwrap();
+            let file = match File::open(&path) {
+                Ok(file) => {
+                    file
+                }
+                Err(error) => {
+                    print!(
+                        "\nERROR: Failed to open file file {} ({})\n\n",
+                        path,
+                        error,
+                    );
+                    return;
+                }
+            };
 
             runner::run(file)
         }
