@@ -30,7 +30,7 @@ impl Functions {
         insert!("print",  print);
         insert!("define", define);
 
-        insert!("+", plus);
+        insert!("+", add);
 
         Self(functions)
     }
@@ -90,7 +90,7 @@ pub fn define(stack: &mut Stack, functions: &mut Functions)
     Ok(())
 }
 
-pub fn plus(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
+pub fn add(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
     let b = stack.pop::<Number>()?;
     let a = stack.pop::<Number>()?;
 
