@@ -141,7 +141,7 @@ impl fmt::Display for Error {
                 write!(f, "Unexpected token: \"{}\"", token)?;
             }
             Error::UnknownFunction(word) => {
-                write!(f, "Unexpected word: \"{}\"", word)?;
+                write!(f, "Unknown function: \"{}\"", word)?;
             }
             Error::Stack(stack::Error::TypeError { expected, actual }) => {
                 write!(
