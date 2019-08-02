@@ -2,6 +2,7 @@ mod functions;
 mod interpreter;
 mod reader;
 mod runner;
+mod stack;
 mod tokenizer;
 
 

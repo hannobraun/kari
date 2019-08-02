@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::tokenizer::Token;
+use crate::stack::Quote;
 
 
 pub struct Functions(HashMap<String, Function>);
@@ -23,6 +23,3 @@ impl Functions {
 pub enum Function {
     Quote(Quote),
 }
-
-
-pub type Quote = Vec<Token>;

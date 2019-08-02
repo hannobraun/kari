@@ -4,7 +4,11 @@ use crate::{
     functions::{
         Function,
         Functions,
+    },
+    stack::{
         Quote,
+        Stack,
+        Value,
     },
     tokenizer::Token,
 };
@@ -12,7 +16,7 @@ use crate::{
 
 pub struct Interpreter {
     states:    Vec<State>,
-    stack:     Vec<Value>,
+    stack:     Stack,
     functions: Functions,
 }
 
@@ -146,31 +150,6 @@ impl Interpreter {
 enum State {
     TopLevel,
     Quote(Quote),
-}
-
-
-pub enum Value {
-    Quote(Quote),
-    String(String),
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Quote(quote) => {
-                write!(f, "[ ")?;
-                for value in quote {
-                    write!(f, "{} ", value)?;
-                }
-                write!(f, "]")?;
-            }
-            Value::String(string) => {
-                write!(f, "{}", string)?;
-            }
-        }
-
-        Ok(())
-    }
 }
 
 
