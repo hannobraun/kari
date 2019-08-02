@@ -2,7 +2,6 @@ use std::fmt;
 
 use crate::{
     functions::{
-        self,
         Function,
         Functions,
     },
@@ -53,9 +52,6 @@ impl Interpreter {
                         }
                         Token::Word(word) => {
                             match word.as_str() {
-                                "print" => {
-                                    functions::print(&mut self.stack)?;
-                                }
                                 "run" => {
                                     let arg = self.stack.pop().unwrap();
                                     match arg {
@@ -74,13 +70,13 @@ impl Interpreter {
                                         }
                                     };
                                 }
-                                "define" => {
-                                    functions::define(
-                                        &mut self.stack,
-                                        &mut self.functions,
-                                    )?;
-                                }
                                 word => match self.functions.get(word) {
+                                    Some(Function::Builtin(builtin)) => {
+                                        builtin(
+                                            &mut self.stack,
+                                            &mut self.functions,
+                                        )?;
+                                    }
                                     Some(Function::Quote(quote)) => {
                                         self.run(quote)?;
                                     }

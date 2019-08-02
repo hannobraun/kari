@@ -15,7 +15,11 @@ pub struct Functions(HashMap<String, Function>);
 
 impl Functions {
     pub fn new() -> Self {
-        Self(HashMap::new())
+        let mut functions = HashMap::new();
+        functions.insert(String::from("print"),  Function::Builtin(&print));
+        functions.insert(String::from("define"), Function::Builtin(&define));
+
+        Self(functions)
     }
 
     pub fn define(&mut self, name: String, body: Quote) {
@@ -32,11 +36,15 @@ impl Functions {
 
 #[derive(Clone)]
 pub enum Function {
+    Builtin(&'static Builtin),
     Quote(Quote),
 }
 
 
-pub fn print(stack: &mut Stack) -> Result<(), stack::Error> {
+pub type Builtin = Fn(&mut Stack, &mut Functions) -> Result<(), stack::Error>;
+
+
+pub fn print(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
     let arg = stack.pop().unwrap();
     print!("{}", arg);
 
