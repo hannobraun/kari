@@ -6,6 +6,7 @@ mod tokenizer;
 use std::{
     env,
     fs::File,
+    io,
 };
 
 
@@ -14,6 +15,11 @@ fn main() {
     let file    = format!("examples/{}.kr", program);
     let program = File::open(file).unwrap();
 
+    run(program);
+}
+
+
+fn run<Program>(program: Program) where Program: io::Read {
     let mut reader      = reader::Reader::new(program);
     let     tokenizer   = tokenizer::Tokenizer::new(&mut reader);
     let     interpreter = interpreter::Interpreter::new(tokenizer);
