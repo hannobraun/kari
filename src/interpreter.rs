@@ -36,7 +36,7 @@ impl Interpreter {
         -> Result<(), Error>
         where Tokens: Iterator<Item=Result<Token, tokenizer::Error>>
     {
-        self.run_tokens(tokens.take_until_error())?;
+        self.run_tokens(&mut tokens.take_until_error())?;
 
         // If something's left in the iterator, it's an error from a previous
         // stage.

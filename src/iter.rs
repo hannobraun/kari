@@ -61,7 +61,7 @@ impl<'r, Iter, T, E> TakeUntilError<'r, Iter, T, E>
     }
 }
 
-impl<'r, Iter, T, E> Iterator for TakeUntilError<'r, Iter, T, E>
+impl<'r, Iter, T, E> Iterator for &'_ mut TakeUntilError<'r, Iter, T, E>
     where Iter: Iterator<Item=Result<T, E>>
 {
     type Item = T;
