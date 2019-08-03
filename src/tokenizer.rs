@@ -137,10 +137,14 @@ impl fmt::Display for Token {
 pub enum Error {
     Reader(reader::Error),
     UnexpectedEscape(char),
+    EndOfStream,
 }
 
 impl From<reader::Error> for Error {
     fn from(from: reader::Error) -> Self {
-        Error::Reader(from)
+        match from {
+            reader::Error::EndOfStream => Error::EndOfStream,
+            error                      => Error::Reader(error),
+        }
     }
 }
