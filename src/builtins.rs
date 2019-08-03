@@ -147,8 +147,8 @@ impl_builtin!(
 
 fn print(
     (input,): &(Expression,),
-    _: &mut (),
-    _: &mut Functions,
+    _       : &mut (),
+    _       : &mut Functions,
 ) {
     match input {
         Expression::Number(number) => print!("{}", number),
@@ -160,8 +160,8 @@ fn print(
 
 fn define(
     (body, name): &(List, List),
-    _: &mut (),
-    functions: &mut Functions,
+    _           : &mut (),
+    functions   : &mut Functions,
 ) {
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
@@ -182,9 +182,9 @@ fn define(
 }
 
 fn add(
-    (a, b): &(Number, Number),
+    (a, b)   : &(Number, Number),
     (result,): &mut (Number,),
-    _: &mut Functions,
+    _        : &mut Functions,
 ) {
     *result = a + b;
 }
