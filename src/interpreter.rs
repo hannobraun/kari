@@ -1,5 +1,3 @@
-use std::fmt;
-
 use crate::{
     functions::{
         Function,
@@ -133,35 +131,5 @@ pub enum Error {
 impl From<stack::Error> for Error {
     fn from(from: stack::Error) -> Self {
         Error::Stack(from)
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\n")?;
-
-        match self {
-            Error::UnexpectedToken(token) => {
-                write!(f, "Unexpected token: \"{}\"", token)?;
-            }
-            Error::UnknownFunction(word) => {
-                write!(f, "Unknown function: \"{}\"", word)?;
-            }
-            Error::Stack(stack::Error::TypeError { expected, actual }) => {
-                write!(
-                    f,
-                    "Expected value of type \"{}\", found {}",
-                    expected,
-                    actual,
-                )?;
-            }
-            Error::Stack(stack::Error::StackEmpty) => {
-                write!(f, "Tried to pop value from empty stack")?;
-            }
-        }
-
-        write!(f, "\n\n")?;
-
-        Ok(())
     }
 }
