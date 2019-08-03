@@ -13,7 +13,6 @@ use crate::{
     stack::{
         self,
         Stack,
-        Value,
     },
 };
 
@@ -54,28 +53,19 @@ impl Interpreter {
     {
         for expression in expressions {
             match expression {
-                Expression::Number(number) => {
-                    self.stack.push(Value::Number(number));
-                }
-                Expression::List(quote) => {
-                    self.stack.push(Value::Quote(quote));
-                }
-                Expression::String(string) => {
-                    self.stack.push(Value::String(string));
-                }
                 Expression::Word(word) => {
                     match word.as_str() {
                         "run" => {
                             let arg = self.stack.pop()?;
                             match arg {
-                                Value::Quote(quote) => {
-                                    self.evaluate(quote)?;
+                                Expression::List(list) => {
+                                    self.evaluate(list)?;
                                 }
                                 arg => {
                                     return Err(
                                         Error::Stack(
                                             stack::Error::TypeError {
-                                                expected: "quote",
+                                                expected: "list",
                                                 actual:   arg,
                                             }
                                         )
@@ -102,6 +92,9 @@ impl Interpreter {
                             }
                         }
                     }
+                }
+                expression => {
+                    self.stack.push(expression);
                 }
             }
         }

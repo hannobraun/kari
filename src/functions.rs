@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
 use crate::{
-    parser::Expression,
+    parser::{
+        Expression,
+        List,
+        Number,
+    },
     stack::{
         self,
-        Number,
-        Quote,
         Stack,
-        Value,
     },
 };
 
@@ -36,7 +37,7 @@ impl Functions {
         Self(functions)
     }
 
-    pub fn define(&mut self, name: String, body: Quote) {
+    pub fn define(&mut self, name: String, body: List) {
         self.0.insert(name, Function::Quote(body));
     }
 
@@ -51,7 +52,7 @@ impl Functions {
 #[derive(Clone)]
 pub enum Function {
     Builtin(&'static Builtin),
-    Quote(Quote),
+    Quote(List),
 }
 
 
@@ -59,8 +60,12 @@ pub type Builtin = Fn(&mut Stack, &mut Functions) -> Result<(), stack::Error>;
 
 
 pub fn print(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
-    let arg = stack.pop::<Value>()?;
-    print!("{}", arg);
+    match stack.pop::<Expression>()? {
+        Expression::Number(number) => print!("{}", number),
+        Expression::List(_)        => unimplemented!(),
+        Expression::String(string) => print!("{}", string),
+        Expression::Word(_)        => unimplemented!(),
+    }
 
     Ok(())
 }
@@ -68,7 +73,7 @@ pub fn print(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
 pub fn define(stack: &mut Stack, functions: &mut Functions)
     -> Result<(), stack::Error>
 {
-    let mut name = stack.pop::<Quote>()?;
+    let mut name = stack.pop::<List>()?;
     assert_eq!(name.len(), 1);
     let name = name.pop().unwrap();
 
@@ -84,7 +89,7 @@ pub fn define(stack: &mut Stack, functions: &mut Functions)
         }
     };
 
-    let body = stack.pop::<Quote>()?;
+    let body = stack.pop::<List>()?;
 
     functions.define(name, body);
 
@@ -95,7 +100,7 @@ pub fn add(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
     let b = stack.pop::<Number>()?;
     let a = stack.pop::<Number>()?;
 
-    stack.push(Value::Number(a + b));
+    stack.push(Expression::Number(a + b));
 
     Ok(())
 }
@@ -104,7 +109,7 @@ pub fn mul(stack: &mut Stack, _: &mut Functions) -> Result<(), stack::Error> {
     let b = stack.pop::<Number>()?;
     let a = stack.pop::<Number>()?;
 
-    stack.push(Value::Number(a * b));
+    stack.push(Expression::Number(a * b));
 
     Ok(())
 }

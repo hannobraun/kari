@@ -1,64 +1,37 @@
-use std::fmt;
+use crate::parser::{
+    Expression,
+    List,
+    Number,
+};
 
-use crate::parser::Expression;
 
-
-pub struct Stack(Vec<Value>);
+pub struct Stack(Vec<Expression>);
 
 impl Stack {
     pub fn new() -> Self {
         Self(Vec::new())
     }
 
-    pub fn push(&mut self, value: Value) {
-        self.0.push(value)
+    pub fn push(&mut self, expression: Expression) {
+        self.0.push(expression)
     }
 
     pub fn pop<T>(&mut self) -> Result<T, Error> where T: Type {
         match self.0.pop() {
-            Some(value) => T::check(value),
-            None        => Err(Error::StackEmpty),
+            Some(expression) => T::check(expression),
+            None             => Err(Error::StackEmpty),
         }
     }
 }
-
-
-#[derive(Debug)]
-pub enum Value {
-    Number(Number),
-    Quote(Quote),
-    String(String),
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Number(number) => number.fmt(f),
-            Value::String(string) => string.fmt(f),
-
-            Value::Quote(quote) => {
-                write!(f, "[ ")?;
-                for value in quote {
-                    write!(f, "{:?} ", value)?;
-                }
-                write!(f, "]")
-            }
-        }
-    }
-}
-
-
-pub type Number = u32;
-pub type Quote  = Vec<Expression>;
 
 
 pub trait Type : Sized {
-    fn check(value: Value) -> Result<Self, Error>;
+    fn check(_: Expression) -> Result<Self, Error>;
 }
 
-impl Type for Value {
-    fn check(value: Value) -> Result<Self, Error> {
-        Ok(value)
+impl Type for Expression {
+    fn check(expression: Expression) -> Result<Self, Error> {
+        Ok(expression)
     }
 }
 
@@ -66,15 +39,15 @@ macro_rules! impl_type {
     ($($type:ident, $name:expr;)*) => {
         $(
             impl Type for $type {
-                fn check(value: Value) -> Result<Self, Error> {
-                    match value {
-                        Value::$type(value) => {
-                            Ok(value)
+                fn check(expression: Expression) -> Result<Self, Error> {
+                    match expression {
+                        Expression::$type(expression) => {
+                            Ok(expression)
                         }
-                        value => {
+                        expression => {
                             Err(Error::TypeError {
                                 expected: $name,
-                                actual:   value,
+                                actual:   expression,
                             })
                         }
                     }
@@ -85,8 +58,8 @@ macro_rules! impl_type {
 }
 
 impl_type!(
+    List,   "list";
     Number, "number";
-    Quote,  "quote";
 );
 
 
@@ -94,7 +67,7 @@ impl_type!(
 pub enum Error {
     TypeError {
         expected: &'static str,
-        actual:   Value,
+        actual:   Expression,
     },
     StackEmpty,
 }
