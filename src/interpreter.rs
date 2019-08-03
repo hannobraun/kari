@@ -2,7 +2,10 @@ use std::io;
 
 use crate::{
     builtins::Builtins,
-    evaluate::Error,
+    evaluate::{
+        Error,
+        Evaluate,
+    },
     functions::{
         Functions,
     },
@@ -44,15 +47,16 @@ impl Interpreter {
                 Err(error)                      => return Err(error.into()),
             };
 
-            self.evaluate(Some(expression))?;
+            self.evaluate(&mut Some(expression).into_iter())?;
         }
 
         Ok(())
     }
+}
 
-    fn evaluate<Expressions>(&mut self, expressions: Expressions)
+impl Evaluate for Interpreter {
+    fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>
-        where Expressions: IntoIterator<Item=Expression>
     {
         for expression in expressions {
             match expression {
@@ -62,7 +66,7 @@ impl Interpreter {
                             let arg = self.stack.pop()?;
                             match arg {
                                 Expression::List(list) => {
-                                    self.evaluate(list)?;
+                                    self.evaluate(&mut list.into_iter())?;
                                 }
                                 arg => {
                                     return Err(
@@ -83,7 +87,7 @@ impl Interpreter {
                                 builtin
                                     .input()
                                     .take(&mut self.stack)?;
-                                builtin.run();
+                                builtin.run(self);
                                 builtin
                                     .output()
                                     .place(&mut self.stack);
@@ -95,7 +99,7 @@ impl Interpreter {
                             }
                             if let Some(list) = self.functions.get(word) {
                                 let list = list.clone();
-                                self.evaluate(list)?;
+                                self.evaluate(&mut list.into_iter())?;
                                 continue;
                             }
 

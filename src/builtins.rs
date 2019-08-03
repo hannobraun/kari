@@ -4,6 +4,7 @@ use std::{
 };
 
 use crate::{
+    evaluate::Evaluate,
     parser::{
         Expression,
         List,
@@ -94,7 +95,7 @@ pub trait Builtin {
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
-    fn run(&mut self);
+    fn run(&mut self, evaluate: &mut Evaluate);
 }
 
 macro_rules! impl_builtin {
@@ -139,8 +140,13 @@ macro_rules! impl_builtin {
                     self.defines.drain(..)
                 }
 
-                fn run(&mut self) {
-                    $fn(&self.input, &mut self.output, &mut self.defines);
+                fn run(&mut self, evaluate: &mut Evaluate) {
+                    $fn(
+                        &self.input,
+                        &mut self.output,
+                        &mut self.defines,
+                        evaluate,
+                    );
                 }
             }
         )*
@@ -159,6 +165,7 @@ fn print(
     (input,): &(Expression,),
     _       : &mut (),
     _       : &mut Vec<(String, List)>,
+    _       : &mut Evaluate,
 ) {
     match input {
         Expression::Number(number) => print!("{}", number),
@@ -172,6 +179,7 @@ fn define(
     (body, name): &(List, List),
     _           : &mut (),
     defines     : &mut Vec<(String, List)>,
+    _           : &mut Evaluate,
 ) {
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
@@ -195,6 +203,7 @@ fn add(
     (a, b)   : &(Number, Number),
     (result,): &mut (Number,),
     _        : &mut Vec<(String, List)>,
+    _        : &mut Evaluate,
 ) {
     *result = a + b;
 }
@@ -203,6 +212,7 @@ fn mul(
     (a, b): &(Number, Number),
     (result,): &mut (Number,),
     _        : &mut Vec<(String, List)>,
+    _        : &mut Evaluate,
 ) {
     *result = a * b;
 }

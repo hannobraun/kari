@@ -1,7 +1,16 @@
 use crate::{
-    parser,
+    parser::{
+        self,
+        Expression,
+    },
     stack,
 };
+
+
+pub trait Evaluate {
+    fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
+        -> Result<(), Error>;
+}
 
 
 #[derive(Debug)]
