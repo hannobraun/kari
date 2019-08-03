@@ -3,6 +3,7 @@ use crate::{
         Function,
         Functions,
     },
+    iter::ErrorIter,
     stack::{
         self,
         Quote,
@@ -31,7 +32,8 @@ impl Interpreter {
         }
     }
 
-    pub fn run<Tokens>(&mut self, mut tokens: Tokens) -> Result<(), Error>
+    pub fn run<Tokens>(&mut self, mut tokens: ErrorIter<Tokens>)
+        -> Result<(), Error>
         where Tokens: Iterator<Item=Result<Token, tokenizer::Error>>
     {
         self.run_tokens(
