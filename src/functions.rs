@@ -41,10 +41,8 @@ impl Functions {
         self.0.insert(name, Function::List(body));
     }
 
-    pub fn get(&self, name: &str) -> Option<Function> {
-        self.0
-            .get(name)
-            .cloned()
+    pub fn get(&self, name: &str) -> Option<&Function> {
+        self.0.get(name)
     }
 }
 

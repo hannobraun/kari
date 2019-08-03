@@ -82,6 +82,7 @@ impl Interpreter {
                                     )?;
                                 }
                                 Some(Function::List(list)) => {
+                                    let list = list.clone();
                                     self.evaluate(list)?;
                                 }
                                 None => {
