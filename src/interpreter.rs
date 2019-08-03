@@ -77,6 +77,9 @@ impl Interpreter {
                         }
                         word => {
                             if let Some(builtin) = self.builtins.get(word) {
+                                builtin
+                                    .input()
+                                    .take(&mut self.stack)?;
                                 builtin.run(
                                     &mut self.stack,
                                     &mut self.functions,

@@ -68,6 +68,12 @@ pub enum Expression {
     Word(String),
 }
 
+impl Default for Expression {
+    fn default() -> Self {
+        Expression::Number(0)
+    }
+}
+
 
 pub type Number = u32;
 pub type List   = Vec<Expression>;

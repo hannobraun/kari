@@ -1,6 +1,6 @@
 use std::{
     collections::HashMap,
-    ops::Deref,
+    ops::DerefMut,
 };
 
 use crate::{
@@ -13,6 +13,7 @@ use crate::{
     stack::{
         self,
         Stack,
+        Type,
     },
 };
 
@@ -30,19 +31,46 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn get(&self, name: &str) -> Option<&Builtin> {
-        self.0.get(name).map(|builtin| builtin.deref())
+    pub fn get(&mut self, name: &str) -> Option<&mut (Builtin + 'static)> {
+        self.0.get_mut(name).map(|builtin| builtin.deref_mut())
+    }
+}
+
+
+pub trait Types {
+    fn take(&mut self, _: &mut Stack) -> Result<(), stack::Error>;
+}
+
+impl<A> Types for (A,) where A: Type {
+    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
+        self.0 = stack.pop::<A>()?;
+
+        Ok(())
+    }
+}
+
+impl<A, B> Types for (A, B)
+    where
+        A: Type,
+        B: Type,
+{
+    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
+        self.1 = stack.pop::<B>()?;
+        self.0 = stack.pop::<A>()?;
+
+        Ok(())
     }
 }
 
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
+    fn input(&mut self) -> &mut Types;
     fn run(&self, _: &mut Stack, _: &mut Functions) -> Result<(), stack::Error>;
 }
 
 macro_rules! impl_builtin {
-    ($($ty:ident, $name:expr, $fn:ident;)*) => {
+    ($($ty:ident, $name:expr, $fn:ident, $input:ty;)*) => {
         fn builtins() -> Vec<Box<Builtin>> {
             vec![
                 $($ty::new(),)*
@@ -50,11 +78,15 @@ macro_rules! impl_builtin {
         }
 
         $(
-            pub struct $ty;
+            pub struct $ty {
+                input: $input,
+            }
 
             impl $ty {
                 fn new() -> Box<Builtin> {
-                    Box::new($ty)
+                    Box::new($ty {
+                        input: Default::default(),
+                    })
                 }
             }
 
@@ -63,10 +95,14 @@ macro_rules! impl_builtin {
                     $name
                 }
 
+                fn input(&mut self) -> &mut Types {
+                    &mut self.input
+                }
+
                 fn run(&self, stack: &mut Stack, functions: &mut Functions)
                     -> Result<(), stack::Error>
                 {
-                    $fn(stack, functions)
+                    $fn(&self.input, stack, functions)
                 }
             }
         )*
@@ -74,17 +110,17 @@ macro_rules! impl_builtin {
 }
 
 impl_builtin!(
-    Print, "print",  print;
-    Define,"define", define;
+    Print, "print",  print,  (Expression,);
+    Define,"define", define, (List, List);
 
-    Add, "+", add;
-    Mul, "*", mul;
+    Add, "+", add, (Number, Number);
+    Mul, "*", mul, (Number, Number);
 );
 
-fn print(stack: &mut Stack, _: &mut Functions)
+fn print((input,): &(Expression,), _: &mut Stack, _: &mut Functions)
     -> Result<(), stack::Error>
 {
-    match stack.pop::<Expression>()? {
+    match input {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
         Expression::String(string) => print!("{}", string),
@@ -94,12 +130,11 @@ fn print(stack: &mut Stack, _: &mut Functions)
     Ok(())
 }
 
-fn define(stack: &mut Stack, functions: &mut Functions)
+fn define((body, name): &(List, List), _: &mut Stack, functions: &mut Functions)
     -> Result<(), stack::Error>
 {
-    let mut name = stack.pop::<List>()?;
     assert_eq!(name.len(), 1);
-    let name = name.pop().unwrap();
+    let name = name.clone().pop().unwrap();
 
     let name = match name {
         Expression::Word(word) => {
@@ -113,30 +148,22 @@ fn define(stack: &mut Stack, functions: &mut Functions)
         }
     };
 
-    let body = stack.pop::<List>()?;
-
-    functions.define(name, body);
+    functions.define(name, body.clone());
 
     Ok(())
 }
 
-fn add(stack: &mut Stack, _: &mut Functions)
+fn add((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions)
     -> Result<(), stack::Error>
 {
-    let b = stack.pop::<Number>()?;
-    let a = stack.pop::<Number>()?;
-
     stack.push(Expression::Number(a + b));
 
     Ok(())
 }
 
-fn mul(stack: &mut Stack, _: &mut Functions)
+fn mul((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions)
     -> Result<(), stack::Error>
 {
-    let b = stack.pop::<Number>()?;
-    let a = stack.pop::<Number>()?;
-
     stack.push(Expression::Number(a * b));
 
     Ok(())
