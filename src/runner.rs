@@ -1,17 +1,15 @@
 use std::io;
 
 use crate::{
-    interpreter::{
-        self,
-        Interpreter,
-    },
+    evaluate,
+    interpreter::Interpreter,
     parser::Parser,
     reader::Reader,
     tokenizer::Tokenizer,
 };
 
 
-pub fn run<Program>(program: Program) -> Result<(), interpreter::Error>
+pub fn run<Program>(program: Program) -> Result<(), evaluate::Error>
     where Program: io::Read
 {
     let reader    = Reader::new(program);

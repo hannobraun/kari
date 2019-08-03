@@ -2,6 +2,7 @@ use std::io;
 
 use crate::{
     builtins::Builtins,
+    evaluate::Error,
     functions::{
         Functions,
     },
@@ -111,13 +112,6 @@ impl Interpreter {
     }
 }
 
-
-#[derive(Debug)]
-pub enum Error {
-    Parser(parser::Error),
-    UnknownFunction(String),
-    Stack(stack::Error),
-}
 
 impl From<stack::Error> for Error {
     fn from(from: stack::Error) -> Self {
