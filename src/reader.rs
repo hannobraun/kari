@@ -9,6 +9,8 @@ use std::{
     },
 };
 
+use crate::stream;
+
 
 pub struct Reader<R> {
     input:  R,
@@ -25,11 +27,11 @@ impl<R> Reader<R> where R: Read {
         }
     }
 
-    pub fn next(&mut self) -> Result<Option<char>, Error> {
+    pub fn next(&mut self) -> stream::Result<char, Error> {
         let c = loop {
             if self.index >= self.buffer.len() {
                 // This can only happen if an error occured before.
-                return Ok(None);
+                return Err(stream::Error::EndOfStream);
             }
 
             let result = self.input.read_exact(
@@ -43,10 +45,10 @@ impl<R> Reader<R> where R: Read {
                     match error.kind() {
                         io::ErrorKind::UnexpectedEof => {
                             self.index = 0;
-                            return Ok(None);
+                            return Err(stream::Error::EndOfStream);
                         }
                         _ => {
-                            return Err(Error::Io(error));
+                            return Err(Error::Io(error).into());
                         }
                     }
                 }
@@ -63,7 +65,7 @@ impl<R> Reader<R> where R: Read {
                 Err(error) => {
                     match self.index {
                         i if i == 4 => {
-                            return Err(Error::Utf8(error));
+                            return Err(Error::Utf8(error).into());
                         }
                         i if i < 4 => {
                             continue;
@@ -77,35 +79,35 @@ impl<R> Reader<R> where R: Read {
         };
 
         self.index = 0;
-        Ok(Some(c))
+        Ok(c)
     }
 
-    pub fn find<P>(&mut self, predicate: P) -> Result<Option<char>, Error>
+    pub fn find<P>(&mut self, predicate: P) -> stream::Result<char, Error>
         where P: Fn(char) -> bool
     {
-        while let Some(c) = self.next()? {
+        loop {
+            let c = self.next()?;
+
             if predicate(c) {
-                return Ok(Some(c));
+                return Ok(c);
             }
         }
-
-        Ok(None)
     }
 
     pub fn push_until<P>(&mut self, s: &mut String, predicate: P)
-        -> Result<(), Error>
+        -> stream::Result<(), Error>
         where P: Fn(char) -> bool
     {
-        while let Some(c) = self.next()? {
+        loop {
+            let c = self.next()?;
+
             if predicate(c) {
                 s.push(c);
             }
             else {
-                break;
+                return Ok(());
             }
         }
-
-        Ok(())
     }
 }
 

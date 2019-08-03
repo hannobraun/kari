@@ -4,6 +4,7 @@ mod iter;
 mod reader;
 mod runner;
 mod stack;
+mod stream;
 mod tokenizer;
 
 

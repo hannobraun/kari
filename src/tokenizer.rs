@@ -5,9 +5,12 @@ use std::{
 
 use crate::iter::ErrorIter;
 
-use crate::reader::{
-    self,
-    Reader,
+use crate::{
+    reader::{
+        self,
+        Reader,
+    },
+    stream,
 };
 
 
@@ -39,9 +42,9 @@ impl<R> Iterator for Tokens<R>
         let mut token = String::new();
 
         let start = match self.reader.find(|c| !c.is_whitespace()) {
-            Ok(Some(c)) => c,
-            Ok(None)    => return None,
-            Err(error)  => return Some(Err(error.into())),
+            Ok(c)                            => c,
+            Err(stream::Error::EndOfStream)  => return None,
+            Err(stream::Error::Other(error)) => return Some(Err(error.into())),
         };
 
         if start == '"' {
@@ -53,8 +56,9 @@ impl<R> Iterator for Tokens<R>
 
         token.push(start);
         match self.reader.push_until(&mut token, |c| !c.is_whitespace()) {
-            Ok(())     => (),
-            Err(error) => return Some(Err(error.into())),
+            Ok(c)                            => c,
+            Err(stream::Error::EndOfStream)  => return None,
+            Err(stream::Error::Other(error)) => return Some(Err(error.into())),
         }
 
         match token.as_str() {
@@ -79,7 +83,13 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
 {
     let mut escape = false;
 
-    while let Some(c) = reader.next()? {
+    loop {
+        let c = match reader.next() {
+            Ok(c)                            => c,
+            Err(stream::Error::EndOfStream)  => return Ok(()),
+            Err(stream::Error::Other(error)) => return Err(error.into()),
+        };
+
         if escape {
             match c {
                 'n' => {
@@ -99,8 +109,6 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
             }
         }
     }
-
-    Ok(())
 }
 
 
