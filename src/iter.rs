@@ -95,19 +95,3 @@ impl<'r, Iter, T, E> Iterator for &'_ mut TakeUntilError<'r, Iter, T, E>
             .map(|item| item.unwrap_or_else(|_| unreachable!()))
     }
 }
-
-impl<Iter, T, E> TakeUntilError<'_, Iter, T, E>
-    where Iter: Iterator<Item=Result<T, E>>
-{
-    pub fn handle_error<F, Item, Error>(&mut self, f: F)
-        -> Option<Result<Item, Error>>
-        where
-            F:     Fn(&mut Self) -> Option<Result<Item, Error>>,
-            Error: From<E>,
-    {
-        let result = f(self);
-        let error  = self.error.take().map(|error| error.into());
-
-        error.map(|error| Err(error)).or(result)
-    }
-}

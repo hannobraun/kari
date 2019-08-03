@@ -9,38 +9,27 @@ use std::{
     },
 };
 
-use crate::iter::ErrorIter;
 
-
-pub struct Reader;
-
-impl Reader {
-    pub fn read<R>(reader: R) -> ErrorIter<Chars<R>> where R: Read {
-        ErrorIter::new(
-            Chars {
-                reader,
-                buffer: [0; 4],
-                index:  0,
-            }
-        )
-    }
-}
-
-
-pub struct Chars<R> {
+pub struct Reader<R> {
     reader: R,
     buffer: [u8; 4],
     index:  usize,
 }
 
-impl<R> Iterator for Chars<R> where R: Read {
-    type Item = Result<char, Error>;
+impl<R> Reader<R> where R: Read {
+    pub fn new(reader: R) -> Self {
+        Reader {
+            reader,
+            buffer: [0; 4],
+            index:  0,
+        }
+    }
 
-    fn next(&mut self) -> Option<Self::Item> {
+    pub fn next(&mut self) -> Result<Option<char>, Error> {
         let c = loop {
             if self.index >= self.buffer.len() {
                 // This can only happen if an error occured before.
-                return None;
+                return Ok(None);
             }
 
             let result = self.reader.read_exact(
@@ -54,10 +43,10 @@ impl<R> Iterator for Chars<R> where R: Read {
                     match error.kind() {
                         io::ErrorKind::UnexpectedEof => {
                             self.index = 0;
-                            return None;
+                            return Ok(None);
                         }
                         _ => {
-                            return Some(Err(Error::Io(error)));
+                            return Err(Error::Io(error));
                         }
                     }
                 }
@@ -74,7 +63,7 @@ impl<R> Iterator for Chars<R> where R: Read {
                 Err(error) => {
                     match self.index {
                         i if i == 4 => {
-                            return Some(Err(Error::Utf8(error)));
+                            return Err(Error::Utf8(error));
                         }
                         i if i < 4 => {
                             continue;
@@ -88,7 +77,35 @@ impl<R> Iterator for Chars<R> where R: Read {
         };
 
         self.index = 0;
-        Some(Ok(c))
+        Ok(Some(c))
+    }
+
+    pub fn find<P>(&mut self, predicate: P) -> Result<Option<char>, Error>
+        where P: Fn(char) -> bool
+    {
+        while let Some(c) = self.next()? {
+            if predicate(c) {
+                return Ok(Some(c));
+            }
+        }
+
+        Ok(None)
+    }
+
+    pub fn push_until<P>(&mut self, s: &mut String, predicate: P)
+        -> Result<(), Error>
+        where P: Fn(char) -> bool
+    {
+        while let Some(c) = self.next()? {
+            if predicate(c) {
+                s.push(c);
+            }
+            else {
+                break;
+            }
+        }
+
+        Ok(())
     }
 }
 

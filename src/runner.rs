@@ -13,8 +13,8 @@ use crate::{
 pub fn run<Program>(program: Program) -> Result<(), interpreter::Error>
     where Program: io::Read
 {
-    let chars  = Reader::read(program);
-    let tokens = Tokenizer::tokenize(chars);
+    let reader = Reader::new(program);
+    let tokens = Tokenizer::tokenize(reader);
 
     let mut interpreter = Interpreter::new();
     interpreter.run(tokens)

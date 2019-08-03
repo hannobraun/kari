@@ -1,80 +1,85 @@
-use std::fmt;
+use std::{
+    fmt,
+    io,
+};
 
 use crate::iter::ErrorIter;
 
-use crate::reader;
+use crate::reader::{
+    self,
+    Reader,
+};
 
 
 pub struct Tokenizer;
 
 impl Tokenizer {
-    pub fn tokenize<Chars>(chars: ErrorIter<Chars>) -> ErrorIter<Tokens<Chars>>
-        where Chars: Iterator<Item=Result<char, reader::Error>>
+    pub fn tokenize<R>(reader: Reader<R>) -> ErrorIter<Tokens<R>>
+        where R: io::Read
     {
         ErrorIter::new(
             Tokens {
-                chars,
+                reader,
             }
         )
     }
 }
 
 
-pub struct Tokens<Chars: Iterator> {
-    chars: ErrorIter<Chars>,
+pub struct Tokens<R> {
+    reader: Reader<R>
 }
 
-impl<Chars> Iterator for Tokens<Chars>
-    where Chars: Iterator<Item=Result<char, reader::Error>>
+impl<R> Iterator for Tokens<R>
+    where R: io::Read
 {
     type Item = Result<Token, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut chars = self.chars.take_until_error();
+        let mut token = String::new();
 
-        chars.handle_error(|mut chars| {
-            let mut token = String::new();
+        let start = match self.reader.find(|c| !c.is_whitespace()) {
+            Ok(Some(c)) => c,
+            Ok(None)    => return None,
+            Err(error)  => return Some(Err(error.into())),
+        };
 
-            let start = chars
-                .find(|c| !c.is_whitespace())?;
+        if start == '"' {
+            let string = consume_string(&mut token, &mut self.reader)
+                .map(|()| Token::String(token));
 
-            if start == '"' {
-                let string = consume_string(&mut token, chars.by_ref())
-                    .map(|()| Token::String(token));
+            return Some(string);
+        }
 
-                return Some(string);
-            }
+        token.push(start);
+        match self.reader.push_until(&mut token, |c| !c.is_whitespace()) {
+            Ok(())     => (),
+            Err(error) => return Some(Err(error.into())),
+        }
 
-            token.push(start);
-            token.extend(
-                chars
-                    .by_ref()
-                    .take_while(|c| !c.is_whitespace())
-            );
+        match token.as_str() {
+            "[" => return Some(Ok(Token::QuoteOpen)),
+            "]" => return Some(Ok(Token::QuoteClose)),
 
-            match token.as_str() {
-                "[" => return Some(Ok(Token::QuoteOpen)),
-                "]" => return Some(Ok(Token::QuoteClose)),
-
-                _ => {
-                    if let Ok(number) = token.parse::<u32>() {
-                        return Some(Ok(Token::Number(number)));
-                    }
-
-                    return Some(Ok(Token::Word(token)));
+            _ => {
+                if let Ok(number) = token.parse::<u32>() {
+                    return Some(Ok(Token::Number(number)));
                 }
+
+                return Some(Ok(Token::Word(token)));
             }
-        })
+        }
     }
 }
 
 
-fn consume_string<S>(token: &mut String, mut string: S) -> Result<(), Error>
-    where S: Iterator<Item=char>
+fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
+    -> Result<(), Error>
+    where R: io::Read
 {
     let mut escape = false;
 
-    while let Some(c) = string.next() {
+    while let Some(c) = reader.next()? {
         if escape {
             match c {
                 'n' => {
