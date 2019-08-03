@@ -37,6 +37,11 @@ impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
 
     fn next(&mut self) -> Option<Self::Item> {
         let c = loop {
+            if self.index >= self.buffer.len() {
+                // This can only happen if an error occured before.
+                return None;
+            }
+
             let result = self.reader.read_exact(
                 &mut self.buffer[self.index ..= self.index]
             );
