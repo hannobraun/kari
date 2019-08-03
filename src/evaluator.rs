@@ -18,15 +18,15 @@ use crate::{
 };
 
 
-pub struct Interpreter {
+pub struct Evaluator {
     builtins:  Builtins,
     stack:     Stack,
     functions: Functions,
 }
 
-impl Interpreter {
+impl Evaluator {
     pub fn new() -> Self {
-        Interpreter {
+        Self {
             builtins:  Builtins::new(),
             stack:     Stack::new(),
             functions: Functions::new(),
@@ -51,7 +51,7 @@ impl Interpreter {
     }
 }
 
-impl Evaluate for Interpreter {
+impl Evaluate for Evaluator {
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>
     {
