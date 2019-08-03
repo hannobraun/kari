@@ -39,20 +39,38 @@ impl Builtins {
 
 pub trait Types {
     fn take(&mut self, _: &mut Stack) -> Result<(), stack::Error>;
+    fn place(&self, _: &mut Stack);
 }
 
-impl<A> Types for (A,) where A: Type {
+impl Types for () {
+    fn take(&mut self, _: &mut Stack) -> Result<(), stack::Error> {
+        Ok(())
+    }
+
+    fn place(&self, _: &mut Stack) {
+        ()
+    }
+}
+
+impl<A> Types for (A,)
+    where
+        A: Type + Clone,
+{
     fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
         self.0 = stack.pop::<A>()?;
 
         Ok(())
     }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.0.clone());
+    }
 }
 
 impl<A, B> Types for (A, B)
     where
-        A: Type,
-        B: Type,
+        A: Type + Clone,
+        B: Type + Clone,
 {
     fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
         self.1 = stack.pop::<B>()?;
@@ -60,17 +78,23 @@ impl<A, B> Types for (A, B)
 
         Ok(())
     }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.0.clone());
+        stack.push(self.1.clone());
+    }
 }
 
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
     fn input(&mut self) -> &mut Types;
-    fn run(&self, _: &mut Stack, _: &mut Functions);
+    fn output(&self) -> &Types;
+    fn run(&mut self, _: &mut Stack, _: &mut Functions);
 }
 
 macro_rules! impl_builtin {
-    ($($ty:ident, $name:expr, $fn:ident, $input:ty;)*) => {
+    ($($ty:ident, $name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
         fn builtins() -> Vec<Box<Builtin>> {
             vec![
                 $($ty::new(),)*
@@ -79,13 +103,15 @@ macro_rules! impl_builtin {
 
         $(
             pub struct $ty {
-                input: $input,
+                input:  $input,
+                output: $output,
             }
 
             impl $ty {
                 fn new() -> Box<Builtin> {
                     Box::new($ty {
-                        input: Default::default(),
+                        input:  Default::default(),
+                        output: Default::default(),
                     })
                 }
             }
@@ -99,8 +125,15 @@ macro_rules! impl_builtin {
                     &mut self.input
                 }
 
-                fn run(&self, stack: &mut Stack, functions: &mut Functions) {
-                    $fn(&self.input, stack, functions)
+                fn output(&self) -> &Types {
+                    &self.output
+                }
+
+                fn run(&mut self,
+                    stack:     &mut Stack,
+                    functions: &mut Functions,
+                ) {
+                    $fn(&self.input, &mut self.output, stack, functions)
                 }
             }
         )*
@@ -108,14 +141,19 @@ macro_rules! impl_builtin {
 }
 
 impl_builtin!(
-    Print, "print",  print,  (Expression,);
-    Define,"define", define, (List, List);
+    Print, "print",  print,  (Expression,) => ();
+    Define,"define", define, (List, List) => ();
 
-    Add, "+", add, (Number, Number);
-    Mul, "*", mul, (Number, Number);
+    Add, "+", add, (Number, Number) => (Number,);
+    Mul, "*", mul, (Number, Number) => (Number,);
 );
 
-fn print((input,): &(Expression,), _: &mut Stack, _: &mut Functions) {
+fn print(
+    (input,): &(Expression,),
+    _: &mut (),
+    _: &mut Stack,
+    _: &mut Functions,
+) {
     match input {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
@@ -126,6 +164,7 @@ fn print((input,): &(Expression,), _: &mut Stack, _: &mut Functions) {
 
 fn define(
     (body, name): &(List, List),
+    _: &mut (),
     _: &mut Stack,
     functions: &mut Functions,
 ) {
@@ -147,10 +186,20 @@ fn define(
     functions.define(name, body.clone());
 }
 
-fn add((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions) {
-    stack.push(Expression::Number(a + b));
+fn add(
+    (a, b): &(Number, Number),
+    (result,): &mut (Number,),
+    _: &mut Stack,
+    _: &mut Functions,
+) {
+    *result = a + b;
 }
 
-fn mul((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions) {
-    stack.push(Expression::Number(a * b));
+fn mul(
+    (a, b): &(Number, Number),
+    (result,): &mut (Number,),
+    _: &mut Stack,
+    _: &mut Functions,
+) {
+    *result = a * b;
 }

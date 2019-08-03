@@ -12,8 +12,8 @@ impl Stack {
         Self(Vec::new())
     }
 
-    pub fn push(&mut self, expression: Expression) {
-        self.0.push(expression)
+    pub fn push<T>(&mut self, value: T) where T: Type {
+        self.0.push(value.to_expression())
     }
 
     pub fn pop<T>(&mut self) -> Result<T, Error> where T: Type {
@@ -27,11 +27,16 @@ impl Stack {
 
 pub trait Type : Sized {
     fn check(_: Expression) -> Result<Self, Error>;
+    fn to_expression(self) -> Expression;
 }
 
 impl Type for Expression {
     fn check(expression: Expression) -> Result<Self, Error> {
         Ok(expression)
+    }
+
+    fn to_expression(self) -> Expression {
+        self
     }
 }
 
@@ -51,6 +56,10 @@ macro_rules! impl_type {
                             })
                         }
                     }
+                }
+
+                fn to_expression(self) -> Expression {
+                    Expression::$type(self)
                 }
             }
         )*
