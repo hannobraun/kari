@@ -11,15 +11,15 @@ use std::{
 
 
 pub struct Reader<R> {
-    reader: R,
+    input:  R,
     buffer: [u8; 4],
     index:  usize,
 }
 
 impl<R> Reader<R> where R: Read {
-    pub fn new(reader: R) -> Self {
+    pub fn new(input: R) -> Self {
         Reader {
-            reader,
+            input,
             buffer: [0; 4],
             index:  0,
         }
@@ -32,7 +32,7 @@ impl<R> Reader<R> where R: Read {
                 return Ok(None);
             }
 
-            let result = self.reader.read_exact(
+            let result = self.input.read_exact(
                 &mut self.buffer[self.index ..= self.index]
             );
             self.index += 1;
