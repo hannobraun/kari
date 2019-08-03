@@ -17,7 +17,7 @@ pub fn run<Program>(program: Program) -> Result<(), Error>
     where Program: io::Read
 {
     let mut reader      = Reader::new(program);
-    let     tokenizer   = Tokenizer::new(&mut reader);
+    let     tokenizer   = Tokenizer::tokenize(&mut reader);
     let mut interpreter = Interpreter::new();
 
     let result = interpreter.run(tokenizer);

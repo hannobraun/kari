@@ -6,7 +6,7 @@ pub struct Tokenizer<Chars> {
 }
 
 impl<Chars> Tokenizer<Chars> {
-    pub fn new(chars: Chars) -> Self {
+    pub fn tokenize(chars: Chars) -> Self {
         Tokenizer {
             chars,
         }
