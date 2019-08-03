@@ -9,7 +9,10 @@ use crate::{
         Stack,
         Value,
     },
-    tokenizer::Token,
+    tokenizer::{
+        self,
+        Token,
+    },
 };
 
 
@@ -28,7 +31,30 @@ impl Interpreter {
         }
     }
 
-    pub fn run<Tokens>(&mut self, tokens: Tokens) -> Result<(), Error>
+    pub fn run<Tokens>(&mut self, mut tokens: Tokens) -> Result<(), Error>
+        where Tokens: Iterator<Item=Result<Token, tokenizer::Error>>
+    {
+        self.run_tokens(
+            tokens
+                .by_ref()
+                .take_while(|token|
+                    token.is_ok()
+                ) // take everything up to first error
+                .flat_map(|x|
+                    x
+                ) // throw away those empty `Err`'s
+        )?;
+
+        // If something's left in the iterator, it's an error from a previous
+        // stage.
+        if let Some(Err(error)) = tokens.next() {
+            return Err(Error::Tokenizer(error));
+        }
+
+        Ok(())
+    }
+
+    pub fn run_tokens<Tokens>(&mut self, tokens: Tokens) -> Result<(), Error>
         where Tokens: IntoIterator<Item=Token>
     {
         for token in tokens {
@@ -57,7 +83,7 @@ impl Interpreter {
                                     let arg = self.stack.pop()?;
                                     match arg {
                                         Value::Quote(quote) => {
-                                            self.run(quote)?;
+                                            self.run_tokens(quote)?;
                                         }
                                         arg => {
                                             return Err(
@@ -80,7 +106,7 @@ impl Interpreter {
                                             )?;
                                         }
                                         Some(Function::Quote(quote)) => {
-                                            self.run(quote)?;
+                                            self.run_tokens(quote)?;
                                         }
                                         None => {
                                             return Err(Error::UnknownFunction(
@@ -123,6 +149,7 @@ enum State {
 
 #[derive(Debug)]
 pub enum Error {
+    Tokenizer(tokenizer::Error),
     UnexpectedToken(Token),
     UnknownFunction(String),
     Stack(stack::Error),

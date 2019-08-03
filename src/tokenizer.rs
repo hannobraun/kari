@@ -14,7 +14,7 @@ impl<Chars> Tokenizer<Chars> {
 }
 
 impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
-    type Item = Token;
+    type Item = Result<Token, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let mut token = String::new();
@@ -23,7 +23,7 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
 
         if start == '"' {
             consume_string(&mut token, self.chars.by_ref());
-            return Some(Token::String(token));
+            return Some(Ok(Token::String(token)));
         }
 
         token.push(start);
@@ -34,15 +34,15 @@ impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
         );
 
         match token.as_str() {
-            "[" => return Some(Token::QuoteOpen),
-            "]" => return Some(Token::QuoteClose),
+            "[" => return Some(Ok(Token::QuoteOpen)),
+            "]" => return Some(Ok(Token::QuoteClose)),
 
             _ => {
                 if let Ok(number) = token.parse::<u32>() {
-                    return Some(Token::Number(number));
+                    return Some(Ok(Token::Number(number)));
                 }
 
-                return Some(Token::Word(token))
+                return Some(Ok(Token::Word(token)));
             }
         }
     }
@@ -97,3 +97,7 @@ impl fmt::Display for Token {
         }
     }
 }
+
+
+#[derive(Debug)]
+pub enum Error {}
