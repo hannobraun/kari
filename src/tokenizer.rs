@@ -31,8 +31,9 @@ impl<Chars> Iterator for Tokens<Chars> where Chars: Iterator<Item=char> {
         let start = self.chars.find(|c| !c.is_whitespace())?;
 
         if start == '"' {
-            consume_string(&mut token, self.chars.by_ref());
-            return Some(Ok(Token::String(token)));
+            let string = consume_string(&mut token, self.chars.by_ref())
+                .map(|()| Token::String(token));
+            return Some(string);
         }
 
         token.push(start);
@@ -58,7 +59,7 @@ impl<Chars> Iterator for Tokens<Chars> where Chars: Iterator<Item=char> {
 }
 
 
-fn consume_string<S>(token: &mut String, mut string: S)
+fn consume_string<S>(token: &mut String, mut string: S) -> Result<(), Error>
     where S: Iterator<Item=char>
 {
     let mut escape = false;
@@ -71,18 +72,20 @@ fn consume_string<S>(token: &mut String, mut string: S)
                     escape = false;
                 }
                 c => {
-                    panic!("Unexpected escape sequence: {}", c);
+                    return Err(Error::UnexpectedEscape(c));
                 }
             }
         }
         else {
             match c {
-                '"'  => return,
+                '"'  => return Ok(()),
                 '\\' => escape = true,
                 c    => token.push(c),
             }
         }
     }
+
+    Ok(())
 }
 
 
@@ -109,4 +112,6 @@ impl fmt::Display for Token {
 
 
 #[derive(Debug)]
-pub enum Error {}
+pub enum Error {
+    UnexpectedEscape(char),
+}
