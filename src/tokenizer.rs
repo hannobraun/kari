@@ -39,7 +39,7 @@ impl<R> Tokenizer<R>
 
         match token.as_str() {
             "[" => return Ok(Token::ListOpen),
-            "]" => return Ok(Token::QuoteClose),
+            "]" => return Ok(Token::ListClose),
 
             _ => {
                 if let Ok(number) = token.parse::<u32>() {
@@ -92,7 +92,7 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
 pub enum Token {
     Number(u32),
     ListOpen,
-    QuoteClose,
+    ListClose,
     String(String),
     Word(String),
 }
@@ -102,7 +102,7 @@ impl fmt::Display for Token {
         match self {
             Token::Number(number) => number.fmt(f),
             Token::ListOpen       => write!(f, "["),
-            Token::QuoteClose     => write!(f, "]"),
+            Token::ListClose      => write!(f, "]"),
             Token::String(string) => string.fmt(f),
             Token::Word(word)     => word.fmt(f),
         }

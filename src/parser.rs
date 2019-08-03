@@ -25,7 +25,7 @@ impl<R> Parser<R>
             Token::ListOpen => {
                 Expression::List(self.parse_list()?)
             }
-            token @ Token::QuoteClose => {
+            token @ Token::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
 
@@ -45,7 +45,7 @@ impl<R> Parser<R>
                 Token::ListOpen => {
                     Expression::List(self.parse_list()?)
                 }
-                Token::QuoteClose => {
+                Token::ListClose => {
                     return Ok(list);
                 }
 
