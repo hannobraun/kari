@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    ops::Deref,
+};
 
 use crate::{
     functions::Functions,
@@ -14,29 +17,21 @@ use crate::{
 };
 
 
-pub struct Builtins(HashMap<&'static str, &'static Builtin>);
+pub struct Builtins(HashMap<&'static str, Box<Builtin>>);
 
 impl Builtins {
     pub fn new() -> Self {
-        let mut functions = HashMap::new();
+        let mut b = HashMap::new();
 
-        let builtins = [
-            &Print as &Builtin,
-            &Define,
-
-            &Add,
-            &Mul,
-        ];
-
-        for &builtin in &builtins {
-            functions.insert(builtin.name(), builtin);
+        for builtin in builtins() {
+            b.insert(builtin.name(), builtin);
         }
 
-        Self(functions)
+        Self(b)
     }
 
-    pub fn get(&self, name: &str) -> Option<&&Builtin> {
-        self.0.get(name)
+    pub fn get(&self, name: &str) -> Option<&Builtin> {
+        self.0.get(name).map(|builtin| builtin.deref())
     }
 }
 
@@ -48,8 +43,20 @@ pub trait Builtin {
 
 macro_rules! impl_builtin {
     ($($ty:ident, $name:expr, $fn:ident;)*) => {
+        fn builtins() -> Vec<Box<Builtin>> {
+            vec![
+                $($ty::new(),)*
+            ]
+        }
+
         $(
             pub struct $ty;
+
+            impl $ty {
+                fn new() -> Box<Builtin> {
+                    Box::new($ty)
+                }
+            }
 
             impl Builtin for $ty {
                 fn name(&self) -> &'static str {
