@@ -72,11 +72,11 @@ impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
                             self.error = Some(Error::Utf8(error));
                             return None;
                         }
-                        i if i > 4 => {
-                            unreachable!();
+                        i if i < 4 => {
+                            continue;
                         }
                         _ => {
-                            continue;
+                            unreachable!();
                         }
                     }
                 }
