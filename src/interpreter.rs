@@ -14,10 +14,7 @@ use crate::{
         Expression,
         Parser,
     },
-    stack::{
-        self,
-        Stack,
-    },
+    stack::Stack,
 };
 
 
@@ -92,18 +89,5 @@ impl Evaluate for Interpreter {
         }
 
         Ok(())
-    }
-}
-
-
-impl From<stack::Error> for Error {
-    fn from(from: stack::Error) -> Self {
-        Error::Stack(from)
-    }
-}
-
-impl From<parser::Error> for Error {
-    fn from(from: parser::Error) -> Self {
-        Error::Parser(from)
     }
 }

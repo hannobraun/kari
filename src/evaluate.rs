@@ -19,3 +19,15 @@ pub enum Error {
     UnknownFunction(String),
     Stack(stack::Error),
 }
+
+impl From<stack::Error> for Error {
+    fn from(from: stack::Error) -> Self {
+        Error::Stack(from)
+    }
+}
+
+impl From<parser::Error> for Error {
+    fn from(from: parser::Error) -> Self {
+        Error::Parser(from)
+    }
+}
