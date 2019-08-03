@@ -47,7 +47,6 @@ impl Functions {
 }
 
 
-#[derive(Clone)]
 pub enum Function {
     Builtin(&'static Builtin),
     List(List),
