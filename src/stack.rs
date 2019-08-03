@@ -25,7 +25,7 @@ impl Stack {
 
 #[derive(Debug)]
 pub enum Value {
-    Number(u32),
+    Number(Number),
     Quote(Quote),
     String(String),
 }
