@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    evaluate::{
+    evaluator::{
         self,
         Evaluate,
     },
@@ -98,7 +98,7 @@ pub trait Builtin {
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
-    fn run(&mut self, evaluate: &mut Evaluate) -> Result<(), evaluate::Error>;
+    fn run(&mut self, evaluate: &mut Evaluate) -> Result<(), evaluator::Error>;
 }
 
 macro_rules! impl_builtin {
@@ -144,7 +144,7 @@ macro_rules! impl_builtin {
                 }
 
                 fn run(&mut self, evaluate: &mut Evaluate)
-                    -> Result<(), evaluate::Error>
+                    -> Result<(), evaluator::Error>
                 {
                     $fn(
                         &self.input,
@@ -173,7 +173,7 @@ fn print(
     _       : &mut Vec<(String, List)>,
     _       : &mut Evaluate,
 )
-    -> Result<(), evaluate::Error>
+    -> Result<(), evaluator::Error>
 {
     match input {
         Expression::Number(number) => print!("{}", number),
@@ -191,7 +191,7 @@ fn define(
     defines     : &mut Vec<(String, List)>,
     _           : &mut Evaluate,
 )
-    -> Result<(), evaluate::Error>
+    -> Result<(), evaluator::Error>
 {
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
@@ -219,7 +219,7 @@ fn run(
     _       : &mut Vec<(String, List)>,
     evaluate: &mut Evaluate,
 )
-    -> Result<(), evaluate::Error>
+    -> Result<(), evaluator::Error>
 {
     evaluate.evaluate(&mut list.clone().into_iter())
 }
@@ -230,7 +230,7 @@ fn add(
     _        : &mut Vec<(String, List)>,
     _        : &mut Evaluate,
 )
-    -> Result<(), evaluate::Error>
+    -> Result<(), evaluator::Error>
 {
     *result = a + b;
     Ok(())
@@ -242,7 +242,7 @@ fn mul(
     _        : &mut Vec<(String, List)>,
     _        : &mut Evaluate,
 )
-    -> Result<(), evaluate::Error>
+    -> Result<(), evaluator::Error>
 {
     *result = a * b;
     Ok(())
