@@ -160,7 +160,7 @@ macro_rules! impl_builtin {
 
 impl_builtin!(
     Print, "print",  print,  (Expression,) => ();
-    Run,   "run",    run,    (List,) => ();
+    Eval,  "eval",   eval,   (List,) => ();
     Define,"define", define, (List, List) => ();
 
     Add, "+", add, (Number, Number) => (Number,);
@@ -213,7 +213,7 @@ fn define(
     Ok(())
 }
 
-fn run(
+fn eval(
     (list,) : &(List,),
     _       : &mut (),
     _       : &mut Vec<(String, List)>,
