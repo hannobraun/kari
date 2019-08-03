@@ -23,7 +23,7 @@ impl<R> Parser<R>
     pub fn next(&mut self) -> Result<Expression, Error> {
         let expression = match self.tokenizer.next()? {
             Token::QuoteOpen => {
-                Expression::Quote(self.parse_list()?)
+                Expression::List(self.parse_list()?)
             }
             token @ Token::QuoteClose => {
                 return Err(Error::UnexpectedToken(token));
@@ -43,7 +43,7 @@ impl<R> Parser<R>
         loop {
             let expression = match self.tokenizer.next()? {
                 Token::QuoteOpen => {
-                    Expression::Quote(self.parse_list()?)
+                    Expression::List(self.parse_list()?)
                 }
                 Token::QuoteClose => {
                     return Ok(list);
@@ -63,7 +63,7 @@ impl<R> Parser<R>
 #[derive(Clone, Debug)]
 pub enum Expression {
     Number(Number),
-    Quote(List),
+    List(List),
     String(String),
     Word(String),
 }

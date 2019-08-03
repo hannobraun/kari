@@ -57,7 +57,7 @@ impl Interpreter {
                 Expression::Number(number) => {
                     self.stack.push(Value::Number(number));
                 }
-                Expression::Quote(quote) => {
+                Expression::List(quote) => {
                     self.stack.push(Value::Quote(quote));
                 }
                 Expression::String(string) => {
