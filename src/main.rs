@@ -1,7 +1,7 @@
 mod builtins;
 mod evaluate;
+mod evaluator;
 mod functions;
-mod interpreter;
 mod parser;
 mod reader;
 mod runner;

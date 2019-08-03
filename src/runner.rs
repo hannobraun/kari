@@ -2,7 +2,7 @@ use std::io;
 
 use crate::{
     evaluate,
-    interpreter::Interpreter,
+    evaluator::Interpreter,
     parser::Parser,
     reader::Reader,
     tokenizer::Tokenizer,
