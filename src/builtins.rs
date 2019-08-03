@@ -4,7 +4,10 @@ use std::{
 };
 
 use crate::{
-    evaluate::Evaluate,
+    evaluate::{
+        self,
+        Evaluate,
+    },
     parser::{
         Expression,
         List,
@@ -95,7 +98,7 @@ pub trait Builtin {
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
-    fn run(&mut self, evaluate: &mut Evaluate);
+    fn run(&mut self, evaluate: &mut Evaluate) -> Result<(), evaluate::Error>;
 }
 
 macro_rules! impl_builtin {
@@ -140,13 +143,15 @@ macro_rules! impl_builtin {
                     self.defines.drain(..)
                 }
 
-                fn run(&mut self, evaluate: &mut Evaluate) {
+                fn run(&mut self, evaluate: &mut Evaluate)
+                    -> Result<(), evaluate::Error>
+                {
                     $fn(
                         &self.input,
                         &mut self.output,
                         &mut self.defines,
                         evaluate,
-                    );
+                    )
                 }
             }
         )*
@@ -155,6 +160,7 @@ macro_rules! impl_builtin {
 
 impl_builtin!(
     Print, "print",  print,  (Expression,) => ();
+    Run,   "run",    run,    (List,) => ();
     Define,"define", define, (List, List) => ();
 
     Add, "+", add, (Number, Number) => (Number,);
@@ -166,13 +172,17 @@ fn print(
     _       : &mut (),
     _       : &mut Vec<(String, List)>,
     _       : &mut Evaluate,
-) {
+)
+    -> Result<(), evaluate::Error>
+{
     match input {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
         Expression::String(string) => print!("{}", string),
         Expression::Word(_)        => unimplemented!(),
     }
+
+    Ok(())
 }
 
 fn define(
@@ -180,7 +190,9 @@ fn define(
     _           : &mut (),
     defines     : &mut Vec<(String, List)>,
     _           : &mut Evaluate,
-) {
+)
+    -> Result<(), evaluate::Error>
+{
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
 
@@ -197,6 +209,19 @@ fn define(
     };
 
     defines.push((name, body.clone()));
+
+    Ok(())
+}
+
+fn run(
+    (list,) : &(List,),
+    _       : &mut (),
+    _       : &mut Vec<(String, List)>,
+    evaluate: &mut Evaluate,
+)
+    -> Result<(), evaluate::Error>
+{
+    evaluate.evaluate(&mut list.clone().into_iter())
 }
 
 fn add(
@@ -204,8 +229,11 @@ fn add(
     (result,): &mut (Number,),
     _        : &mut Vec<(String, List)>,
     _        : &mut Evaluate,
-) {
+)
+    -> Result<(), evaluate::Error>
+{
     *result = a + b;
+    Ok(())
 }
 
 fn mul(
@@ -213,6 +241,9 @@ fn mul(
     (result,): &mut (Number,),
     _        : &mut Vec<(String, List)>,
     _        : &mut Evaluate,
-) {
+)
+    -> Result<(), evaluate::Error>
+{
     *result = a * b;
+    Ok(())
 }

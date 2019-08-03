@@ -61,53 +61,29 @@ impl Evaluate for Interpreter {
         for expression in expressions {
             match expression {
                 Expression::Word(word) => {
-                    match word.as_str() {
-                        "run" => {
-                            let arg = self.stack.pop()?;
-                            match arg {
-                                Expression::List(list) => {
-                                    self.evaluate(&mut list.into_iter())?;
-                                }
-                                arg => {
-                                    return Err(
-                                        Error::Stack(
-                                            stack::Error::TypeError {
-                                                expected: "list",
-                                                actual:   arg,
-                                            }
-                                        )
-                                    );
-                                }
-                            };
+                    if let Some(mut builtin) = self.builtins.take(&word) {
+                        builtin
+                            .input()
+                            .take(&mut self.stack)?;
+                        builtin.run(self)?;
+                        builtin
+                            .output()
+                            .place(&mut self.stack);
+                        for (name, body) in builtin.defines() {
+                            self.functions.define(name, body);
                         }
-                        word => {
-                            if let Some(mut builtin) =
-                                self.builtins.take(word)
-                            {
-                                builtin
-                                    .input()
-                                    .take(&mut self.stack)?;
-                                builtin.run(self);
-                                builtin
-                                    .output()
-                                    .place(&mut self.stack);
-                                for (name, body) in builtin.defines() {
-                                    self.functions.define(name, body);
-                                }
-                                self.builtins.put_back(builtin);
-                                continue;
-                            }
-                            if let Some(list) = self.functions.get(word) {
-                                let list = list.clone();
-                                self.evaluate(&mut list.into_iter())?;
-                                continue;
-                            }
-
-                            return Err(Error::UnknownFunction(
-                                word.to_string())
-                            );
-                        }
+                        self.builtins.put_back(builtin);
+                        continue;
                     }
+                    if let Some(list) = self.functions.get(&word) {
+                        let list = list.clone();
+                        self.evaluate(&mut list.into_iter())?;
+                        continue;
+                    }
+
+                    return Err(Error::UnknownFunction(
+                        word.to_string())
+                    );
                 }
                 expression => {
                     self.stack.push(expression);
