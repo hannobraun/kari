@@ -83,7 +83,7 @@ impl Interpreter {
                                 builtin.run(
                                     &mut self.stack,
                                     &mut self.functions,
-                                )?;
+                                );
                                 continue;
                             }
                             if let Some(list) = self.functions.get(word) {

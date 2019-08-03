@@ -66,7 +66,7 @@ impl<A, B> Types for (A, B)
 pub trait Builtin {
     fn name(&self) -> &'static str;
     fn input(&mut self) -> &mut Types;
-    fn run(&self, _: &mut Stack, _: &mut Functions) -> Result<(), stack::Error>;
+    fn run(&self, _: &mut Stack, _: &mut Functions);
 }
 
 macro_rules! impl_builtin {
@@ -99,9 +99,7 @@ macro_rules! impl_builtin {
                     &mut self.input
                 }
 
-                fn run(&self, stack: &mut Stack, functions: &mut Functions)
-                    -> Result<(), stack::Error>
-                {
+                fn run(&self, stack: &mut Stack, functions: &mut Functions) {
                     $fn(&self.input, stack, functions)
                 }
             }
@@ -117,22 +115,20 @@ impl_builtin!(
     Mul, "*", mul, (Number, Number);
 );
 
-fn print((input,): &(Expression,), _: &mut Stack, _: &mut Functions)
-    -> Result<(), stack::Error>
-{
+fn print((input,): &(Expression,), _: &mut Stack, _: &mut Functions) {
     match input {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
         Expression::String(string) => print!("{}", string),
         Expression::Word(_)        => unimplemented!(),
     }
-
-    Ok(())
 }
 
-fn define((body, name): &(List, List), _: &mut Stack, functions: &mut Functions)
-    -> Result<(), stack::Error>
-{
+fn define(
+    (body, name): &(List, List),
+    _: &mut Stack,
+    functions: &mut Functions,
+) {
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
 
@@ -149,22 +145,12 @@ fn define((body, name): &(List, List), _: &mut Stack, functions: &mut Functions)
     };
 
     functions.define(name, body.clone());
-
-    Ok(())
 }
 
-fn add((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions)
-    -> Result<(), stack::Error>
-{
+fn add((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions) {
     stack.push(Expression::Number(a + b));
-
-    Ok(())
 }
 
-fn mul((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions)
-    -> Result<(), stack::Error>
-{
+fn mul((a, b): &(Number, Number), stack: &mut Stack, _: &mut Functions) {
     stack.push(Expression::Number(a * b));
-
-    Ok(())
 }
