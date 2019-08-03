@@ -61,66 +61,33 @@ pub trait Builtin {
     fn run(&self, _: &mut Stack, _: &mut Functions) -> Result<(), stack::Error>;
 }
 
+macro_rules! impl_builtin {
+    ($($ty:ident, $name:expr, $fn:ident;)*) => {
+        $(
+            pub struct $ty;
 
-pub struct Print;
+            impl Builtin for $ty {
+                fn name(&self) -> &'static str {
+                    $name
+                }
 
-impl Builtin for Print {
-    fn name(&self) -> &'static str {
-        "print"
-    }
-
-    fn run(&self, stack: &mut Stack, functions: &mut Functions)
-        -> Result<(), stack::Error>
-    {
-        print(stack, functions)
-    }
-}
-
-
-pub struct Define;
-
-impl Builtin for Define {
-    fn name(&self) -> &'static str {
-        "define"
-    }
-
-    fn run(&self, stack: &mut Stack, functions: &mut Functions)
-        -> Result<(), stack::Error>
-    {
-        define(stack, functions)
+                fn run(&self, stack: &mut Stack, functions: &mut Functions)
+                    -> Result<(), stack::Error>
+                {
+                    $fn(stack, functions)
+                }
+            }
+        )*
     }
 }
 
+impl_builtin!(
+    Print, "print",  print;
+    Define,"define", define;
 
-pub struct Add;
-
-impl Builtin for Add {
-    fn name(&self) -> &'static str {
-        "+"
-    }
-
-    fn run(&self, stack: &mut Stack, functions: &mut Functions)
-        -> Result<(), stack::Error>
-    {
-        add(stack, functions)
-    }
-}
-
-
-pub struct Mul;
-
-impl Builtin for Mul {
-    fn name(&self) -> &'static str {
-        "*"
-    }
-
-    fn run(&self, stack: &mut Stack, functions: &mut Functions)
-        -> Result<(), stack::Error>
-    {
-        mul(stack, functions)
-    }
-}
-
+    Add, "+", add;
+    Mul, "*", mul;
+);
 
 fn print(stack: &mut Stack, _: &mut Functions)
     -> Result<(), stack::Error>
