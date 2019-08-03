@@ -81,8 +81,8 @@ impl Interpreter {
                                         &mut self.functions,
                                     )?;
                                 }
-                                Some(Function::List(quote)) => {
-                                    self.evaluate(quote)?;
+                                Some(Function::List(list)) => {
+                                    self.evaluate(list)?;
                                 }
                                 None => {
                                     return Err(Error::UnknownFunction(
