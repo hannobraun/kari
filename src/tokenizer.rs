@@ -6,7 +6,9 @@ use crate::iter::ErrorIter;
 pub struct Tokenizer;
 
 impl Tokenizer {
-    pub fn tokenize<Chars>(chars: Chars) -> ErrorIter<Tokens<Chars>> {
+    pub fn tokenize<Chars>(chars: Chars) -> ErrorIter<Tokens<Chars>>
+        where Chars: Iterator<Item=char>
+    {
         ErrorIter::new(
             Tokens {
                 chars,

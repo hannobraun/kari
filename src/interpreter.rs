@@ -36,16 +36,7 @@ impl Interpreter {
         -> Result<(), Error>
         where Tokens: Iterator<Item=Result<Token, tokenizer::Error>>
     {
-        self.run_tokens(
-            tokens
-                .by_ref()
-                .take_while(|token|
-                    token.is_ok()
-                ) // take everything up to first error
-                .flat_map(|x|
-                    x
-                ) // throw away those empty `Err`'s
-        )?;
+        self.run_tokens(tokens.take_until_error())?;
 
         // If something's left in the iterator, it's an error from a previous
         // stage.
