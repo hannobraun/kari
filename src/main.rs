@@ -1,5 +1,6 @@
 mod functions;
 mod interpreter;
+mod parser;
 mod reader;
 mod runner;
 mod stack;

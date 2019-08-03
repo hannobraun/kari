@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::tokenizer::Token;
+use crate::parser::Expression;
 
 
 pub struct Stack(Vec<Value>);
@@ -39,7 +39,7 @@ impl fmt::Display for Value {
             Value::Quote(quote) => {
                 write!(f, "[ ")?;
                 for value in quote {
-                    write!(f, "{} ", value)?;
+                    write!(f, "{:?} ", value)?;
                 }
                 write!(f, "]")
             }
@@ -49,7 +49,7 @@ impl fmt::Display for Value {
 
 
 pub type Number = u32;
-pub type Quote  = Vec<Token>;
+pub type Quote  = Vec<Expression>;
 
 
 pub trait Type : Sized {

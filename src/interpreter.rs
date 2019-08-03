@@ -5,22 +5,20 @@ use crate::{
         Function,
         Functions,
     },
+    parser::{
+        self,
+        Expression,
+        Parser,
+    },
     stack::{
         self,
-        Quote,
         Stack,
         Value,
-    },
-    tokenizer::{
-        self,
-        Token,
-        Tokenizer,
     },
 };
 
 
 pub struct Interpreter {
-    states:    Vec<State>,
     stack:     Stack,
     functions: Functions,
 }
@@ -28,110 +26,83 @@ pub struct Interpreter {
 impl Interpreter {
     pub fn new() -> Self {
         Interpreter {
-            states:    vec![State::TopLevel],
             stack:     Stack::new(),
             functions: Functions::new(),
         }
     }
 
-    pub fn run<R>(&mut self, mut tokenizer: Tokenizer<R>)
+    pub fn run<R>(&mut self, mut parser: Parser<R>)
         -> Result<(), Error>
         where R: io::Read
     {
-        let mut tokens = Vec::new();
         loop {
-            match tokenizer.next() {
-                Ok(token)                          => tokens.push(token),
-                Err(tokenizer::Error::EndOfStream) => break,
-                Err(error)                         => return Err(error.into()),
+            let expression = match parser.next() {
+                Ok(expression)                  => expression,
+                Err(parser::Error::EndOfStream) => break,
+                Err(error)                      => return Err(error.into()),
+            };
 
-            }
+            self.evaluate(Some(expression))?;
         }
-
-        self.run_tokens(tokens)?;
 
         Ok(())
     }
 
-    pub fn run_tokens<Tokens>(&mut self, tokens: Tokens) -> Result<(), Error>
-        where Tokens: IntoIterator<Item=Token>
+    fn evaluate<Expressions>(&mut self, expressions: Expressions)
+        -> Result<(), Error>
+        where Expressions: IntoIterator<Item=Expression>
     {
-        for token in tokens {
-            // Can't panic, as we have at least the top-level state on the state
-            // stack.
-            let state = self.states.last_mut().unwrap();
-
-            match state {
-                State::TopLevel => {
-                    match token {
-                        Token::QuoteOpen => {
-                            self.states.push(State::Quote(Vec::new()));
-                        }
-                        Token::QuoteClose => {
-                            return Err(Error::UnexpectedToken(token));
-                        }
-                        Token::Number(number) => {
-                            self.stack.push(Value::Number(number));
-                        }
-                        Token::String(string) => {
-                            self.stack.push(Value::String(string));
-                        }
-                        Token::Word(word) => {
-                            match word.as_str() {
-                                "run" => {
-                                    let arg = self.stack.pop()?;
-                                    match arg {
-                                        Value::Quote(quote) => {
-                                            self.run_tokens(quote)?;
-                                        }
-                                        arg => {
-                                            return Err(
-                                                Error::Stack(
-                                                    stack::Error::TypeError {
-                                                        expected: "quote",
-                                                        actual:   arg,
-                                                    }
-                                                )
-                                            );
-                                        }
-                                    };
+        for expression in expressions {
+            match expression {
+                Expression::Number(number) => {
+                    self.stack.push(Value::Number(number));
+                }
+                Expression::Quote(quote) => {
+                    self.stack.push(Value::Quote(quote));
+                }
+                Expression::String(string) => {
+                    self.stack.push(Value::String(string));
+                }
+                Expression::Word(word) => {
+                    match word.as_str() {
+                        "run" => {
+                            let arg = self.stack.pop()?;
+                            match arg {
+                                Value::Quote(quote) => {
+                                    self.evaluate(quote)?;
                                 }
-                                word => {
-                                    match self.functions.get(word) {
-                                        Some(Function::Builtin(builtin)) => {
-                                            builtin(
-                                                &mut self.stack,
-                                                &mut self.functions,
-                                            )?;
-                                        }
-                                        Some(Function::Quote(quote)) => {
-                                            self.run_tokens(quote)?;
-                                        }
-                                        None => {
-                                            return Err(Error::UnknownFunction(
-                                                word.to_string())
-                                            );
-                                        }
-                                    }
+                                arg => {
+                                    return Err(
+                                        Error::Stack(
+                                            stack::Error::TypeError {
+                                                expected: "quote",
+                                                actual:   arg,
+                                            }
+                                        )
+                                    );
+                                }
+                            };
+                        }
+                        word => {
+                            match self.functions.get(word) {
+                                Some(Function::Builtin(builtin)) => {
+                                    builtin(
+                                        &mut self.stack,
+                                        &mut self.functions,
+                                    )?;
+                                }
+                                Some(Function::Quote(quote)) => {
+                                    self.evaluate(quote)?;
+                                }
+                                None => {
+                                    return Err(Error::UnknownFunction(
+                                        word.to_string())
+                                    );
                                 }
                             }
                         }
                     }
                 }
-                State::Quote(quote) => {
-                    match token {
-                        Token::QuoteOpen => {
-                            self.states.push(State::Quote(Vec::new()));
-                        }
-                        Token::QuoteClose => {
-                            self.stack.push(Value::Quote(quote.clone()));
-                            self.states.pop();
-                        }
-                        token => {
-                            quote.push(token);
-                        }
-                    }
-                }
             }
         }
 
@@ -140,16 +111,9 @@ impl Interpreter {
 }
 
 
-enum State {
-    TopLevel,
-    Quote(Quote),
-}
-
-
 #[derive(Debug)]
 pub enum Error {
-    Tokenizer(tokenizer::Error),
-    UnexpectedToken(Token),
+    Parser(parser::Error),
     UnknownFunction(String),
     Stack(stack::Error),
 }
@@ -160,8 +124,8 @@ impl From<stack::Error> for Error {
     }
 }
 
-impl From<tokenizer::Error> for Error {
-    fn from(from: tokenizer::Error) -> Self {
-        Error::Tokenizer(from)
+impl From<parser::Error> for Error {
+    fn from(from: parser::Error) -> Self {
+        Error::Parser(from)
     }
 }

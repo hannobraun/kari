@@ -5,6 +5,7 @@ use crate::{
         self,
         Interpreter,
     },
+    parser::Parser,
     reader::Reader,
     tokenizer::Tokenizer,
 };
@@ -15,7 +16,8 @@ pub fn run<Program>(program: Program) -> Result<(), interpreter::Error>
 {
     let reader    = Reader::new(program);
     let tokenizer = Tokenizer::new(reader);
+    let parser    = Parser::new(tokenizer);
 
     let mut interpreter = Interpreter::new();
-    interpreter.run(tokenizer)
+    interpreter.run(parser)
 }

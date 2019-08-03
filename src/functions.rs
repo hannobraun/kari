@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
+    parser::Expression,
     stack::{
         self,
         Number,
@@ -8,7 +9,6 @@ use crate::{
         Stack,
         Value,
     },
-    tokenizer::Token,
 };
 
 
@@ -73,13 +73,13 @@ pub fn define(stack: &mut Stack, functions: &mut Functions)
     let name = name.pop().unwrap();
 
     let name = match name {
-        Token::Word(word) => {
+        Expression::Word(word) => {
             word
         }
-        token => {
+        expression => {
             panic!(
-                "Unexpected token: {}\n",
-                token,
+                "Unexpected expression: {:?}\n",
+                expression,
             );
         }
     };
