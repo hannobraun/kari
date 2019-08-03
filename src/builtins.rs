@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    ops::DerefMut,
     vec,
 };
 
@@ -31,8 +30,12 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn get(&mut self, name: &str) -> Option<&mut (Builtin + 'static)> {
-        self.0.get_mut(name).map(|builtin| builtin.deref_mut())
+    pub fn take(&mut self, name: &str) -> Option<Box<Builtin>> {
+        self.0.remove(name)
+    }
+
+    pub fn put_back(&mut self, builtin: Box<Builtin>) {
+        self.0.insert(builtin.name(), builtin);
     }
 }
 

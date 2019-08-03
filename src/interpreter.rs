@@ -77,7 +77,9 @@ impl Interpreter {
                             };
                         }
                         word => {
-                            if let Some(builtin) = self.builtins.get(word) {
+                            if let Some(mut builtin) =
+                                self.builtins.take(word)
+                            {
                                 builtin
                                     .input()
                                     .take(&mut self.stack)?;
@@ -88,6 +90,7 @@ impl Interpreter {
                                 for (name, body) in builtin.defines() {
                                     self.functions.define(name, body);
                                 }
+                                self.builtins.put_back(builtin);
                                 continue;
                             }
                             if let Some(list) = self.functions.get(word) {
