@@ -22,7 +22,7 @@ impl<R> Parser<R>
 
     pub fn next(&mut self) -> Result<Expression, Error> {
         let expression = match self.tokenizer.next()? {
-            Token::QuoteOpen => {
+            Token::ListOpen => {
                 Expression::List(self.parse_list()?)
             }
             token @ Token::QuoteClose => {
@@ -42,7 +42,7 @@ impl<R> Parser<R>
 
         loop {
             let expression = match self.tokenizer.next()? {
-                Token::QuoteOpen => {
+                Token::ListOpen => {
                     Expression::List(self.parse_list()?)
                 }
                 Token::QuoteClose => {

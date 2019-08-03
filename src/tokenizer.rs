@@ -38,7 +38,7 @@ impl<R> Tokenizer<R>
         self.reader.push_until(&mut token, |c| !c.is_whitespace())?;
 
         match token.as_str() {
-            "[" => return Ok(Token::QuoteOpen),
+            "[" => return Ok(Token::ListOpen),
             "]" => return Ok(Token::QuoteClose),
 
             _ => {
@@ -91,7 +91,7 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
 #[derive(Clone, Debug)]
 pub enum Token {
     Number(u32),
-    QuoteOpen,
+    ListOpen,
     QuoteClose,
     String(String),
     Word(String),
@@ -101,7 +101,7 @@ impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Token::Number(number) => number.fmt(f),
-            Token::QuoteOpen      => write!(f, "["),
+            Token::ListOpen       => write!(f, "["),
             Token::QuoteClose     => write!(f, "]"),
             Token::String(string) => string.fmt(f),
             Token::Word(word)     => word.fmt(f),
