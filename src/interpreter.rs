@@ -81,7 +81,7 @@ impl Interpreter {
                                         &mut self.functions,
                                     )?;
                                 }
-                                Some(Function::Quote(quote)) => {
+                                Some(Function::List(quote)) => {
                                     self.evaluate(quote)?;
                                 }
                                 None => {

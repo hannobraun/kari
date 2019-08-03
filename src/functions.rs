@@ -38,7 +38,7 @@ impl Functions {
     }
 
     pub fn define(&mut self, name: String, body: List) {
-        self.0.insert(name, Function::Quote(body));
+        self.0.insert(name, Function::List(body));
     }
 
     pub fn get(&self, name: &str) -> Option<Function> {
@@ -52,7 +52,7 @@ impl Functions {
 #[derive(Clone)]
 pub enum Function {
     Builtin(&'static Builtin),
-    Quote(List),
+    List(List),
 }
 
 
