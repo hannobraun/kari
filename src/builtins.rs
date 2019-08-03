@@ -90,7 +90,7 @@ pub trait Builtin {
     fn name(&self) -> &'static str;
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
-    fn run(&mut self, _: &mut Stack, _: &mut Functions);
+    fn run(&mut self, _: &mut Functions);
 }
 
 macro_rules! impl_builtin {
@@ -129,11 +129,8 @@ macro_rules! impl_builtin {
                     &self.output
                 }
 
-                fn run(&mut self,
-                    stack:     &mut Stack,
-                    functions: &mut Functions,
-                ) {
-                    $fn(&self.input, &mut self.output, stack, functions)
+                fn run(&mut self, functions: &mut Functions) {
+                    $fn(&self.input, &mut self.output, functions)
                 }
             }
         )*
@@ -151,7 +148,6 @@ impl_builtin!(
 fn print(
     (input,): &(Expression,),
     _: &mut (),
-    _: &mut Stack,
     _: &mut Functions,
 ) {
     match input {
@@ -165,7 +161,6 @@ fn print(
 fn define(
     (body, name): &(List, List),
     _: &mut (),
-    _: &mut Stack,
     functions: &mut Functions,
 ) {
     assert_eq!(name.len(), 1);
@@ -189,7 +184,6 @@ fn define(
 fn add(
     (a, b): &(Number, Number),
     (result,): &mut (Number,),
-    _: &mut Stack,
     _: &mut Functions,
 ) {
     *result = a + b;
@@ -198,7 +192,6 @@ fn add(
 fn mul(
     (a, b): &(Number, Number),
     (result,): &mut (Number,),
-    _: &mut Stack,
     _: &mut Functions,
 ) {
     *result = a * b;

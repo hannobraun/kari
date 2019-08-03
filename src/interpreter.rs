@@ -80,10 +80,7 @@ impl Interpreter {
                                 builtin
                                     .input()
                                     .take(&mut self.stack)?;
-                                builtin.run(
-                                    &mut self.stack,
-                                    &mut self.functions,
-                                );
+                                builtin.run(&mut self.functions,);
                                 builtin
                                     .output()
                                     .place(&mut self.stack);
