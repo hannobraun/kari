@@ -1,19 +1,26 @@
 use std::fmt;
 
+use crate::iter::ErrorIter;
 
-pub struct Tokenizer<Chars> {
-    chars: Chars,
-}
 
-impl<Chars> Tokenizer<Chars> {
-    pub fn tokenize(chars: Chars) -> Self {
-        Tokenizer {
-            chars,
-        }
+pub struct Tokenizer;
+
+impl Tokenizer {
+    pub fn tokenize<Chars>(chars: Chars) -> ErrorIter<Tokens<Chars>> {
+        ErrorIter::new(
+            Tokens {
+                chars,
+            }
+        )
     }
 }
 
-impl<Chars> Iterator for Tokenizer<Chars> where Chars: Iterator<Item=char> {
+
+pub struct Tokens<Chars> {
+    chars: Chars
+}
+
+impl<Chars> Iterator for Tokens<Chars> where Chars: Iterator<Item=char> {
     type Item = Result<Token, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
