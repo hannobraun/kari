@@ -9,8 +9,6 @@ use std::{
     },
 };
 
-use crate::stream;
-
 
 pub struct Reader<R> {
     input:  R,
@@ -27,11 +25,11 @@ impl<R> Reader<R> where R: Read {
         }
     }
 
-    pub fn next(&mut self) -> stream::Result<char, Error> {
+    pub fn next(&mut self) -> Result<char, Error> {
         let c = loop {
             if self.index >= self.buffer.len() {
                 // This can only happen if an error occured before.
-                return Err(stream::Error::EndOfStream);
+                return Err(Error::EndOfStream);
             }
 
             let result = self.input.read_exact(
@@ -45,7 +43,7 @@ impl<R> Reader<R> where R: Read {
                     match error.kind() {
                         io::ErrorKind::UnexpectedEof => {
                             self.index = 0;
-                            return Err(stream::Error::EndOfStream);
+                            return Err(Error::EndOfStream);
                         }
                         _ => {
                             return Err(Error::Io(error).into());
@@ -82,7 +80,7 @@ impl<R> Reader<R> where R: Read {
         Ok(c)
     }
 
-    pub fn find<P>(&mut self, predicate: P) -> stream::Result<char, Error>
+    pub fn find<P>(&mut self, predicate: P) -> Result<char, Error>
         where P: Fn(char) -> bool
     {
         loop {
@@ -95,7 +93,7 @@ impl<R> Reader<R> where R: Read {
     }
 
     pub fn push_until<P>(&mut self, s: &mut String, predicate: P)
-        -> stream::Result<(), Error>
+        -> Result<(), Error>
         where P: Fn(char) -> bool
     {
         loop {
@@ -114,6 +112,7 @@ impl<R> Reader<R> where R: Read {
 
 #[derive(Debug)]
 pub enum Error {
+    EndOfStream,
     Io(io::Error),
     Utf8(Utf8Error),
 }
