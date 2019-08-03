@@ -47,15 +47,17 @@ impl<Iter, T, E> ErrorIter<Iter> where Iter: Iterator<Item=Result<T, E>> {
 }
 
 
-pub struct TakeUntilError<'r, Iter: Iterator<Item=Result<T, E>>, T, E>(
-    &'r mut ErrorIter<Iter>
-);
+pub struct TakeUntilError<'r, Iter: Iterator<Item=Result<T, E>>, T, E> {
+    iter: &'r mut ErrorIter<Iter>,
+}
 
 impl<'r, Iter, T, E> TakeUntilError<'r, Iter, T, E>
     where Iter: Iterator<Item=Result<T, E>>
 {
     pub fn new(iter: &'r mut ErrorIter<Iter>) -> Self {
-        TakeUntilError(iter)
+        TakeUntilError {
+            iter,
+        }
     }
 }
 
@@ -65,11 +67,11 @@ impl<'r, Iter, T, E> Iterator for TakeUntilError<'r, Iter, T, E>
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(Err(_)) = self.0.peek() {
+        if let Some(Err(_)) = self.iter.peek() {
             return None;
         }
 
-        self.0
+        self.iter
             .next()
             // Can't panic. We just peeked at the next item, and if it were an
             // error, we would have returned already.
