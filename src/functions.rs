@@ -69,17 +69,10 @@ impl Builtin for Print {
         "print"
     }
 
-    fn run(&self, stack: &mut Stack, _: &mut Functions)
+    fn run(&self, stack: &mut Stack, functions: &mut Functions)
         -> Result<(), stack::Error>
     {
-        match stack.pop::<Expression>()? {
-            Expression::Number(number) => print!("{}", number),
-            Expression::List(_)        => unimplemented!(),
-            Expression::String(string) => print!("{}", string),
-            Expression::Word(_)        => unimplemented!(),
-        }
-
-        Ok(())
+        print(stack, functions)
     }
 }
 
@@ -94,27 +87,7 @@ impl Builtin for Define {
     fn run(&self, stack: &mut Stack, functions: &mut Functions)
         -> Result<(), stack::Error>
     {
-        let mut name = stack.pop::<List>()?;
-        assert_eq!(name.len(), 1);
-        let name = name.pop().unwrap();
-
-        let name = match name {
-            Expression::Word(word) => {
-                word
-            }
-            expression => {
-                panic!(
-                    "Unexpected expression: {:?}\n",
-                    expression,
-                );
-            }
-        };
-
-        let body = stack.pop::<List>()?;
-
-        functions.define(name, body);
-
-        Ok(())
+        define(stack, functions)
     }
 }
 
@@ -126,15 +99,10 @@ impl Builtin for Add {
         "+"
     }
 
-    fn run(&self, stack: &mut Stack, _: &mut Functions)
+    fn run(&self, stack: &mut Stack, functions: &mut Functions)
         -> Result<(), stack::Error>
     {
-        let b = stack.pop::<Number>()?;
-        let a = stack.pop::<Number>()?;
-
-        stack.push(Expression::Number(a + b));
-
-        Ok(())
+        add(stack, functions)
     }
 }
 
@@ -146,14 +114,71 @@ impl Builtin for Mul {
         "*"
     }
 
-    fn run(&self, stack: &mut Stack, _: &mut Functions)
+    fn run(&self, stack: &mut Stack, functions: &mut Functions)
         -> Result<(), stack::Error>
     {
-        let b = stack.pop::<Number>()?;
-        let a = stack.pop::<Number>()?;
-
-        stack.push(Expression::Number(a * b));
-
-        Ok(())
+        mul(stack, functions)
     }
+}
+
+
+fn print(stack: &mut Stack, _: &mut Functions)
+    -> Result<(), stack::Error>
+{
+    match stack.pop::<Expression>()? {
+        Expression::Number(number) => print!("{}", number),
+        Expression::List(_)        => unimplemented!(),
+        Expression::String(string) => print!("{}", string),
+        Expression::Word(_)        => unimplemented!(),
+    }
+
+    Ok(())
+}
+
+fn define(stack: &mut Stack, functions: &mut Functions)
+    -> Result<(), stack::Error>
+{
+    let mut name = stack.pop::<List>()?;
+    assert_eq!(name.len(), 1);
+    let name = name.pop().unwrap();
+
+    let name = match name {
+        Expression::Word(word) => {
+            word
+        }
+        expression => {
+            panic!(
+                "Unexpected expression: {:?}\n",
+                expression,
+            );
+        }
+    };
+
+    let body = stack.pop::<List>()?;
+
+    functions.define(name, body);
+
+    Ok(())
+}
+
+fn add(stack: &mut Stack, _: &mut Functions)
+    -> Result<(), stack::Error>
+{
+    let b = stack.pop::<Number>()?;
+    let a = stack.pop::<Number>()?;
+
+    stack.push(Expression::Number(a + b));
+
+    Ok(())
+}
+
+fn mul(stack: &mut Stack, _: &mut Functions)
+    -> Result<(), stack::Error>
+{
+    let b = stack.pop::<Number>()?;
+    let a = stack.pop::<Number>()?;
+
+    stack.push(Expression::Number(a * b));
+
+    Ok(())
 }
