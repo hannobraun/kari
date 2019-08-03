@@ -76,7 +76,7 @@ impl Interpreter {
                         word => {
                             match self.functions.get(word) {
                                 Some(Function::Builtin(builtin)) => {
-                                    builtin(
+                                    builtin.run(
                                         &mut self.stack,
                                         &mut self.functions,
                                     )?;
