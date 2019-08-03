@@ -38,7 +38,7 @@ impl<R> Parser<R>
     }
 
     pub fn parse_list(&mut self) -> Result<Quote, Error> {
-        let mut quote = Quote::new();
+        let mut list = Quote::new();
 
         loop {
             let expression = match self.tokenizer.next()? {
@@ -46,7 +46,7 @@ impl<R> Parser<R>
                     Expression::Quote(self.parse_list()?)
                 }
                 Token::QuoteClose => {
-                    return Ok(quote);
+                    return Ok(list);
                 }
 
                 Token::Number(number) => Expression::Number(number),
@@ -54,7 +54,7 @@ impl<R> Parser<R>
                 Token::Word(word)     => Expression::Word(word),
             };
 
-            quote.push(expression);
+            list.push(expression);
         }
     }
 }
