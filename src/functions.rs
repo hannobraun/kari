@@ -19,20 +19,20 @@ impl Functions {
     pub fn new() -> Self {
         let mut functions = HashMap::new();
 
-        macro_rules! insert {
-            ($name:expr, $builtin:expr) => {
-                functions.insert(
-                    String::from($name),
-                    Function::Builtin(&$builtin)
-                );
-            }
+        let builtins = [
+            &Print as &Builtin,
+            &Define,
+
+            &Add,
+            &Mul,
+        ];
+
+        for &builtin in &builtins {
+            functions.insert(
+                String::from(builtin.name()),
+                Function::Builtin(builtin)
+            );
         }
-
-        insert!("print",  Print);
-        insert!("define", Define);
-
-        insert!("+", Add);
-        insert!("*", Mul);
 
         Self(functions)
     }
@@ -57,6 +57,7 @@ pub enum Function {
 
 
 pub trait Builtin {
+    fn name(&self) -> &'static str;
     fn run(&self, _: &mut Stack, _: &mut Functions) -> Result<(), stack::Error>;
 }
 
@@ -64,6 +65,10 @@ pub trait Builtin {
 pub struct Print;
 
 impl Builtin for Print {
+    fn name(&self) -> &'static str {
+        "print"
+    }
+
     fn run(&self, stack: &mut Stack, _: &mut Functions)
         -> Result<(), stack::Error>
     {
@@ -82,6 +87,10 @@ impl Builtin for Print {
 pub struct Define;
 
 impl Builtin for Define {
+    fn name(&self) -> &'static str {
+        "define"
+    }
+
     fn run(&self, stack: &mut Stack, functions: &mut Functions)
         -> Result<(), stack::Error>
     {
@@ -113,6 +122,10 @@ impl Builtin for Define {
 pub struct Add;
 
 impl Builtin for Add {
+    fn name(&self) -> &'static str {
+        "+"
+    }
+
     fn run(&self, stack: &mut Stack, _: &mut Functions)
         -> Result<(), stack::Error>
     {
@@ -129,6 +142,10 @@ impl Builtin for Add {
 pub struct Mul;
 
 impl Builtin for Mul {
+    fn name(&self) -> &'static str {
+        "*"
+    }
+
     fn run(&self, stack: &mut Stack, _: &mut Functions)
         -> Result<(), stack::Error>
     {
