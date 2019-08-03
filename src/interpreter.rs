@@ -1,9 +1,10 @@
+use std::io;
+
 use crate::{
     functions::{
         Function,
         Functions,
     },
-    iter::ErrorIter,
     stack::{
         self,
         Quote,
@@ -13,6 +14,7 @@ use crate::{
     tokenizer::{
         self,
         Token,
+        Tokenizer,
     },
 };
 
@@ -32,16 +34,21 @@ impl Interpreter {
         }
     }
 
-    pub fn run<Tokens>(&mut self, mut tokens: ErrorIter<Tokens>)
+    pub fn run<R>(&mut self, mut tokenizer: Tokenizer<R>)
         -> Result<(), Error>
-        where Tokens: Iterator<Item=Result<Token, tokenizer::Error>>
+        where R: io::Read
     {
-        let mut tokens = tokens.take_until_error();
-        self.run_tokens(&mut tokens)?;
+        let mut tokens = Vec::new();
+        loop {
+            match tokenizer.next() {
+                Ok(token)                          => tokens.push(token),
+                Err(tokenizer::Error::EndOfStream) => break,
+                Err(error)                         => return Err(error.into()),
 
-        if let Some(error) = tokens.error() {
-            return Err(Error::Tokenizer(error));
+            }
         }
+
+        self.run_tokens(tokens)?;
 
         Ok(())
     }
@@ -150,5 +157,11 @@ pub enum Error {
 impl From<stack::Error> for Error {
     fn from(from: stack::Error) -> Self {
         Error::Stack(from)
+    }
+}
+
+impl From<tokenizer::Error> for Error {
+    fn from(from: tokenizer::Error) -> Self {
+        Error::Tokenizer(from)
     }
 }

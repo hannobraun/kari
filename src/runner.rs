@@ -13,9 +13,9 @@ use crate::{
 pub fn run<Program>(program: Program) -> Result<(), interpreter::Error>
     where Program: io::Read
 {
-    let reader = Reader::new(program);
-    let tokens = Tokenizer::tokenize(reader);
+    let reader    = Reader::new(program);
+    let tokenizer = Tokenizer::new(reader);
 
     let mut interpreter = Interpreter::new();
-    interpreter.run(tokens)
+    interpreter.run(tokenizer)
 }
