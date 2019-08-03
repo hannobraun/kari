@@ -47,9 +47,6 @@ fn main() {
     };
 
     if let Err(error) = result {
-        match error {
-            runner::Error::Reader(error)      => print!("{:?}", error),
-            runner::Error::Interpreter(error) => print!("{:?}", error),
-        }
+        print!("{:?}", error);
     }
 }

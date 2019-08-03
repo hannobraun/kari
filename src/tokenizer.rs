@@ -2,12 +2,14 @@ use std::fmt;
 
 use crate::iter::ErrorIter;
 
+use crate::reader;
+
 
 pub struct Tokenizer;
 
 impl Tokenizer {
-    pub fn tokenize<Chars>(chars: Chars) -> ErrorIter<Tokens<Chars>>
-        where Chars: Iterator<Item=char>
+    pub fn tokenize<Chars>(chars: ErrorIter<Chars>) -> ErrorIter<Tokens<Chars>>
+        where Chars: Iterator<Item=Result<char, reader::Error>>
     {
         ErrorIter::new(
             Tokens {
@@ -18,43 +20,51 @@ impl Tokenizer {
 }
 
 
-pub struct Tokens<Chars> {
-    chars: Chars
+pub struct Tokens<Chars: Iterator> {
+    chars: ErrorIter<Chars>,
 }
 
-impl<Chars> Iterator for Tokens<Chars> where Chars: Iterator<Item=char> {
+impl<Chars> Iterator for Tokens<Chars>
+    where Chars: Iterator<Item=Result<char, reader::Error>>
+{
     type Item = Result<Token, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut token = String::new();
+        let mut chars = self.chars.take_until_error();
 
-        let start = self.chars.find(|c| !c.is_whitespace())?;
+        chars.handle_error(|mut chars| {
+            let mut token = String::new();
 
-        if start == '"' {
-            let string = consume_string(&mut token, self.chars.by_ref())
-                .map(|()| Token::String(token));
-            return Some(string);
-        }
+            let start = chars
+                .find(|c| !c.is_whitespace())?;
 
-        token.push(start);
-        token.extend(
-            self.chars
-                .by_ref()
-                .take_while(|c| !c.is_whitespace())
-        );
+            if start == '"' {
+                let string = consume_string(&mut token, chars.by_ref())
+                    .map(|()| Token::String(token));
 
-        match token.as_str() {
-            "[" => return Some(Ok(Token::QuoteOpen)),
-            "]" => return Some(Ok(Token::QuoteClose)),
-
-            _ => {
-                if let Ok(number) = token.parse::<u32>() {
-                    return Some(Ok(Token::Number(number)));
-                }
-
-                return Some(Ok(Token::Word(token)));
+                return Some(string);
             }
-        }
+
+            token.push(start);
+            token.extend(
+                chars
+                    .by_ref()
+                    .take_while(|c| !c.is_whitespace())
+            );
+
+            match token.as_str() {
+                "[" => return Some(Ok(Token::QuoteOpen)),
+                "]" => return Some(Ok(Token::QuoteClose)),
+
+                _ => {
+                    if let Ok(number) = token.parse::<u32>() {
+                        return Some(Ok(Token::Number(number)));
+                    }
+
+                    return Some(Ok(Token::Word(token)));
+                }
+            }
+        })
     }
 }
 
@@ -113,5 +123,12 @@ impl fmt::Display for Token {
 
 #[derive(Debug)]
 pub enum Error {
+    Reader(reader::Error),
     UnexpectedEscape(char),
+}
+
+impl From<reader::Error> for Error {
+    fn from(from: reader::Error) -> Self {
+        Error::Reader(from)
+    }
 }

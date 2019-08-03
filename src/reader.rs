@@ -9,31 +9,32 @@ use std::{
     },
 };
 
+use crate::iter::ErrorIter;
 
-pub struct Reader<R> {
+
+pub struct Reader;
+
+impl Reader {
+    pub fn read<R>(reader: R) -> ErrorIter<Chars<R>> where R: Read {
+        ErrorIter::new(
+            Chars {
+                reader,
+                buffer: [0; 4],
+                index:  0,
+            }
+        )
+    }
+}
+
+
+pub struct Chars<R> {
     reader: R,
     buffer: [u8; 4],
     index:  usize,
-    error:  Option<Error>,
 }
 
-impl<R> Reader<R> {
-    pub fn read(reader: R) -> Self {
-        Reader {
-            reader,
-            buffer: [0; 4],
-            index:  0,
-            error:  None,
-        }
-    }
-
-    pub fn error(self) -> Option<Error> {
-        self.error
-    }
-}
-
-impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
-    type Item = char;
+impl<R> Iterator for Chars<R> where R: Read {
+    type Item = Result<char, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let c = loop {
@@ -52,14 +53,13 @@ impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
                 Err(error) => {
                     match error.kind() {
                         io::ErrorKind::UnexpectedEof => {
-                            ()
+                            self.index = 0;
+                            return None;
                         }
                         _ => {
-                            self.error = Some(Error::Io(error));
+                            return Some(Err(Error::Io(error)));
                         }
                     }
-
-                    return None;
                 }
             }
 
@@ -74,8 +74,7 @@ impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
                 Err(error) => {
                     match self.index {
                         i if i == 4 => {
-                            self.error = Some(Error::Utf8(error));
-                            return None;
+                            return Some(Err(Error::Utf8(error)));
                         }
                         i if i < 4 => {
                             continue;
@@ -89,7 +88,7 @@ impl<'r, R> Iterator for &'r mut Reader<R> where R: Read {
         };
 
         self.index = 0;
-        Some(c)
+        Some(Ok(c))
     }
 }
 
