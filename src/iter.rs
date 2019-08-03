@@ -48,7 +48,8 @@ impl<Iter, T, E> ErrorIter<Iter> where Iter: Iterator<Item=Result<T, E>> {
 
 
 pub struct TakeUntilError<'r, Iter: Iterator<Item=Result<T, E>>, T, E> {
-    iter: &'r mut ErrorIter<Iter>,
+    iter:  &'r mut ErrorIter<Iter>,
+    error: Option<E>,
 }
 
 impl<'r, Iter, T, E> TakeUntilError<'r, Iter, T, E>
@@ -57,7 +58,12 @@ impl<'r, Iter, T, E> TakeUntilError<'r, Iter, T, E>
     pub fn new(iter: &'r mut ErrorIter<Iter>) -> Self {
         TakeUntilError {
             iter,
+            error: None,
         }
+    }
+
+    pub fn error(self) -> Option<E> {
+        self.error
     }
 }
 
@@ -67,7 +73,18 @@ impl<'r, Iter, T, E> Iterator for &'_ mut TakeUntilError<'r, Iter, T, E>
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
+        if let Some(_) = self.error {
+            return None;
+        }
+
         if let Some(Err(_)) = self.iter.peek() {
+            // Can't panic, because our peeking just determined that it's an
+            // error.
+            self.error = self.iter
+                .next()
+                .map(|result|
+                    result.err().unwrap()
+                );
             return None;
         }
 
