@@ -42,7 +42,6 @@ impl<R> Reader<R> where R: Read {
                 Err(error) => {
                     match error.kind() {
                         io::ErrorKind::UnexpectedEof => {
-                            self.index = 0;
                             return Err(Error::EndOfStream);
                         }
                         _ => {
