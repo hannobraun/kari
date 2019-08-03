@@ -23,6 +23,7 @@ impl Stack {
 }
 
 
+#[derive(Debug)]
 pub enum Value {
     Number(u32),
     Quote(Quote),
@@ -89,6 +90,7 @@ impl_type!(
 );
 
 
+#[derive(Debug)]
 pub enum Error {
     TypeError {
         expected: &'static str,

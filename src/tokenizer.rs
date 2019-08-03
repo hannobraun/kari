@@ -77,7 +77,7 @@ fn consume_string<S>(token: &mut String, mut string: S)
 }
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Token {
     Number(u32),
     QuoteOpen,

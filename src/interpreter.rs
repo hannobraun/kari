@@ -123,6 +123,7 @@ enum State {
 }
 
 
+#[derive(Debug)]
 pub enum Error {
     UnexpectedToken(Token),
     UnknownFunction(String),
