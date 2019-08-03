@@ -37,8 +37,8 @@ impl<R> Parser<R>
         Ok(expression)
     }
 
-    pub fn parse_list(&mut self) -> Result<Quote, Error> {
-        let mut list = Quote::new();
+    pub fn parse_list(&mut self) -> Result<List, Error> {
+        let mut list = List::new();
 
         loop {
             let expression = match self.tokenizer.next()? {
@@ -63,14 +63,14 @@ impl<R> Parser<R>
 #[derive(Clone, Debug)]
 pub enum Expression {
     Number(Number),
-    Quote(Quote),
+    Quote(List),
     String(String),
     Word(String),
 }
 
 
 pub type Number = u32;
-pub type Quote  = Vec<Expression>;
+pub type List   = Vec<Expression>;
 
 
 #[derive(Debug)]
