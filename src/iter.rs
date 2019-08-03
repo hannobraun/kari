@@ -42,7 +42,7 @@ impl<Iter, T, E> ErrorIter<Iter> where Iter: Iterator<Item=Result<T, E>> {
     }
 
     pub fn take_until_error(&mut self) -> TakeUntilError<Iter, T, E> {
-        TakeUntilError(self)
+        TakeUntilError::new(self)
     }
 }
 
@@ -50,6 +50,14 @@ impl<Iter, T, E> ErrorIter<Iter> where Iter: Iterator<Item=Result<T, E>> {
 pub struct TakeUntilError<'r, Iter: Iterator<Item=Result<T, E>>, T, E>(
     &'r mut ErrorIter<Iter>
 );
+
+impl<'r, Iter, T, E> TakeUntilError<'r, Iter, T, E>
+    where Iter: Iterator<Item=Result<T, E>>
+{
+    pub fn new(iter: &'r mut ErrorIter<Iter>) -> Self {
+        TakeUntilError(iter)
+    }
+}
 
 impl<'r, Iter, T, E> Iterator for TakeUntilError<'r, Iter, T, E>
     where Iter: Iterator<Item=Result<T, E>>
