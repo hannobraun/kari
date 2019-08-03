@@ -18,7 +18,7 @@ pub struct Reader<R> {
 }
 
 impl<R> Reader<R> {
-    pub fn new(reader: R) -> Self {
+    pub fn read(reader: R) -> Self {
         Reader {
             reader,
             buffer: [0; 4],
