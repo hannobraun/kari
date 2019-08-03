@@ -1,10 +1,10 @@
 use std::{
     collections::HashMap,
     ops::DerefMut,
+    vec,
 };
 
 use crate::{
-    functions::Functions,
     parser::{
         Expression,
         List,
@@ -90,7 +90,8 @@ pub trait Builtin {
     fn name(&self) -> &'static str;
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
-    fn run(&mut self, _: &mut Functions);
+    fn defines(&mut self) -> vec::Drain<(String, List)>;
+    fn run(&mut self);
 }
 
 macro_rules! impl_builtin {
@@ -103,15 +104,17 @@ macro_rules! impl_builtin {
 
         $(
             pub struct $ty {
-                input:  $input,
-                output: $output,
+                input:   $input,
+                output:  $output,
+                defines: Vec<(String, List)>,
             }
 
             impl $ty {
                 fn new() -> Box<Builtin> {
                     Box::new($ty {
-                        input:  Default::default(),
-                        output: Default::default(),
+                        input:   Default::default(),
+                        output:  Default::default(),
+                        defines: Vec::new(),
                     })
                 }
             }
@@ -129,8 +132,12 @@ macro_rules! impl_builtin {
                     &self.output
                 }
 
-                fn run(&mut self, functions: &mut Functions) {
-                    $fn(&self.input, &mut self.output, functions)
+                fn defines(&mut self) -> vec::Drain<(String, List)> {
+                    self.defines.drain(..)
+                }
+
+                fn run(&mut self) {
+                    $fn(&self.input, &mut self.output, &mut self.defines);
                 }
             }
         )*
@@ -148,7 +155,7 @@ impl_builtin!(
 fn print(
     (input,): &(Expression,),
     _       : &mut (),
-    _       : &mut Functions,
+    _       : &mut Vec<(String, List)>,
 ) {
     match input {
         Expression::Number(number) => print!("{}", number),
@@ -161,7 +168,7 @@ fn print(
 fn define(
     (body, name): &(List, List),
     _           : &mut (),
-    functions   : &mut Functions,
+    defines     : &mut Vec<(String, List)>,
 ) {
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
@@ -178,13 +185,13 @@ fn define(
         }
     };
 
-    functions.define(name, body.clone());
+    defines.push((name, body.clone()));
 }
 
 fn add(
     (a, b)   : &(Number, Number),
     (result,): &mut (Number,),
-    _        : &mut Functions,
+    _        : &mut Vec<(String, List)>,
 ) {
     *result = a + b;
 }
@@ -192,7 +199,7 @@ fn add(
 fn mul(
     (a, b): &(Number, Number),
     (result,): &mut (Number,),
-    _: &mut Functions,
+    _        : &mut Vec<(String, List)>,
 ) {
     *result = a * b;
 }

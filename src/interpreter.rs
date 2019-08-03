@@ -80,10 +80,13 @@ impl Interpreter {
                                 builtin
                                     .input()
                                     .take(&mut self.stack)?;
-                                builtin.run(&mut self.functions,);
+                                builtin.run();
                                 builtin
                                     .output()
                                     .place(&mut self.stack);
+                                for (name, body) in builtin.defines() {
+                                    self.functions.define(name, body);
+                                }
                                 continue;
                             }
                             if let Some(list) = self.functions.get(word) {
