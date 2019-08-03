@@ -1,8 +1,8 @@
 use std::io;
 
 use crate::{
+    builtins::Builtins,
     functions::{
-        Function,
         Functions,
     },
     parser::{
@@ -18,6 +18,7 @@ use crate::{
 
 
 pub struct Interpreter {
+    builtins:  Builtins,
     stack:     Stack,
     functions: Functions,
 }
@@ -25,6 +26,7 @@ pub struct Interpreter {
 impl Interpreter {
     pub fn new() -> Self {
         Interpreter {
+            builtins:  Builtins::new(),
             stack:     Stack::new(),
             functions: Functions::new(),
         }
@@ -74,23 +76,22 @@ impl Interpreter {
                             };
                         }
                         word => {
-                            match self.functions.get(word) {
-                                Some(Function::Builtin(builtin)) => {
-                                    builtin.run(
-                                        &mut self.stack,
-                                        &mut self.functions,
-                                    )?;
-                                }
-                                Some(Function::List(list)) => {
-                                    let list = list.clone();
-                                    self.evaluate(list)?;
-                                }
-                                None => {
-                                    return Err(Error::UnknownFunction(
-                                        word.to_string())
-                                    );
-                                }
+                            if let Some(builtin) = self.builtins.get(word) {
+                                builtin.run(
+                                    &mut self.stack,
+                                    &mut self.functions,
+                                )?;
+                                continue;
                             }
+                            if let Some(list) = self.functions.get(word) {
+                                let list = list.clone();
+                                self.evaluate(list)?;
+                                continue;
+                            }
+
+                            return Err(Error::UnknownFunction(
+                                word.to_string())
+                            );
                         }
                     }
                 }
