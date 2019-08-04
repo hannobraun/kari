@@ -59,6 +59,21 @@ impl Types for () {
     }
 }
 
+impl<A> Types for A
+    where
+        A: Type + Clone,
+{
+    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
+        *self = stack.pop::<A>()?;
+
+        Ok(())
+    }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.clone());
+    }
+}
+
 impl<A> Types for (A,)
     where
         A: Type + Clone,
@@ -159,19 +174,19 @@ macro_rules! impl_builtin {
 }
 
 impl_builtin!(
-    Print, "print",  print,  (Expression,) => ();
-    Eval,  "eval",   eval,   (List,) => ();
+    Print, "print",  print,  Expression => ();
+    Eval,  "eval",   eval,   List => ();
     Define,"define", define, (List, List) => ();
 
-    Add, "+", add, (Number, Number) => (Number,);
-    Mul, "*", mul, (Number, Number) => (Number,);
+    Add, "+", add, (Number, Number) => Number;
+    Mul, "*", mul, (Number, Number) => Number;
 );
 
 fn print(
-    (input,): &(Expression,),
-    _       : &mut (),
-    _       : &mut Vec<(String, List)>,
-    _       : &mut Evaluate,
+    input: &Expression,
+    _    : &mut (),
+    _    : &mut Vec<(String, List)>,
+    _    : &mut Evaluate,
 )
     -> Result<(), evaluator::Error>
 {
@@ -214,7 +229,7 @@ fn define(
 }
 
 fn eval(
-    (list,) : &(List,),
+    list    : &List,
     _       : &mut (),
     _       : &mut Vec<(String, List)>,
     evaluate: &mut Evaluate,
@@ -225,10 +240,10 @@ fn eval(
 }
 
 fn add(
-    (a, b)   : &(Number, Number),
-    (result,): &mut (Number,),
-    _        : &mut Vec<(String, List)>,
-    _        : &mut Evaluate,
+    (a, b): &(Number, Number),
+    result: &mut Number,
+    _     : &mut Vec<(String, List)>,
+    _     : &mut Evaluate,
 )
     -> Result<(), evaluator::Error>
 {
@@ -238,9 +253,9 @@ fn add(
 
 fn mul(
     (a, b): &(Number, Number),
-    (result,): &mut (Number,),
-    _        : &mut Vec<(String, List)>,
-    _        : &mut Evaluate,
+    result: &mut Number,
+    _     : &mut Vec<(String, List)>,
+    _     : &mut Evaluate,
 )
     -> Result<(), evaluator::Error>
 {
