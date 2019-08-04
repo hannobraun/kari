@@ -29,12 +29,10 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn take(&mut self, name: &str) -> Option<&'static Builtin> {
-        self.0.remove(name)
-    }
-
-    pub fn put_back(&mut self, builtin: &'static Builtin) {
-        self.0.insert(builtin.name(), builtin);
+    pub fn builtin(&self, name: &str) -> Option<&'static (Builtin + 'static)> {
+        self.0
+            .get(name)
+            .map(|builtin| *builtin)
     }
 }
 
