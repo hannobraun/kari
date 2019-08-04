@@ -118,4 +118,3 @@ impl From<parser::Error> for Error {
         Error::Parser(from)
     }
 }
-
