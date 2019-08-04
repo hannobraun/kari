@@ -98,7 +98,7 @@ pub trait Builtin {
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
-    fn run(&mut self, evaluate: &mut Evaluate) -> Result<(), evaluator::Error>;
+    fn run(&mut self, _: &mut Evaluate) -> Result<(), evaluator::Error>;
 }
 
 macro_rules! impl_builtin {
