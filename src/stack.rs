@@ -16,11 +16,8 @@ impl Stack {
         value.push(&mut self.0)
     }
 
-    pub fn pop<T>(&mut self) -> Result<T, Error> where T: Type {
-        match self.0.pop() {
-            Some(expression) => T::check(expression),
-            None             => Err(Error::StackEmpty),
-        }
+    pub fn pop<T: Pop>(&mut self) -> Result<T, Error> {
+        T::pop(&mut self.0)
     }
 }
 
@@ -29,20 +26,23 @@ pub trait Push {
     fn push(self, stack: &mut Vec<Expression>);
 }
 
+pub trait Pop : Sized {
+    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error>;
+}
+
+
 impl Push for Expression {
     fn push(self, stack: &mut Vec<Expression>) {
         stack.push(self)
     }
 }
 
-
-pub trait Type : Sized {
-    fn check(_: Expression) -> Result<Self, Error>;
-}
-
-impl Type for Expression {
-    fn check(expression: Expression) -> Result<Self, Error> {
-        Ok(expression)
+impl Pop for Expression {
+    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
+        match stack.pop() {
+            Some(expression) => Ok(expression),
+            None             => Err(Error::StackEmpty),
+        }
     }
 }
 
@@ -55,17 +55,20 @@ macro_rules! impl_type {
                 }
             }
 
-            impl Type for $type {
-                fn check(expression: Expression) -> Result<Self, Error> {
-                    match expression {
-                        Expression::$type(expression) => {
+            impl Pop for $type {
+                fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
+                    match Expression::pop(stack) {
+                        Ok(Expression::$type(expression)) => {
                             Ok(expression)
                         }
-                        expression => {
+                        Ok(expression) => {
                             Err(Error::TypeError {
                                 expected: $name,
                                 actual:   expression,
                             })
+                        }
+                        Err(error) => {
+                            Err(error)
                         }
                     }
                 }
@@ -97,7 +100,7 @@ impl Types for () {
 
 impl<A> Types for A
     where
-        A: Push + Type + Clone,
+        A: Push + Pop + Clone,
 {
     fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
         *self = stack.pop::<A>()?;
@@ -112,7 +115,7 @@ impl<A> Types for A
 
 impl<A> Types for (A,)
     where
-        A: Push + Type + Clone,
+        A: Push + Pop + Clone,
 {
     fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
         self.0 = stack.pop::<A>()?;
@@ -127,8 +130,8 @@ impl<A> Types for (A,)
 
 impl<A, B> Types for (A, B)
     where
-        A: Push + Type + Clone,
-        B: Push + Type + Clone,
+        A: Push + Pop + Clone,
+        B: Push + Pop + Clone,
 {
     fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
         self.1 = stack.pop::<B>()?;
