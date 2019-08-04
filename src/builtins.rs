@@ -16,7 +16,7 @@ use crate::{
 };
 
 
-pub struct Builtins(HashMap<&'static str, Box<Builtin>>);
+pub struct Builtins(HashMap<&'static str, &'static Builtin>);
 
 impl Builtins {
     pub fn new() -> Self {
@@ -29,11 +29,11 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn take(&mut self, name: &str) -> Option<Box<Builtin>> {
+    pub fn take(&mut self, name: &str) -> Option<&'static Builtin> {
         self.0.remove(name)
     }
 
-    pub fn put_back(&mut self, builtin: Box<Builtin>) {
+    pub fn put_back(&mut self, builtin: &'static Builtin) {
         self.0.insert(builtin.name(), builtin);
     }
 }
@@ -46,20 +46,14 @@ pub trait Builtin {
 
 macro_rules! impl_builtin {
     ($($ty:ident, $name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
-        fn builtins() -> Vec<Box<Builtin>> {
+        fn builtins() -> Vec<&'static Builtin> {
             vec![
-                $($ty::new(),)*
+                $(&$ty,)*
             ]
         }
 
         $(
             pub struct $ty;
-
-            impl $ty {
-                fn new() -> Box<Builtin> {
-                    Box::new($ty)
-                }
-            }
 
             impl Builtin for $ty {
                 fn name(&self) -> &'static str {
