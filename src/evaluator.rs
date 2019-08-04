@@ -2,6 +2,10 @@ use std::io;
 
 use crate::{
     builtins::Builtins,
+    context::{
+        Context,
+        Error,
+    },
     functions::{
         Functions,
     },
@@ -11,10 +15,7 @@ use crate::{
         List,
         Parser,
     },
-    stack::{
-        self,
-        Stack,
-    },
+    stack::Stack,
 };
 
 
@@ -88,33 +89,5 @@ impl Context for Evaluator {
         }
 
         Ok(())
-    }
-}
-
-
-pub trait Context {
-    fn stack(&mut self) -> &mut Stack;
-    fn define(&mut self, name: String, body: List);
-    fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
-        -> Result<(), Error>;
-}
-
-
-#[derive(Debug)]
-pub enum Error {
-    Parser(parser::Error),
-    UnknownFunction(String),
-    Stack(stack::Error),
-}
-
-impl From<stack::Error> for Error {
-    fn from(from: stack::Error) -> Self {
-        Error::Stack(from)
-    }
-}
-
-impl From<parser::Error> for Error {
-    fn from(from: parser::Error) -> Self {
-        Error::Parser(from)
     }
 }

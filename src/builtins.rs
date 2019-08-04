@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    evaluator::{
+    context::{
         self,
         Context,
     },
@@ -41,7 +41,7 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn run(&mut self, _: &mut Context) -> Result<(), evaluator::Error>;
+    fn run(&mut self, _: &mut Context) -> Result<(), context::Error>;
 }
 
 macro_rules! impl_builtin {
@@ -67,7 +67,7 @@ macro_rules! impl_builtin {
                 }
 
                 fn run(&mut self, context: &mut Context)
-                    -> Result<(), evaluator::Error>
+                    -> Result<(), context::Error>
                 {
                     $fn(context)
                 }
@@ -85,7 +85,7 @@ impl_builtin!(
     Mul, "*", mul, (Number, Number) => Number;
 );
 
-fn print(context: &mut Context) -> Result<(), evaluator::Error> {
+fn print(context: &mut Context) -> Result<(), context::Error> {
     match context.stack().pop::<Expression>()? {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
@@ -96,7 +96,7 @@ fn print(context: &mut Context) -> Result<(), evaluator::Error> {
     Ok(())
 }
 
-fn define(context: &mut Context) -> Result<(), evaluator::Error> {
+fn define(context: &mut Context) -> Result<(), context::Error> {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
     assert_eq!(name.len(), 1);
@@ -119,19 +119,19 @@ fn define(context: &mut Context) -> Result<(), evaluator::Error> {
     Ok(())
 }
 
-fn eval(context: &mut Context) -> Result<(), evaluator::Error> {
+fn eval(context: &mut Context) -> Result<(), context::Error> {
     let list = context.stack().pop::<List>()?;
     context.evaluate(&mut list.into_iter())?;
     Ok(())
 }
 
-fn add(context: &mut Context) -> Result<(), evaluator::Error> {
+fn add(context: &mut Context) -> Result<(), context::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(a + b);
     Ok(())
 }
 
-fn mul(context: &mut Context) -> Result<(), evaluator::Error> {
+fn mul(context: &mut Context) -> Result<(), context::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(a * b);
     Ok(())
