@@ -46,7 +46,7 @@ impl Pop for Expression {
     }
 }
 
-macro_rules! impl_type {
+macro_rules! impl_push_pop {
     ($($type:ident, $name:expr;)*) => {
         $(
             impl Push for $type {
@@ -77,7 +77,7 @@ macro_rules! impl_type {
     }
 }
 
-impl_type!(
+impl_push_pop!(
     List,   "list";
     Number, "number";
 );
