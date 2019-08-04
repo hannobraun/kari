@@ -41,7 +41,6 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn defines(&mut self) -> vec::Drain<(String, List)>;
     fn run(&mut self, _: &mut Context) -> Result<(), evaluator::Error>;
 }
 
@@ -54,15 +53,11 @@ macro_rules! impl_builtin {
         }
 
         $(
-            pub struct $ty {
-                defines: Vec<(String, List)>,
-            }
+            pub struct $ty;
 
             impl $ty {
                 fn new() -> Box<Builtin> {
-                    Box::new($ty {
-                        defines: Vec::new(),
-                    })
+                    Box::new($ty)
                 }
             }
 
@@ -71,17 +66,10 @@ macro_rules! impl_builtin {
                     $name
                 }
 
-                fn defines(&mut self) -> vec::Drain<(String, List)> {
-                    self.defines.drain(..)
-                }
-
                 fn run(&mut self, context: &mut Context)
                     -> Result<(), evaluator::Error>
                 {
-                    $fn(
-                        &mut self.defines,
-                        context,
-                    )
+                    $fn(context)
                 }
             }
         )*
@@ -97,12 +85,7 @@ impl_builtin!(
     Mul, "*", mul, (Number, Number) => Number;
 );
 
-fn print(
-    _      : &mut Vec<(String, List)>,
-    context: &mut Context,
-)
-    -> Result<(), evaluator::Error>
-{
+fn print(context: &mut Context) -> Result<(), evaluator::Error> {
     match context.stack().pop::<Expression>()? {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
@@ -113,12 +96,7 @@ fn print(
     Ok(())
 }
 
-fn define(
-    defines: &mut Vec<(String, List)>,
-    context: &mut Context,
-)
-    -> Result<(), evaluator::Error>
-{
+fn define(context: &mut Context) -> Result<(), evaluator::Error> {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
     assert_eq!(name.len(), 1);
@@ -136,39 +114,24 @@ fn define(
         }
     };
 
-    defines.push((name, body.clone()));
+    context.define(name, body.clone());
 
     Ok(())
 }
 
-fn eval(
-    _      : &mut Vec<(String, List)>,
-    context: &mut Context,
-)
-    -> Result<(), evaluator::Error>
-{
+fn eval(context: &mut Context) -> Result<(), evaluator::Error> {
     let list = context.stack().pop::<List>()?;
     context.evaluate(&mut list.into_iter())?;
     Ok(())
 }
 
-fn add(
-    _      : &mut Vec<(String, List)>,
-    context: &mut Context,
-)
-    -> Result<(), evaluator::Error>
-{
+fn add(context: &mut Context) -> Result<(), evaluator::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(a + b);
     Ok(())
 }
 
-fn mul(
-    _      : &mut Vec<(String, List)>,
-    context: &mut Context,
-)
-    -> Result<(), evaluator::Error>
-{
+fn mul(context: &mut Context) -> Result<(), evaluator::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(a * b);
     Ok(())

@@ -8,6 +8,7 @@ use crate::{
     parser::{
         self,
         Expression,
+        List,
         Parser,
     },
     stack::{
@@ -55,6 +56,10 @@ impl Context for Evaluator {
         &mut self.stack
     }
 
+    fn define(&mut self, name: String, body: List) {
+        self.functions.define(name, body);
+    }
+
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>
     {
@@ -63,9 +68,6 @@ impl Context for Evaluator {
                 Expression::Word(word) => {
                     if let Some(mut builtin) = self.builtins.take(&word) {
                         builtin.run(self)?;
-                        for (name, body) in builtin.defines() {
-                            self.functions.define(name, body);
-                        }
                         self.builtins.put_back(builtin);
                         continue;
                     }
@@ -92,6 +94,7 @@ impl Context for Evaluator {
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
+    fn define(&mut self, name: String, body: List);
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>;
 }
