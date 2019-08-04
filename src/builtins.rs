@@ -77,6 +77,7 @@ impl_builtin!(
     Mul, "*", mul, (Number, Number) => Number;
 );
 
+
 fn print(context: &mut Context) -> Result<(), context::Error> {
     match context.stack().pop::<Expression>()? {
         Expression::Number(number) => print!("{}", number),
