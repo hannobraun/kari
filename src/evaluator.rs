@@ -51,6 +51,10 @@ impl Evaluator {
 }
 
 impl Context for Evaluator {
+    fn stack(&mut self) -> &mut Stack {
+        &mut self.stack
+    }
+
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>
     {
@@ -58,13 +62,7 @@ impl Context for Evaluator {
             match expression {
                 Expression::Word(word) => {
                     if let Some(mut builtin) = self.builtins.take(&word) {
-                        builtin
-                            .input()
-                            .take(&mut self.stack)?;
                         builtin.run(self)?;
-                        builtin
-                            .output()
-                            .place(&mut self.stack);
                         for (name, body) in builtin.defines() {
                             self.functions.define(name, body);
                         }
@@ -93,6 +91,7 @@ impl Context for Evaluator {
 
 
 pub trait Context {
+    fn stack(&mut self) -> &mut Stack;
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>;
 }

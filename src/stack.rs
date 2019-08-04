@@ -83,66 +83,26 @@ impl_push_pop!(
 );
 
 
-pub trait Types {
-    fn take(&mut self, _: &mut Stack) -> Result<(), Error>;
-    fn place(&self, _: &mut Stack);
-}
-
-impl Types for () {
-    fn take(&mut self, _: &mut Stack) -> Result<(), Error> {
-        Ok(())
-    }
-
-    fn place(&self, _: &mut Stack) {
-        ()
-    }
-}
-
-impl<A> Types for A
+impl<A, B> Push for (A, B)
     where
-        A: Push + Pop + Clone,
+        A: Push,
+        B: Push,
 {
-    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
-        *self = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.clone());
+    fn push(self, stack: &mut Vec<Expression>) {
+        self.0.push(stack);
+        self.1.push(stack);
     }
 }
 
-impl<A> Types for (A,)
+impl<A, B> Pop for (A, B)
     where
-        A: Push + Pop + Clone,
+        A: Pop,
+        B: Pop,
 {
-    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
-        self.0 = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.0.clone());
-    }
-}
-
-impl<A, B> Types for (A, B)
-    where
-        A: Push + Pop + Clone,
-        B: Push + Pop + Clone,
-{
-    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
-        self.1 = stack.pop::<B>()?;
-        self.0 = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.0.clone());
-        stack.push(self.1.clone());
+    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
+        let b = B::pop(stack)?;
+        let a = A::pop(stack)?;
+        Ok((a, b))
     }
 }
 

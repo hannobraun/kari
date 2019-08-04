@@ -13,7 +13,6 @@ use crate::{
         List,
         Number,
     },
-    stack::Types,
 };
 
 
@@ -42,8 +41,6 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn input(&mut self) -> &mut Types;
-    fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
     fn run(&mut self, _: &mut Context) -> Result<(), evaluator::Error>;
 }
@@ -58,16 +55,12 @@ macro_rules! impl_builtin {
 
         $(
             pub struct $ty {
-                input:   $input,
-                output:  $output,
                 defines: Vec<(String, List)>,
             }
 
             impl $ty {
                 fn new() -> Box<Builtin> {
                     Box::new($ty {
-                        input:   Default::default(),
-                        output:  Default::default(),
                         defines: Vec::new(),
                     })
                 }
@@ -78,14 +71,6 @@ macro_rules! impl_builtin {
                     $name
                 }
 
-                fn input(&mut self) -> &mut Types {
-                    &mut self.input
-                }
-
-                fn output(&self) -> &Types {
-                    &self.output
-                }
-
                 fn defines(&mut self) -> vec::Drain<(String, List)> {
                     self.defines.drain(..)
                 }
@@ -94,8 +79,6 @@ macro_rules! impl_builtin {
                     -> Result<(), evaluator::Error>
                 {
                     $fn(
-                        &self.input,
-                        &mut self.output,
                         &mut self.defines,
                         context,
                     )
@@ -115,14 +98,12 @@ impl_builtin!(
 );
 
 fn print(
-    input: &Expression,
-    _    : &mut (),
-    _    : &mut Vec<(String, List)>,
-    _    : &mut Context,
+    _      : &mut Vec<(String, List)>,
+    context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
-    match input {
+    match context.stack().pop::<Expression>()? {
         Expression::Number(number) => print!("{}", number),
         Expression::List(_)        => unimplemented!(),
         Expression::String(string) => print!("{}", string),
@@ -133,13 +114,13 @@ fn print(
 }
 
 fn define(
-    (body, name): &(List, List),
-    _           : &mut (),
-    defines     : &mut Vec<(String, List)>,
-    _           : &mut Context,
+    defines: &mut Vec<(String, List)>,
+    context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
+    let (body, name) = context.stack().pop::<(List, List)>()?;
+
     assert_eq!(name.len(), 1);
     let name = name.clone().pop().unwrap();
 
@@ -161,36 +142,34 @@ fn define(
 }
 
 fn eval(
-    list   : &List,
-    _      : &mut (),
     _      : &mut Vec<(String, List)>,
     context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
-    context.evaluate(&mut list.clone().into_iter())
+    let list = context.stack().pop::<List>()?;
+    context.evaluate(&mut list.into_iter())?;
+    Ok(())
 }
 
 fn add(
-    (a, b): &(Number, Number),
-    result: &mut Number,
-    _     : &mut Vec<(String, List)>,
-    _     : &mut Context,
+    _      : &mut Vec<(String, List)>,
+    context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
-    *result = a + b;
+    let (a, b) = context.stack().pop::<(Number, Number)>()?;
+    context.stack().push(a + b);
     Ok(())
 }
 
 fn mul(
-    (a, b): &(Number, Number),
-    result: &mut Number,
-    _     : &mut Vec<(String, List)>,
-    _     : &mut Context,
+    _      : &mut Vec<(String, List)>,
+    context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
-    *result = a * b;
+    let (a, b) = context.stack().pop::<(Number, Number)>()?;
+    context.stack().push(a * b);
     Ok(())
 }
