@@ -72,6 +72,70 @@ impl_type!(
 );
 
 
+pub trait Types {
+    fn take(&mut self, _: &mut Stack) -> Result<(), Error>;
+    fn place(&self, _: &mut Stack);
+}
+
+impl Types for () {
+    fn take(&mut self, _: &mut Stack) -> Result<(), Error> {
+        Ok(())
+    }
+
+    fn place(&self, _: &mut Stack) {
+        ()
+    }
+}
+
+impl<A> Types for A
+    where
+        A: Type + Clone,
+{
+    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
+        *self = stack.pop::<A>()?;
+
+        Ok(())
+    }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.clone());
+    }
+}
+
+impl<A> Types for (A,)
+    where
+        A: Type + Clone,
+{
+    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
+        self.0 = stack.pop::<A>()?;
+
+        Ok(())
+    }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.0.clone());
+    }
+}
+
+impl<A, B> Types for (A, B)
+    where
+        A: Type + Clone,
+        B: Type + Clone,
+{
+    fn take(&mut self, stack: &mut Stack) -> Result<(), Error> {
+        self.1 = stack.pop::<B>()?;
+        self.0 = stack.pop::<A>()?;
+
+        Ok(())
+    }
+
+    fn place(&self, stack: &mut Stack) {
+        stack.push(self.0.clone());
+        stack.push(self.1.clone());
+    }
+}
+
+
 #[derive(Debug)]
 pub enum Error {
     TypeError {

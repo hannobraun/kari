@@ -13,11 +13,7 @@ use crate::{
         List,
         Number,
     },
-    stack::{
-        self,
-        Stack,
-        Type,
-    },
+    stack::Types,
 };
 
 
@@ -40,70 +36,6 @@ impl Builtins {
 
     pub fn put_back(&mut self, builtin: Box<Builtin>) {
         self.0.insert(builtin.name(), builtin);
-    }
-}
-
-
-pub trait Types {
-    fn take(&mut self, _: &mut Stack) -> Result<(), stack::Error>;
-    fn place(&self, _: &mut Stack);
-}
-
-impl Types for () {
-    fn take(&mut self, _: &mut Stack) -> Result<(), stack::Error> {
-        Ok(())
-    }
-
-    fn place(&self, _: &mut Stack) {
-        ()
-    }
-}
-
-impl<A> Types for A
-    where
-        A: Type + Clone,
-{
-    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
-        *self = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.clone());
-    }
-}
-
-impl<A> Types for (A,)
-    where
-        A: Type + Clone,
-{
-    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
-        self.0 = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.0.clone());
-    }
-}
-
-impl<A, B> Types for (A, B)
-    where
-        A: Type + Clone,
-        B: Type + Clone,
-{
-    fn take(&mut self, stack: &mut Stack) -> Result<(), stack::Error> {
-        self.1 = stack.pop::<B>()?;
-        self.0 = stack.pop::<A>()?;
-
-        Ok(())
-    }
-
-    fn place(&self, stack: &mut Stack) {
-        stack.push(self.0.clone());
-        stack.push(self.1.clone());
     }
 }
 
