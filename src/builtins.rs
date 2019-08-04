@@ -41,7 +41,7 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn run(&mut self, _: &mut Context) -> Result<(), context::Error>;
+    fn run(&self, _: &mut Context) -> Result<(), context::Error>;
 }
 
 macro_rules! impl_builtin {
@@ -66,7 +66,7 @@ macro_rules! impl_builtin {
                     $name
                 }
 
-                fn run(&mut self, context: &mut Context)
+                fn run(&self, context: &mut Context)
                     -> Result<(), context::Error>
                 {
                     $fn(context)

@@ -67,7 +67,7 @@ impl Context for Evaluator {
         for expression in expressions {
             match expression {
                 Expression::Word(word) => {
-                    if let Some(mut builtin) = self.builtins.take(&word) {
+                    if let Some(builtin) = self.builtins.take(&word) {
                         builtin.run(self)?;
                         self.builtins.put_back(builtin);
                         continue;
