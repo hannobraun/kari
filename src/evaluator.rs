@@ -67,13 +67,13 @@ impl Context for Evaluator {
         for expression in expressions {
             match expression {
                 Expression::Word(word) => {
-                    if let Some(builtin) = self.builtins.builtin(&word) {
-                        builtin.run(self)?;
-                        continue;
-                    }
                     if let Some(list) = self.functions.get(&word) {
                         let list = list.clone();
                         self.evaluate(&mut list.into_iter())?;
+                        continue;
+                    }
+                    if let Some(builtin) = self.builtins.builtin(&word) {
+                        builtin.run(self)?;
                         continue;
                     }
 
