@@ -50,7 +50,7 @@ impl Evaluator {
     }
 }
 
-impl Evaluate for Evaluator {
+impl Context for Evaluator {
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>
     {
@@ -92,7 +92,7 @@ impl Evaluate for Evaluator {
 }
 
 
-pub trait Evaluate {
+pub trait Context {
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
         -> Result<(), Error>;
 }

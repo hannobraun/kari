@@ -6,7 +6,7 @@ use std::{
 use crate::{
     evaluator::{
         self,
-        Evaluate,
+        Context,
     },
     parser::{
         Expression,
@@ -113,7 +113,7 @@ pub trait Builtin {
     fn input(&mut self) -> &mut Types;
     fn output(&self) -> &Types;
     fn defines(&mut self) -> vec::Drain<(String, List)>;
-    fn run(&mut self, _: &mut Evaluate) -> Result<(), evaluator::Error>;
+    fn run(&mut self, _: &mut Context) -> Result<(), evaluator::Error>;
 }
 
 macro_rules! impl_builtin {
@@ -158,14 +158,14 @@ macro_rules! impl_builtin {
                     self.defines.drain(..)
                 }
 
-                fn run(&mut self, evaluate: &mut Evaluate)
+                fn run(&mut self, context: &mut Context)
                     -> Result<(), evaluator::Error>
                 {
                     $fn(
                         &self.input,
                         &mut self.output,
                         &mut self.defines,
-                        evaluate,
+                        context,
                     )
                 }
             }
@@ -186,7 +186,7 @@ fn print(
     input: &Expression,
     _    : &mut (),
     _    : &mut Vec<(String, List)>,
-    _    : &mut Evaluate,
+    _    : &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
@@ -204,7 +204,7 @@ fn define(
     (body, name): &(List, List),
     _           : &mut (),
     defines     : &mut Vec<(String, List)>,
-    _           : &mut Evaluate,
+    _           : &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
@@ -229,21 +229,21 @@ fn define(
 }
 
 fn eval(
-    list    : &List,
-    _       : &mut (),
-    _       : &mut Vec<(String, List)>,
-    evaluate: &mut Evaluate,
+    list   : &List,
+    _      : &mut (),
+    _      : &mut Vec<(String, List)>,
+    context: &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
-    evaluate.evaluate(&mut list.clone().into_iter())
+    context.evaluate(&mut list.clone().into_iter())
 }
 
 fn add(
     (a, b): &(Number, Number),
     result: &mut Number,
     _     : &mut Vec<(String, List)>,
-    _     : &mut Evaluate,
+    _     : &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
@@ -255,7 +255,7 @@ fn mul(
     (a, b): &(Number, Number),
     result: &mut Number,
     _     : &mut Vec<(String, List)>,
-    _     : &mut Evaluate,
+    _     : &mut Context,
 )
     -> Result<(), evaluator::Error>
 {
