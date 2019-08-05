@@ -11,21 +11,29 @@ use std::{
 
 
 pub struct Reader<R> {
-    input:  R,
+    input: R,
+
     buffer: [u8; 4],
     index:  usize,
+
+    next_column: usize,
+    next_line:   usize,
 }
 
 impl<R> Reader<R> where R: Read {
     pub fn new(input: R) -> Self {
         Reader {
             input,
+
             buffer: [0; 4],
             index:  0,
+
+            next_column: 0,
+            next_line:   0,
         }
     }
 
-    pub fn next(&mut self) -> Result<char, Error> {
+    pub fn next(&mut self) -> Result<Char, Error> {
         let c = loop {
             if self.index >= self.buffer.len() {
                 // This can only happen if an error occured before.
@@ -76,11 +84,24 @@ impl<R> Reader<R> where R: Read {
         };
 
         self.index = 0;
+
+        let c = Char {
+            c,
+            column: self.next_column,
+            line:   self.next_line,
+        };
+
+        self.next_column += 1;
+        if c.c == '\n' {
+            self.next_column = 0;
+            self.next_line += 1;
+        }
+
         Ok(c)
     }
 
-    pub fn find<P>(&mut self, predicate: P) -> Result<char, Error>
-        where P: Fn(char) -> bool
+    pub fn find<P>(&mut self, predicate: P) -> Result<Char, Error>
+        where P: Fn(Char) -> bool
     {
         loop {
             let c = self.next()?;
@@ -93,18 +114,38 @@ impl<R> Reader<R> where R: Read {
 
     pub fn push_until<P>(&mut self, s: &mut String, predicate: P)
         -> Result<(), Error>
-        where P: Fn(char) -> bool
+        where P: Fn(Char) -> bool
     {
         loop {
             let c = self.next()?;
 
             if predicate(c) {
-                s.push(c);
+                s.push(c.c);
             }
             else {
                 return Ok(());
             }
         }
+    }
+}
+
+
+#[derive(Clone, Copy)]
+pub struct Char {
+    pub c:      char,
+    pub column: usize,
+    pub line:   usize,
+}
+
+impl Char {
+    pub fn is_whitespace(&self) -> bool {
+        self.c.is_whitespace()
+    }
+}
+
+impl PartialEq<char> for Char {
+    fn eq(&self, other: &char) -> bool {
+        self.c.eq(other)
     }
 }
 

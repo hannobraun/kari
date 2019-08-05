@@ -30,7 +30,7 @@ impl<R> Tokenizer<R>
         let start = loop {
             let c = self.reader.find(|c| !c.is_whitespace())?;
 
-            match c {
+            match c.c {
                 '#' => {
                     self.reader.find(|c| c == '\n')?;
                 }
@@ -45,7 +45,7 @@ impl<R> Tokenizer<R>
                 .map(|()| Token { kind: TokenKind::String(token) });
         }
 
-        token.push(start);
+        token.push(start.c);
         self.reader.push_until(&mut token, |c| !c.is_whitespace())?;
 
         match token.as_str() {
@@ -78,7 +78,7 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
         };
 
         if escape {
-            match c {
+            match c.c {
                 'n' => {
                     token.push('\n');
                     escape = false;
@@ -89,7 +89,7 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
             }
         }
         else {
-            match c {
+            match c.c {
                 '"'  => return Ok(()),
                 '\\' => escape = true,
                 c    => token.push(c),
