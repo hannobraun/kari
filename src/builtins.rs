@@ -69,9 +69,9 @@ macro_rules! impl_builtin {
 }
 
 impl_builtin!(
-    Print, "print",  print,  Expression => ();
-    Eval,  "eval",   eval,   List => ();
-    Define,"define", define, (List, List) => ();
+    Print,  "print",  print,  Expression => ();
+    Eval,   "eval",   eval,   List => ();
+    Define, "define", define, (List, List) => ();
 
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
