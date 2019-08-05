@@ -74,6 +74,8 @@ impl_builtin!(
     Eval,   "eval",   eval,   List => ();
     Define, "define", define, (List, List) => ();
 
+    Dup, "dup", dup, Expression => (Expression, Expression);
+
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
 );
@@ -117,6 +119,17 @@ fn eval(context: &mut Context) -> Result {
     context.evaluate(&mut list.into_iter())?;
     Ok(())
 }
+
+
+fn dup(context: &mut Context) -> Result {
+    let expression = context.stack().pop::<Expression>()?;
+
+    context.stack().push(expression.clone());
+    context.stack().push(expression);
+
+    Ok(())
+}
+
 
 fn add(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
