@@ -65,25 +65,23 @@ impl Context for Evaluator {
         -> Result<(), Error>
     {
         for expression in expressions {
-            match expression {
-                Expression::Word(word) => {
-                    if let Some(list) = self.functions.get(&word) {
-                        let list = list.clone();
-                        self.evaluate(&mut list.0.into_iter())?;
-                        continue;
-                    }
-                    if let Some(builtin) = self.builtins.builtin(&word) {
-                        builtin.run(self)?;
-                        continue;
-                    }
+            if let Expression::Word(word) = expression {
+                if let Some(list) = self.functions.get(&word) {
+                    let list = list.clone();
+                    self.evaluate(&mut list.0.into_iter())?;
+                    continue;
+                }
+                if let Some(builtin) = self.builtins.builtin(&word) {
+                    builtin.run(self)?;
+                    continue;
+                }
 
-                    return Err(Error::UnknownFunction(
-                        word.to_string())
-                    );
-                }
-                expression => {
-                    self.stack.push(expression);
-                }
+                return Err(Error::UnknownFunction(
+                    word.to_string())
+                );
+            }
+            else {
+                self.stack.push(expression);
             }
         }
 
