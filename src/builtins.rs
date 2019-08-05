@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    result::Result as StdResult,
     vec,
 };
 
@@ -39,7 +40,7 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn run(&self, _: &mut Context) -> Result<(), context::Error>;
+    fn run(&self, _: &mut Context) -> Result;
 }
 
 macro_rules! impl_builtin {
@@ -59,7 +60,7 @@ macro_rules! impl_builtin {
                 }
 
                 fn run(&self, context: &mut Context)
-                    -> Result<(), context::Error>
+                    -> Result
                 {
                     $fn(context)
                 }
@@ -78,14 +79,17 @@ impl_builtin!(
 );
 
 
-fn print(context: &mut Context) -> Result<(), context::Error> {
+pub type Result = StdResult<(), context::Error>;
+
+
+fn print(context: &mut Context) -> Result {
     let expression = context.stack().pop::<Expression>()?;
     print!("{}", expression);
 
     Ok(())
 }
 
-fn define(context: &mut Context) -> Result<(), context::Error> {
+fn define(context: &mut Context) -> Result {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
     assert_eq!(name.0.len(), 1);
@@ -108,19 +112,19 @@ fn define(context: &mut Context) -> Result<(), context::Error> {
     Ok(())
 }
 
-fn eval(context: &mut Context) -> Result<(), context::Error> {
+fn eval(context: &mut Context) -> Result {
     let list = context.stack().pop::<List>()?;
     context.evaluate(&mut list.into_iter())?;
     Ok(())
 }
 
-fn add(context: &mut Context) -> Result<(), context::Error> {
+fn add(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(Number(a.0 + b.0));
     Ok(())
 }
 
-fn mul(context: &mut Context) -> Result<(), context::Error> {
+fn mul(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
     context.stack().push(Number(a.0 * b.0));
     Ok(())
