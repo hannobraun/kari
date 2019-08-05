@@ -92,8 +92,8 @@ fn print(context: &mut Context) -> Result<(), context::Error> {
 fn define(context: &mut Context) -> Result<(), context::Error> {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
-    assert_eq!(name.len(), 1);
-    let name = name.clone().pop().unwrap();
+    assert_eq!(name.0.len(), 1);
+    let name = name.0.clone().pop().unwrap();
 
     let name = match name {
         Expression::Word(word) => {

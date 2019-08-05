@@ -54,7 +54,7 @@ impl<R> Parser<R>
                 Token::Word(word)     => Expression::Word(word),
             };
 
-            list.push(expression);
+            list.0.push(expression);
         }
     }
 }
@@ -76,7 +76,25 @@ impl Default for Expression {
 
 
 pub type Number = u32;
-pub type List   = Vec<Expression>;
+
+
+#[derive(Clone, Debug)]
+pub struct List(pub Vec<Expression>);
+
+impl List {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+}
+
+impl IntoIterator for List {
+    type Item     = <Vec<Expression> as IntoIterator>::Item;
+    type IntoIter = <Vec<Expression> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
 
 
 #[derive(Debug)]
