@@ -6,6 +6,7 @@ use std::{
 use crate::tokenizer::{
     self,
     Token,
+    TokenKind,
     Tokenizer,
 };
 
@@ -24,19 +25,20 @@ impl<R> Parser<R>
     }
 
     pub fn next(&mut self) -> Result<Expression, Error> {
-        let token = self.tokenizer.next()?;
+        let mut token = self.tokenizer.next()?;
 
-        let expression = match token {
-            Token::ListOpen => {
+        let expression = match token.kind {
+            TokenKind::ListOpen => {
                 Expression::List(self.parse_list()?)
             }
-            token @ Token::ListClose => {
+            kind @ TokenKind::ListClose => {
+                token.kind = kind;
                 return Err(Error::UnexpectedToken(token));
             }
 
-            Token::Number(number) => Expression::Number(Number(number)),
-            Token::String(string) => Expression::String(string),
-            Token::Word(word)     => Expression::Word(word),
+            TokenKind::Number(number) => Expression::Number(Number(number)),
+            TokenKind::String(string) => Expression::String(string),
+            TokenKind::Word(word)     => Expression::Word(word),
         };
 
         Ok(expression)
@@ -48,17 +50,17 @@ impl<R> Parser<R>
         loop {
             let token = self.tokenizer.next()?;
 
-            let expression = match token {
-                Token::ListOpen => {
+            let expression = match token.kind {
+                TokenKind::ListOpen => {
                     Expression::List(self.parse_list()?)
                 }
-                Token::ListClose => {
+                TokenKind::ListClose => {
                     return Ok(list);
                 }
 
-                Token::Number(number) => Expression::Number(Number(number)),
-                Token::String(string) => Expression::String(string),
-                Token::Word(word)     => Expression::Word(word),
+                TokenKind::Number(number) => Expression::Number(Number(number)),
+                TokenKind::String(string) => Expression::String(string),
+                TokenKind::Word(word)     => Expression::Word(word),
             };
 
             list.0.push(expression);

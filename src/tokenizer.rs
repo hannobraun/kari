@@ -42,22 +42,22 @@ impl<R> Tokenizer<R>
 
         if start == '"' {
             return consume_string(&mut token, &mut self.reader)
-                .map(|()| Token::String(token));
+                .map(|()| Token { kind: TokenKind::String(token) });
         }
 
         token.push(start);
         self.reader.push_until(&mut token, |c| !c.is_whitespace())?;
 
         match token.as_str() {
-            "[" => return Ok(Token::ListOpen),
-            "]" => return Ok(Token::ListClose),
+            "[" => return Ok(Token { kind: TokenKind::ListOpen }),
+            "]" => return Ok(Token { kind: TokenKind::ListClose }),
 
             _ => {
                 if let Ok(number) = token.parse::<u32>() {
-                    return Ok(Token::Number(number));
+                    return Ok(Token { kind: TokenKind::Number(number) });
                 }
 
-                return Ok(Token::Word(token));
+                return Ok(Token { kind: TokenKind::Word(token) });
             }
         }
     }
@@ -99,8 +99,14 @@ fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
 }
 
 
+#[derive(Debug)]
+pub struct Token {
+    pub kind: TokenKind,
+}
+
+
 #[derive(Clone, Debug)]
-pub enum Token {
+pub enum TokenKind {
     Number(u32),
     ListOpen,
     ListClose,
@@ -108,14 +114,14 @@ pub enum Token {
     Word(String),
 }
 
-impl fmt::Display for Token {
+impl fmt::Display for TokenKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Token::Number(number) => number.fmt(f),
-            Token::ListOpen       => write!(f, "["),
-            Token::ListClose      => write!(f, "]"),
-            Token::String(string) => string.fmt(f),
-            Token::Word(word)     => word.fmt(f),
+            TokenKind::Number(number) => number.fmt(f),
+            TokenKind::ListOpen       => write!(f, "["),
+            TokenKind::ListClose      => write!(f, "]"),
+            TokenKind::String(string) => string.fmt(f),
+            TokenKind::Word(word)     => word.fmt(f),
         }
     }
 }
