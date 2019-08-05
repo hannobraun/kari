@@ -1,11 +1,13 @@
 "each:\n" print
-[ 1 2 3 ] [ dup print ] each print
-"\n" print
+[ 1 2 3 ] [ print " " print ] each
+"\n\n" print
 
 "map:\n" print
 [ 1 2 3 ] [ dup * ] each print
-"\n" print
+"\n\n" print
 
 "fold:\n" print
-0 [ 1 2 3 ] [ + ] each print
-"\n" print
+0 [ 1 2 3 ] [ + ] each
+    eval # The result is a list of one element. Unpack it.
+    print
+"\n\n" print
