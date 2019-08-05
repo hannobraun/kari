@@ -13,36 +13,42 @@ impl Stack {
     }
 
     pub fn push<T: Push>(&mut self, value: T) {
-        value.push(&mut self.0)
+        value.push(self)
     }
 
     pub fn pop<T: Pop>(&mut self) -> Result<T, Error> {
-        T::pop(&mut self.0)
+        T::pop(self)
+    }
+
+    pub fn push_raw(&mut self, value: Expression) {
+        self.0.push(value)
+    }
+
+    pub fn pop_raw(&mut self) -> Result<Expression, Error> {
+        self.0.pop()
+            .ok_or(Error::StackEmpty)
     }
 }
 
 
 pub trait Push {
-    fn push(self, stack: &mut Vec<Expression>);
+    fn push(self, stack: &mut Stack);
 }
 
 pub trait Pop : Sized {
-    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error>;
+    fn pop(stack: &mut Stack) -> Result<Self, Error>;
 }
 
 
 impl Push for Expression {
-    fn push(self, stack: &mut Vec<Expression>) {
-        stack.push(self)
+    fn push(self, stack: &mut Stack) {
+        stack.push_raw(self)
     }
 }
 
 impl Pop for Expression {
-    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
-        match stack.pop() {
-            Some(expression) => Ok(expression),
-            None             => Err(Error::StackEmpty),
-        }
+    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+        stack.pop_raw()
     }
 }
 
@@ -50,13 +56,13 @@ macro_rules! impl_push_pop {
     ($($type:ident, $name:expr;)*) => {
         $(
             impl Push for $type {
-                fn push(self, stack: &mut Vec<Expression>) {
+                fn push(self, stack: &mut Stack) {
                     stack.push(Expression::$type(self))
                 }
             }
 
             impl Pop for $type {
-                fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
+                fn pop(stack: &mut Stack) -> Result<Self, Error> {
                     match Expression::pop(stack) {
                         Ok(Expression::$type(expression)) => {
                             Ok(expression)
@@ -88,9 +94,9 @@ impl<A, B> Push for (A, B)
         A: Push,
         B: Push,
 {
-    fn push(self, stack: &mut Vec<Expression>) {
-        self.0.push(stack);
-        self.1.push(stack);
+    fn push(self, stack: &mut Stack) {
+        stack.push(self.0);
+        stack.push(self.1);
     }
 }
 
@@ -99,9 +105,9 @@ impl<A, B> Pop for (A, B)
         A: Pop,
         B: Pop,
 {
-    fn pop(stack: &mut Vec<Expression>) -> Result<Self, Error> {
-        let b = B::pop(stack)?;
-        let a = A::pop(stack)?;
+    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+        let b = stack.pop()?;
+        let a = stack.pop()?;
         Ok((a, b))
     }
 }
