@@ -24,7 +24,9 @@ impl<R> Parser<R>
     }
 
     pub fn next(&mut self) -> Result<Expression, Error> {
-        let expression = match self.tokenizer.next()? {
+        let token = self.tokenizer.next()?;
+
+        let expression = match token {
             Token::ListOpen => {
                 Expression::List(self.parse_list()?)
             }
@@ -44,7 +46,9 @@ impl<R> Parser<R>
         let mut list = List::new();
 
         loop {
-            let expression = match self.tokenizer.next()? {
+            let token = self.tokenizer.next()?;
+
+            let expression = match token {
                 Token::ListOpen => {
                     Expression::List(self.parse_list()?)
                 }
