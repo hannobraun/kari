@@ -27,7 +27,18 @@ impl<R> Tokenizer<R>
     pub fn next(&mut self) -> Result<Token, Error> {
         let mut token = String::new();
 
-        let start = self.reader.find(|c| !c.is_whitespace())?;
+        let start = loop {
+            let c = self.reader.find(|c| !c.is_whitespace())?;
+
+            match c {
+                '#' => {
+                    self.reader.find(|c| c == '\n')?;
+                }
+                _ => {
+                    break c;
+                }
+            }
+        };
 
         if start == '"' {
             return consume_string(&mut token, &mut self.reader)
