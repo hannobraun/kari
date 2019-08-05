@@ -75,7 +75,7 @@ impl_builtin!(
     Define, "define", define, (List, List) => ();
 
     Drop, "drop", drop, Expression => ();
-    Dup, "dup", dup, Expression => (Expression, Expression);
+    Dup,  "dup",  dup,  Expression => (Expression, Expression);
 
     Each, "each", each, (List, List) => List;
 
