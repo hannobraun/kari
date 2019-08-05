@@ -79,12 +79,8 @@ impl_builtin!(
 
 
 fn print(context: &mut Context) -> Result<(), context::Error> {
-    match context.stack().pop::<Expression>()? {
-        Expression::Number(number) => print!("{}", number.0),
-        Expression::List(_)        => unimplemented!(),
-        Expression::String(string) => print!("{}", string),
-        Expression::Word(_)        => unimplemented!(),
-    }
+    let expression = context.stack().pop::<Expression>()?;
+    print!("{}", expression);
 
     Ok(())
 }

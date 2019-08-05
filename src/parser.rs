@@ -1,4 +1,7 @@
-use std::io;
+use std::{
+    fmt,
+    io,
+};
 
 use crate::tokenizer::{
     self,
@@ -74,6 +77,17 @@ impl Default for Expression {
     }
 }
 
+impl fmt::Display for Expression {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Expression::Number(number) => number.0.fmt(f),
+            Expression::List(list)     => list.fmt(f),
+            Expression::String(string) => string.fmt(f),
+            Expression::Word(word)     => word.fmt(f),
+        }
+    }
+}
+
 
 #[derive(Clone, Debug)]
 pub struct Number(pub u32);
@@ -94,6 +108,18 @@ impl IntoIterator for List {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl fmt::Display for List {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[ ")?;
+        for item in &self.0 {
+            write!(f, "{} ", item)?;
+        }
+        write!(f, "]")?;
+
+        Ok(())
     }
 }
 
