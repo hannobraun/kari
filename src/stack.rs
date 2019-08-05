@@ -1,4 +1,5 @@
 use crate::parser::{
+    Bool,
     Expression,
     List,
     Number,
@@ -102,6 +103,7 @@ macro_rules! impl_push_pop {
 }
 
 impl_push_pop!(
+    Bool,   "bool";
     List,   "list";
     Number, "number";
 );

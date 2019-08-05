@@ -65,6 +65,7 @@ impl<R> Parser<R>
 
 #[derive(Clone, Debug)]
 pub enum Expression {
+    Bool(Bool),
     Number(Number),
     List(List),
     String(String),
@@ -80,6 +81,7 @@ impl Default for Expression {
 impl fmt::Display for Expression {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Expression::Bool(b)        => b.0.fmt(f),
             Expression::Number(number) => number.0.fmt(f),
             Expression::List(list)     => list.fmt(f),
             Expression::String(string) => string.fmt(f),
@@ -87,6 +89,10 @@ impl fmt::Display for Expression {
         }
     }
 }
+
+
+#[derive(Clone, Debug)]
+pub struct Bool(pub bool);
 
 
 #[derive(Clone, Debug)]
