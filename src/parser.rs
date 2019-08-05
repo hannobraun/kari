@@ -29,7 +29,7 @@ impl<R> Parser<R>
                 return Err(Error::UnexpectedToken(token));
             }
 
-            Token::Number(number) => Expression::Number(number),
+            Token::Number(number) => Expression::Number(Number(number)),
             Token::String(string) => Expression::String(string),
             Token::Word(word)     => Expression::Word(word),
         };
@@ -49,7 +49,7 @@ impl<R> Parser<R>
                     return Ok(list);
                 }
 
-                Token::Number(number) => Expression::Number(number),
+                Token::Number(number) => Expression::Number(Number(number)),
                 Token::String(string) => Expression::String(string),
                 Token::Word(word)     => Expression::Word(word),
             };
@@ -70,12 +70,13 @@ pub enum Expression {
 
 impl Default for Expression {
     fn default() -> Self {
-        Expression::Number(0)
+        Expression::Number(Number(0))
     }
 }
 
 
-pub type Number = u32;
+#[derive(Clone, Debug)]
+pub struct Number(pub u32);
 
 
 #[derive(Clone, Debug)]

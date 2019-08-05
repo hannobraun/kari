@@ -80,7 +80,7 @@ impl_builtin!(
 
 fn print(context: &mut Context) -> Result<(), context::Error> {
     match context.stack().pop::<Expression>()? {
-        Expression::Number(number) => print!("{}", number),
+        Expression::Number(number) => print!("{}", number.0),
         Expression::List(_)        => unimplemented!(),
         Expression::String(string) => print!("{}", string),
         Expression::Word(_)        => unimplemented!(),
@@ -120,12 +120,12 @@ fn eval(context: &mut Context) -> Result<(), context::Error> {
 
 fn add(context: &mut Context) -> Result<(), context::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push(a + b);
+    context.stack().push(Number(a.0 + b.0));
     Ok(())
 }
 
 fn mul(context: &mut Context) -> Result<(), context::Error> {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push(a * b);
+    context.stack().push(Number(a.0 * b.0));
     Ok(())
 }
