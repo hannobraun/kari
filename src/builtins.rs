@@ -74,6 +74,7 @@ impl_builtin!(
     Eval,   "eval",   eval,   List => ();
     Define, "define", define, (List, List) => ();
 
+    Drop, "drop", drop, Expression => ();
     Dup, "dup", dup, Expression => (Expression, Expression);
 
     Each, "each", each, (List, List) => List;
@@ -122,6 +123,11 @@ fn eval(context: &mut Context) -> Result {
     Ok(())
 }
 
+
+fn drop(context: &mut Context) -> Result {
+    context.stack().pop::<Expression>()?;
+    Ok(())
+}
 
 fn dup(context: &mut Context) -> Result {
     let expression = context.stack().pop::<Expression>()?;
