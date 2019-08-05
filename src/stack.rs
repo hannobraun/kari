@@ -5,11 +5,15 @@ use crate::parser::{
 };
 
 
-pub struct Stack(Vec<Expression>);
+pub struct Stack {
+    entries: Vec<Expression>,
+}
 
 impl Stack {
     pub fn new() -> Self {
-        Self(Vec::new())
+        Self {
+            entries: Vec::new(),
+        }
     }
 
     pub fn push<T: Push>(&mut self, value: T) {
@@ -21,11 +25,11 @@ impl Stack {
     }
 
     pub fn push_raw(&mut self, value: Expression) {
-        self.0.push(value)
+        self.entries.push(value)
     }
 
     pub fn pop_raw(&mut self) -> Result<Expression, Error> {
-        self.0.pop()
+        self.entries.pop()
             .ok_or(Error::StackEmpty)
     }
 }
