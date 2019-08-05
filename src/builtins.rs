@@ -29,7 +29,7 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn builtin(&self, name: &str) -> Option<&'static (Builtin + 'static)> {
+    pub fn builtin(&self, name: &str) -> Option<&'static Builtin> {
         self.0
             .get(name)
             .map(|builtin| *builtin)
