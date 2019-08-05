@@ -6,13 +6,13 @@ use crate::parser::{
 
 
 pub struct Stack {
-    entries: Vec<Expression>,
+    substacks: Vec<Vec<Expression>>
 }
 
 impl Stack {
     pub fn new() -> Self {
         Self {
-            entries: Vec::new(),
+            substacks: vec![Vec::new()],
         }
     }
 
@@ -25,12 +25,26 @@ impl Stack {
     }
 
     pub fn push_raw(&mut self, value: Expression) {
-        self.entries.push(value)
+        let stack = self.substacks.last_mut().unwrap();
+        stack.push(value)
     }
 
     pub fn pop_raw(&mut self) -> Result<Expression, Error> {
-        self.entries.pop()
-            .ok_or(Error::StackEmpty)
+        for stack in self.substacks.iter_mut().rev() {
+            if let Some(value) = stack.pop() {
+                return Ok(value)
+            }
+        }
+
+        Err(Error::StackEmpty)
+    }
+
+    pub fn create_substack(&mut self) {
+        self.substacks.push(Vec::new());
+    }
+
+    pub fn destroy_substack(&mut self) -> Vec<Expression> {
+        self.substacks.pop().unwrap()
     }
 }
 

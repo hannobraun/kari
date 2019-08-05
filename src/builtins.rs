@@ -76,6 +76,8 @@ impl_builtin!(
 
     Dup, "dup", dup, Expression => (Expression, Expression);
 
+    Each, "each", each, (List, List) => List;
+
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
 );
@@ -126,6 +128,23 @@ fn dup(context: &mut Context) -> Result {
 
     context.stack().push(expression.clone());
     context.stack().push(expression);
+
+    Ok(())
+}
+
+
+fn each(context: &mut Context) -> Result {
+    let (list, function) = context.stack().pop::<(List, List)>()?;
+
+    context.stack().create_substack();
+
+    for item in list {
+        context.stack().push(item);
+        context.evaluate(&mut function.clone().into_iter())?;
+    }
+
+    let list = context.stack().destroy_substack();
+    context.stack().push(List(list));
 
     Ok(())
 }

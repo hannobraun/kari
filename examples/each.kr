@@ -1,0 +1,11 @@
+"each:\n" print
+[ 1 2 3 ] [ dup print ] each print
+"\n" print
+
+"map:\n" print
+[ 1 2 3 ] [ dup * ] each print
+"\n" print
+
+"fold:\n" print
+0 [ 1 2 3 ] [ + ] each print
+"\n" print
