@@ -37,7 +37,12 @@ pub fn run<Program>(name: &str, program: Program)
                     && c.pos.line <= span.end.line
             );
 
-            print!("  => {}:{}:{}\n", name, span.start.line, span.start.column);
+            print!(
+                "  => {}:{}:{}\n",
+                name,
+                span.start.line + 1,
+                span.start.column + 1,
+            );
             print!("      |\n");
 
             // This makes heavy assumptions about the structure of `chars`,
