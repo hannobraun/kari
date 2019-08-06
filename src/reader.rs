@@ -121,7 +121,7 @@ impl PartialEq<char> for Char {
 }
 
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Position {
     pub column: usize,
     pub line:   usize,
