@@ -65,6 +65,7 @@ impl<Reader> Stream for Tokenizer<Reader>
                             builder.process(c);
                         }
                         '"' => {
+                            builder.process(c);
                             return Ok(builder.into_string());
                         }
                         _ => {
