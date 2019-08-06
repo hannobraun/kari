@@ -83,7 +83,7 @@ macro_rules! impl_push_pop {
                 fn pop(stack: &mut Stack) -> Result<Self, Error> {
                     match stack.pop_raw() {
                         Some(expression) => {
-                            match expression.kind {
+                            match expression.data {
                                 ExpressionKind::$type(expression) => {
                                     Ok(expression)
                                 }
@@ -157,7 +157,7 @@ impl fmt::Display for Error {
                     f,
                     "Type error: Expected `{}`, found `{}`",
                     expected,
-                    actual.kind,
+                    actual.data,
                 )?;
             }
             Error::StackEmpty { expected } => {

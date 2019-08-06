@@ -32,7 +32,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let mut token = self.tokenizer.next()?;
 
-        let kind = match token.kind {
+        let data = match token.kind {
             TokenKind::ListOpen => {
                 ExpressionKind::List(self.parse_list()?)
             }
@@ -53,7 +53,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
 
         Ok(
             Expression {
-                kind,
+                data,
             }
         )
     }
@@ -68,7 +68,7 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            let kind = match token.kind {
+            let data = match token.kind {
                 TokenKind::ListOpen => {
                     ExpressionKind::List(self.parse_list()?)
                 }
@@ -88,7 +88,7 @@ impl<Tokenizer> Parser<Tokenizer>
 
             list.0.push(
                 Expression {
-                    kind,
+                    data,
                 }
             );
         }
@@ -98,7 +98,7 @@ impl<Tokenizer> Parser<Tokenizer>
 
 #[derive(Clone, Debug)]
 pub struct Expression {
-    pub kind: ExpressionKind,
+    pub data: ExpressionKind,
 }
 
 
@@ -154,7 +154,7 @@ impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[ ")?;
         for item in &self.0 {
-            write!(f, "{} ", item.kind)?;
+            write!(f, "{} ", item.data)?;
         }
         write!(f, "]")?;
 
@@ -179,7 +179,7 @@ macro_rules! impl_expression {
             impl ToExpression for $name {
                 fn to_expression(self) -> Expression {
                     Expression {
-                        kind: ExpressionKind::$name(self),
+                        data: ExpressionKind::$name(self),
                     }
                 }
             }
