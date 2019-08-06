@@ -22,7 +22,7 @@ use std::{
 fn main() {
     match env::args().count() {
         1 => {
-            runner::run(io::stdin().lock())
+            runner::run("stdin", io::stdin().lock())
         },
         2 => {
             // Can't panic, as we just verified that there are two arguments.
@@ -43,7 +43,7 @@ fn main() {
                 }
             };
 
-            runner::run(file)
+            runner::run(&path, file)
         }
         _ => {
             print!("\nERROR: Expecting zero or one arguments\n\n");

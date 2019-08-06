@@ -10,7 +10,7 @@ use crate::{
 };
 
 
-pub fn run<Program>(program: Program)
+pub fn run<Program>(name: &str, program: Program)
     where Program: io::Read
 {
     let     reader    = Reader::new(program);
@@ -37,7 +37,7 @@ pub fn run<Program>(program: Program)
                     && c.pos.line <= span.end.line
             );
 
-            print!("  => {}:{}\n", span.start.line, span.start.column);
+            print!("  => {}:{}:{}\n", name, span.start.line, span.start.column);
             print!("      |\n");
 
             // This makes heavy assumptions about the structure of `chars`,
