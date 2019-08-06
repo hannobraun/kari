@@ -40,19 +40,19 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
 
         let kind = match token.kind {
             TokenKind::ListOpen => {
-                expression::Data::List(self.parse_list()?)
+                expression::Kind::List(self.parse_list()?)
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                expression::Data::Number(Number(number))
+                expression::Kind::Number(Number(number))
             }
             TokenKind::String(string) => {
-                expression::Data::String(string)
+                expression::Kind::String(string)
             }
             TokenKind::Word(word) => {
-                expression::Data::Word(word)
+                expression::Kind::Word(word)
             }
         };
 
@@ -75,19 +75,19 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let kind = match token.kind {
                 TokenKind::ListOpen => {
-                    expression::Data::List(self.parse_list()?)
+                    expression::Kind::List(self.parse_list()?)
                 }
                 TokenKind::ListClose => {
                     return Ok(list);
                 }
                 TokenKind::Number(number) => {
-                    expression::Data::Number(Number(number))
+                    expression::Kind::Number(Number(number))
                 }
                 TokenKind::String(string) => {
-                    expression::Data::String(string)
+                    expression::Kind::String(string)
                 }
                 TokenKind::Word(word) => {
-                    expression::Data::Word(word)
+                    expression::Kind::Word(word)
                 }
             };
 

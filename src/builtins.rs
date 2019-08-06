@@ -102,7 +102,7 @@ fn define(context: &mut Context) -> Result {
     let name = name.0.clone().pop().unwrap();
 
     let name = match name.kind {
-        expression::Data::Word(word) => {
+        expression::Kind::Word(word) => {
             word
         }
         kind => {

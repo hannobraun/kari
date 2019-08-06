@@ -3,12 +3,12 @@ use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Expression {
-    pub kind: Data,
+    pub kind: Kind,
 }
 
 
 #[derive(Clone, Debug)]
-pub enum Data {
+pub enum Kind {
     Bool(Bool),
     Number(Number),
     List(List),
@@ -16,14 +16,14 @@ pub enum Data {
     Word(String),
 }
 
-impl fmt::Display for Data {
+impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Data::Bool(b)        => b.0.fmt(f),
-            Data::Number(number) => number.0.fmt(f),
-            Data::List(list)     => list.fmt(f),
-            Data::String(string) => string.fmt(f),
-            Data::Word(word)     => word.fmt(f),
+            Kind::Bool(b)        => b.0.fmt(f),
+            Kind::Number(number) => number.0.fmt(f),
+            Kind::List(list)     => list.fmt(f),
+            Kind::String(string) => string.fmt(f),
+            Kind::Word(word)     => word.fmt(f),
         }
     }
 }
@@ -108,7 +108,7 @@ macro_rules! impl_expression {
             impl Into for $ty {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        kind: Data::$ty(self),
+                        kind: Kind::$ty(self),
                     }
                 }
             }
@@ -118,7 +118,7 @@ macro_rules! impl_expression {
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
-                        Data::$ty(kind) => Ok(kind),
+                        Kind::$ty(kind) => Ok(kind),
                         _               => Err(expression),
                     }
                 }
