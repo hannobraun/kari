@@ -12,6 +12,7 @@ use crate::{
 };
 
 
+#[derive(Debug)]
 pub struct Stack {
     substacks: Vec<Vec<Expression>>
 }
