@@ -1,6 +1,7 @@
 mod builtins;
 mod context;
 mod evaluator;
+mod expression;
 mod functions;
 mod parser;
 mod reader;

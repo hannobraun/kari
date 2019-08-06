@@ -4,15 +4,15 @@ use crate::{
         Context,
         Error,
     },
-    functions::{
-        Functions,
-    },
-    parser::{
-        self,
+    expression::{
         Expression,
         ExpressionKind,
         List,
     },
+    functions::{
+        Functions,
+    },
+    parser,
     stack::Stack,
     stream::Stream,
 };

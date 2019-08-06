@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::parser::{
+use crate::expression::{
     Bool,
     Expression,
     ExpressionKind,

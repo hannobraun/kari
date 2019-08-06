@@ -1,11 +1,11 @@
 use std::fmt;
 
 use crate::{
-    parser::{
-        self,
+    expression::{
         Expression,
         List,
     },
+    parser,
     stack::{
         self,
         Stack,
