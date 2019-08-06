@@ -2,11 +2,7 @@ use std::fmt;
 
 use crate::expression::{
     self,
-    Bool,
     Expression,
-    Kind as _,
-    List,
-    Number,
 };
 
 
@@ -69,49 +65,26 @@ impl<T> Push for T where T: expression::Kind {
     }
 }
 
-impl Pop for Expression {
+impl<T> Pop for T where T: expression::Kind {
     fn pop(stack: &mut Stack) -> Result<Self, Error> {
-        stack.pop_raw()
-            .ok_or(Error::StackEmpty { expected: "expression" })
-    }
-}
-
-macro_rules! impl_push_pop {
-    ($($type:ident;)*) => {
-        $(
-            impl Pop for $type where Self: expression::Kind {
-                fn pop(stack: &mut Stack) -> Result<Self, Error> {
-                    match stack.pop_raw() {
-                        Some(expression) => {
-                            match expression.data {
-                                expression::Data::$type(expression) => {
-                                    Ok(expression)
-                                }
-                                _ => {
-                                    Err(Error::TypeError {
-                                        expected: Self::NAME,
-                                        actual:   expression,
-                                    })
-                                }
-                            }
+        match stack.pop_raw() {
+            Some(expression) => {
+                T::from_expression(expression)
+                    .map_err(|expression|
+                        Error::TypeError {
+                            expected: T::NAME,
+                            actual:   expression,
                         }
-                        None => {
-                            Err(Error::StackEmpty {
-                                expected: Self::NAME,
-                            })
-                        }
-                    }
-                }
+                    )
             }
-        )*
+            None => {
+                Err(Error::StackEmpty {
+                    expected: T::NAME,
+                })
+            }
+        }
     }
 }
-
-impl_push_pop!(
-    Bool;
-    List;
-    Number;
-);
 
 
 impl<A, B> Push for (A, B)
