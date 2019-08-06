@@ -1,7 +1,4 @@
-use std::{
-    fmt,
-    io,
-};
+use std::fmt;
 
 use crate::{
     stream::Stream,
@@ -10,24 +7,25 @@ use crate::{
         Span,
         Token,
         TokenKind,
-        Tokenizer,
     },
 };
 
 
-pub struct Parser<R> {
-    tokenizer: Tokenizer<R>,
+pub struct Parser<Tokenizer> {
+    tokenizer: Tokenizer,
 }
 
-impl<R> Parser<R> {
-    pub fn new(tokenizer: Tokenizer<R>) -> Self {
+impl<Tokenizer> Parser<Tokenizer> {
+    pub fn new(tokenizer: Tokenizer) -> Self {
         Parser {
             tokenizer,
         }
     }
 }
 
-impl<R> Stream for Parser<R> where R: io::Read {
+impl<Tokenizer> Stream for Parser<Tokenizer>
+    where Tokenizer: Stream<Item=Token, Error=tokenizer::Error>
+{
     type Item  = Expression;
     type Error = Error;
 
@@ -52,7 +50,9 @@ impl<R> Stream for Parser<R> where R: io::Read {
     }
 }
 
-impl<R> Parser<R> where R: io::Read {
+impl<Tokenizer> Parser<Tokenizer>
+    where Tokenizer: Stream<Item=Token, Error=tokenizer::Error>
+{
     fn parse_list(&mut self) -> Result<List, Error> {
         let mut list = List::new();
 
