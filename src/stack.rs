@@ -68,7 +68,7 @@ impl Push for Expression {
 impl Pop for Expression {
     fn pop(stack: &mut Stack) -> Result<Self, Error> {
         stack.pop_raw()
-            .ok_or(Error::StackEmpty)
+            .ok_or(Error::StackEmpty { expected: "expression" })
     }
 }
 
@@ -94,7 +94,9 @@ macro_rules! impl_push_pop {
                             })
                         }
                         None => {
-                            Err(Error::StackEmpty)
+                            Err(Error::StackEmpty {
+                                expected: $name,
+                            })
                         }
                     }
                 }
@@ -140,5 +142,7 @@ pub enum Error {
         expected: &'static str,
         actual:   Expression,
     },
-    StackEmpty,
+    StackEmpty {
+        expected: &'static str,
+    },
 }
