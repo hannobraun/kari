@@ -3,12 +3,15 @@ use std::{
     io,
 };
 
-use crate::tokenizer::{
-    self,
-    Span,
-    Token,
-    TokenKind,
-    Tokenizer,
+use crate::{
+    stream::Stream,
+    tokenizer::{
+        self,
+        Span,
+        Token,
+        TokenKind,
+        Tokenizer,
+    },
 };
 
 
@@ -16,16 +19,19 @@ pub struct Parser<R> {
     tokenizer: Tokenizer<R>,
 }
 
-impl<R> Parser<R>
-    where R: io::Read
-{
+impl<R> Parser<R> {
     pub fn new(tokenizer: Tokenizer<R>) -> Self {
         Parser {
             tokenizer,
         }
     }
+}
 
-    pub fn next(&mut self) -> Result<Expression, Error> {
+impl<R> Stream for Parser<R> where R: io::Read {
+    type Item  = Expression;
+    type Error = Error;
+
+    fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let mut token = self.tokenizer.next()?;
 
         let expression = match token.kind {
@@ -44,7 +50,9 @@ impl<R> Parser<R>
 
         Ok(expression)
     }
+}
 
+impl<R> Parser<R> where R: io::Read {
     fn parse_list(&mut self) -> Result<List, Error> {
         let mut list = List::new();
 

@@ -10,6 +10,7 @@ use crate::{
         Position,
         Reader,
     },
+    stream::Stream,
 };
 
 
@@ -17,16 +18,19 @@ pub struct Tokenizer<R> {
     reader: Reader<R>
 }
 
-impl<R> Tokenizer<R>
-    where R: io::Read
-{
+impl<R> Tokenizer<R> {
     pub fn new(reader: Reader<R>) -> Self {
         Self {
             reader,
         }
     }
+}
 
-    pub fn next(&mut self) -> Result<Token, Error> {
+impl<R> Stream for Tokenizer<R> where R: io::Read {
+    type Item  = Token;
+    type Error = Error;
+
+    fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let mut builder = TokenBuilder::new();
         let mut state   = State::Initial;
 

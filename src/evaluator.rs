@@ -16,6 +16,7 @@ use crate::{
         Parser,
     },
     stack::Stack,
+    stream::Stream,
 };
 
 

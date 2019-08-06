@@ -6,6 +6,8 @@ use std::{
     },
 };
 
+use crate::stream::Stream;
+
 
 pub struct Reader<R> {
     input: R,
@@ -16,7 +18,7 @@ pub struct Reader<R> {
     next_pos: Position,
 }
 
-impl<R> Reader<R> where R: io::Read {
+impl<R> Reader<R> {
     pub fn new(input: R) -> Self {
         Reader {
             input,
@@ -30,8 +32,13 @@ impl<R> Reader<R> where R: io::Read {
             },
         }
     }
+}
 
-    pub fn next(&mut self) -> Result<Char, Error> {
+impl<R> Stream for Reader<R> where R: io::Read {
+    type Item  = Char;
+    type Error = Error;
+
+    fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let c = loop {
             if self.index >= self.buffer.len() {
                 // This can only happen if an error occured before.
