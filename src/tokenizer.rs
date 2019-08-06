@@ -1,32 +1,30 @@
-use std::{
-    fmt,
-    io,
-};
+use std::fmt;
 
 use crate::{
     reader::{
         self,
         Char,
         Position,
-        Reader,
     },
     stream::Stream,
 };
 
 
-pub struct Tokenizer<R> {
-    reader: Reader<R>
+pub struct Tokenizer<Reader> {
+    reader: Reader,
 }
 
-impl<R> Tokenizer<R> {
-    pub fn new(reader: Reader<R>) -> Self {
+impl<Reader> Tokenizer<Reader> {
+    pub fn new(reader: Reader) -> Self {
         Self {
             reader,
         }
     }
 }
 
-impl<R> Stream for Tokenizer<R> where R: io::Read {
+impl<Reader> Stream for Tokenizer<Reader>
+    where Reader: Stream<Item=Char, Error=reader::Error>
+{
     type Item  = Token;
     type Error = Error;
 
