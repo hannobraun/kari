@@ -60,9 +60,7 @@ impl<R> Tokenizer<R>
                             state = State::StringEscape;
                         }
                         '"' => {
-                            return Ok(Token {
-                                kind: TokenKind::String(builder.buffer),
-                            });
+                            return Ok(builder.into_string());
                         }
                         _ => {
                             builder.push(c);
@@ -123,6 +121,12 @@ impl TokenBuilder {
 
     fn push(&mut self, c: Char) {
         self.buffer.push(c.c);
+    }
+
+    fn into_string(self) -> Token {
+        Token {
+            kind: TokenKind::String(self.buffer),
+        }
     }
 }
 
