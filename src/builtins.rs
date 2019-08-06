@@ -105,8 +105,8 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into,
     {
-        let r = f(((self.0).0, (self.1).0));
-        expression::Data(r).into_expression()
+        let result = f(((self.0).0, (self.1).0));
+        expression::Data(result).into_expression()
     }
 }
 
