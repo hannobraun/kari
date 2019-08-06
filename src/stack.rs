@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::parser::{
     Bool,
     Expression,
@@ -145,4 +147,24 @@ pub enum Error {
     StackEmpty {
         expected: &'static str,
     },
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::TypeError { expected, actual } => {
+                write!(
+                    f,
+                    "Type error: Expected `{}`, found `{}`",
+                    expected,
+                    actual,
+                )?;
+            }
+            Error::StackEmpty { expected } => {
+                write!(f, "Stack empty: Expected `{}`", expected)?;
+            }
+        }
+
+        Ok(())
+    }
 }
