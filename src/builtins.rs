@@ -12,6 +12,7 @@ use crate::{
     expression::{
         self,
         Expression,
+        Into as _,
         List,
         Number,
     },
@@ -83,6 +84,31 @@ impl_builtin!(
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
 );
+
+
+pub trait Compute : Sized {
+    type Input;
+
+    fn compute<F, R>(self, _: F) -> Expression
+        where
+            F: Fn(Self::Input) -> R,
+            expression::Data<R>: expression::Into;
+
+}
+
+impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
+{
+    type Input = (A, B);
+
+    fn compute<F, R>(self, f: F) -> Expression
+        where
+            F: Fn(Self::Input) -> R,
+            expression::Data<R>: expression::Into,
+    {
+        let r = f(((self.0).0, (self.1).0));
+        expression::Data(r).into_expression()
+    }
+}
 
 
 pub type Result = StdResult<(), context::Error>;
@@ -158,13 +184,17 @@ fn each(context: &mut Context) -> Result {
 
 
 fn add(context: &mut Context) -> Result {
-    let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push::<Number>(expression::Data(Number((a.0).0 + (b.0).0)));
+    let result = context
+        .stack().pop::<(Number, Number)>()?
+        .compute(|(a, b)| a + b);
+    context.stack().push_raw(result);
     Ok(())
 }
 
 fn mul(context: &mut Context) -> Result {
-    let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push::<Number>(expression::Data(Number((a.0).0 * (b.0).0)));
+    let result = context
+        .stack().pop::<(Number, Number)>()?
+        .compute(|(a, b)| a * b);
+    context.stack().push_raw(result);
     Ok(())
 }
