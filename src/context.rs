@@ -25,16 +25,16 @@ pub trait Context {
 #[derive(Debug)]
 pub enum Error {
     Parser(parser::Error),
-    UnknownFunction(String),
+    UnknownFunction { name: String, span: Span },
     Stack(stack::Error),
 }
 
 impl Error {
     pub fn span(&self) -> Option<Span> {
         match self {
-            Error::Parser(error)      => error.span(),
-            Error::UnknownFunction(_) => None,
-            Error::Stack(_)           => None,
+            Error::Parser(error)                => error.span(),
+            Error::UnknownFunction { span, .. } => Some(*span),
+            Error::Stack(_)                     => None,
         }
     }
 }
@@ -57,7 +57,7 @@ impl fmt::Display for Error {
             Error::Parser(error) => {
                 write!(f, "{}", error)?;
             }
-            Error::UnknownFunction(name) => {
+            Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)?;
             }
             Error::Stack(error) => {

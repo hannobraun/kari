@@ -75,8 +75,11 @@ impl Context for Evaluator {
                     continue;
                 }
 
-                return Err(Error::UnknownFunction(
-                    word.to_string())
+                return Err(
+                    Error::UnknownFunction {
+                        name: word.to_string(),
+                        span: expression.span,
+                    }
                 );
             }
             else {
