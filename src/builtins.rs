@@ -106,10 +106,10 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into,
     {
-        let result = f((self.0.data, self.1.data));
-        let span   = Span::merge(self.0.span, self.0.span);
+        let data = f((self.0.data, self.1.data));
+        let span = Span::merge(self.0.span, self.0.span);
 
-        expression::Data { data: result, span }.into_expression()
+        expression::Data { data, span }.into_expression()
     }
 }
 
