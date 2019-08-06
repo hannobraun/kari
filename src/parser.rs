@@ -5,6 +5,7 @@ use std::{
 
 use crate::tokenizer::{
     self,
+    Span,
     Token,
     TokenKind,
     Tokenizer,
@@ -143,6 +144,16 @@ pub enum Error {
     EndOfStream,
 }
 
+impl Error {
+    pub fn span(&self) -> Option<Span> {
+        match self {
+            Error::Tokenizer(_)           => None,
+            Error::UnexpectedToken(token) => Some(token.span),
+            Error::EndOfStream            => None,
+        }
+    }
+}
+
 impl From<tokenizer::Error> for Error {
     fn from(from: tokenizer::Error) -> Self {
         match from {
@@ -159,7 +170,7 @@ impl fmt::Display for Error {
                 write!(f, "Tokenizer error:\n{:?}", error)?;
             }
             Error::UnexpectedToken(token) => {
-                write!(f, "Unexpected token:\n{:?}", token)?;
+                write!(f, "Unexpected token: {}", token.kind)?;
             }
             Error::EndOfStream => {
                 panic!("Error variant should not be display: {:?}", self);

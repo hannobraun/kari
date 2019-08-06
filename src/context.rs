@@ -10,6 +10,7 @@ use crate::{
         self,
         Stack,
     },
+    tokenizer::Span,
 };
 
 
@@ -26,6 +27,16 @@ pub enum Error {
     Parser(parser::Error),
     UnknownFunction(String),
     Stack(stack::Error),
+}
+
+impl Error {
+    pub fn span(&self) -> Option<Span> {
+        match self {
+            Error::Parser(error)      => error.span(),
+            Error::UnknownFunction(_) => None,
+            Error::Stack(_)           => None,
+        }
+    }
 }
 
 impl From<stack::Error> for Error {

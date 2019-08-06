@@ -49,6 +49,10 @@ fn main() {
     };
 
     if let Err(error) = result {
-        print!("\nERROR: {}\n\n", error);
+        print!("\nERROR: {}\n", error);
+        for span in error.span() {
+            print!("{:?}\n", span);
+        }
+        print!("\n");
     }
 }
