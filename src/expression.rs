@@ -68,11 +68,11 @@ impl fmt::Display for List {
 }
 
 
-pub trait ToExpression {
+pub trait Kind {
     fn to_expression(self) -> Expression;
 }
 
-impl ToExpression for Expression {
+impl Kind for Expression {
     fn to_expression(self) -> Expression {
         self
     }
@@ -81,7 +81,7 @@ impl ToExpression for Expression {
 macro_rules! impl_expression {
     ($($name:ident;)*) => {
         $(
-            impl ToExpression for $name {
+            impl Kind for $name {
                 fn to_expression(self) -> Expression {
                     Expression {
                         data: Data::$name(self),

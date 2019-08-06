@@ -6,7 +6,6 @@ use crate::expression::{
     Expression,
     List,
     Number,
-    ToExpression,
 };
 
 
@@ -63,7 +62,7 @@ pub trait Pop : Sized {
 }
 
 
-impl<T> Push for T where T: ToExpression {
+impl<T> Push for T where T: expression::Kind {
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.to_expression())
     }
