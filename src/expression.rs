@@ -69,19 +69,25 @@ impl fmt::Display for List {
 
 
 pub trait Kind {
+    const NAME: &'static str;
+
     fn to_expression(self) -> Expression;
 }
 
 impl Kind for Expression {
+    const NAME: &'static str = "expression";
+
     fn to_expression(self) -> Expression {
         self
     }
 }
 
 macro_rules! impl_expression {
-    ($($ty:ident;)*) => {
+    ($($ty:ident, $name:expr;)*) => {
         $(
             impl Kind for $ty {
+                const NAME: &'static str = $name;
+
                 fn to_expression(self) -> Expression {
                     Expression {
                         data: Data::$ty(self),
@@ -93,8 +99,8 @@ macro_rules! impl_expression {
 }
 
 impl_expression!(
-    Bool;
-    List;
-    Number;
-    String;
+    Bool,   "bool";
+    List,   "list";
+    Number, "number";
+    String, "string";
 );

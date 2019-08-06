@@ -4,6 +4,7 @@ use crate::expression::{
     self,
     Bool,
     Expression,
+    Kind as _,
     List,
     Number,
 };
@@ -76,9 +77,9 @@ impl Pop for Expression {
 }
 
 macro_rules! impl_push_pop {
-    ($($type:ident, $name:expr;)*) => {
+    ($($type:ident;)*) => {
         $(
-            impl Pop for $type {
+            impl Pop for $type where Self: expression::Kind {
                 fn pop(stack: &mut Stack) -> Result<Self, Error> {
                     match stack.pop_raw() {
                         Some(expression) => {
@@ -88,7 +89,7 @@ macro_rules! impl_push_pop {
                                 }
                                 _ => {
                                     Err(Error::TypeError {
-                                        expected: $name,
+                                        expected: Self::NAME,
                                         actual:   expression,
                                     })
                                 }
@@ -96,7 +97,7 @@ macro_rules! impl_push_pop {
                         }
                         None => {
                             Err(Error::StackEmpty {
-                                expected: $name,
+                                expected: Self::NAME,
                             })
                         }
                     }
@@ -107,9 +108,9 @@ macro_rules! impl_push_pop {
 }
 
 impl_push_pop!(
-    Bool,   "bool";
-    List,   "list";
-    Number, "number";
+    Bool;
+    List;
+    Number;
 );
 
 
