@@ -107,7 +107,7 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             expression::Data<R>: expression::Into,
     {
         let data = f((self.0.data, self.1.data));
-        let span = Span::merge(self.0.span, self.0.span);
+        let span = Span::merge(&[self.0.span, self.0.span]);
 
         expression::Data { data, span }.into_expression()
     }
@@ -181,7 +181,7 @@ fn each(context: &mut Context) -> Result {
 
     let result = context.stack().destroy_substack();
 
-    let span = Span::merge(list.span, function.span);
+    let span = Span::merge(&[list.span, function.span]);
     let data = expression::Data {
         data: List(result),
         span,
