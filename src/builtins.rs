@@ -43,7 +43,7 @@ impl Builtins {
 
 pub trait Builtin {
     fn name(&self) -> &'static str;
-    fn run(&self, _: &mut Context) -> Result;
+    fn run(&self, operator: Span, _: &mut Context) -> Result;
 }
 
 macro_rules! impl_builtin {
@@ -62,10 +62,10 @@ macro_rules! impl_builtin {
                     $name
                 }
 
-                fn run(&self, context: &mut Context)
+                fn run(&self, operator: Span, context: &mut Context)
                     -> Result
                 {
-                    $fn(context)
+                    $fn(operator, context)
                 }
             }
         )*
@@ -90,7 +90,7 @@ impl_builtin!(
 pub trait Compute : Sized {
     type Input;
 
-    fn compute<F, R>(self, _: F) -> Expression
+    fn compute<F, R>(self, operator: Span, _: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into;
@@ -101,13 +101,13 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
 {
     type Input = (A, B);
 
-    fn compute<F, R>(self, f: F) -> Expression
+    fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into,
     {
         let data = f((self.0.data, self.1.data));
-        let span = Span::merge(&[self.0.span, self.0.span]);
+        let span = Span::merge(&[operator, self.0.span, self.0.span]);
 
         expression::Data { data, span }.into_expression()
     }
@@ -117,14 +117,14 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
 pub type Result = StdResult<(), context::Error>;
 
 
-fn print(context: &mut Context) -> Result {
+fn print(_: Span, context: &mut Context) -> Result {
     let expression = context.stack().pop::<Expression>()?;
     print!("{}", expression.kind);
 
     Ok(())
 }
 
-fn define(context: &mut Context) -> Result {
+fn define(_operator: Span, context: &mut Context) -> Result {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
     assert_eq!(name.data.0.len(), 1);
@@ -147,20 +147,22 @@ fn define(context: &mut Context) -> Result {
     Ok(())
 }
 
-fn eval(context: &mut Context) -> Result {
+fn eval(_operator: Span, context: &mut Context) -> Result {
     let list = context.stack().pop::<List>()?;
     context.evaluate(&mut list.data.into_iter())?;
     Ok(())
 }
 
 
-fn drop(context: &mut Context) -> Result {
+fn drop(_: Span, context: &mut Context) -> Result {
     context.stack().pop::<Expression>()?;
     Ok(())
 }
 
-fn dup(context: &mut Context) -> Result {
-    let expression = context.stack().pop::<Expression>()?;
+fn dup(operator: Span, context: &mut Context) -> Result {
+    let mut expression = context.stack().pop::<Expression>()?;
+
+    expression.span =  Span::merge(&[operator, expression.span]);
 
     context.stack().push::<Expression>(expression.clone());
     context.stack().push::<Expression>(expression);
@@ -169,7 +171,7 @@ fn dup(context: &mut Context) -> Result {
 }
 
 
-fn each(context: &mut Context) -> Result {
+fn each(operator: Span, context: &mut Context) -> Result {
     let (list, function) = context.stack().pop::<(List, List)>()?;
 
     context.stack().create_substack();
@@ -181,7 +183,7 @@ fn each(context: &mut Context) -> Result {
 
     let result = context.stack().destroy_substack();
 
-    let span = Span::merge(&[list.span, function.span]);
+    let span = Span::merge(&[operator, list.span, function.span]);
     let data = expression::Data {
         data: List(result),
         span,
@@ -192,18 +194,18 @@ fn each(context: &mut Context) -> Result {
 }
 
 
-fn add(context: &mut Context) -> Result {
+fn add(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>()?
-        .compute(|(a, b)| a + b);
+        .compute(operator, |(a, b)| a + b);
     context.stack().push_raw(result);
     Ok(())
 }
 
-fn mul(context: &mut Context) -> Result {
+fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>()?
-        .compute(|(a, b)| a * b);
+        .compute(operator, |(a, b)| a * b);
     context.stack().push_raw(result);
     Ok(())
 }
