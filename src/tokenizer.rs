@@ -80,24 +80,7 @@ impl<R> Tokenizer<R>
                 }
                 State::Word => {
                     if c.is_whitespace() {
-                        match builder.buffer.as_str() {
-                            "[" => return Ok(Token { kind: TokenKind::ListOpen }),
-                            "]" => return Ok(Token { kind: TokenKind::ListClose }),
-
-                            _ => {
-                                if let Ok(number) =
-                                    builder.buffer.parse::<u32>()
-                                {
-                                    return Ok(Token {
-                                        kind: TokenKind::Number(number),
-                                    });
-                                }
-
-                                return Ok(Token {
-                                    kind: TokenKind::Word(builder.buffer),
-                                });
-                            }
-                        }
+                        return Ok(builder.into_word());
                     }
 
                     builder.push(c);
@@ -126,6 +109,25 @@ impl TokenBuilder {
     fn into_string(self) -> Token {
         Token {
             kind: TokenKind::String(self.buffer),
+        }
+    }
+
+    fn into_word(self) -> Token {
+        match self.buffer.as_str() {
+            "[" => return Token { kind: TokenKind::ListOpen },
+            "]" => return Token { kind: TokenKind::ListClose },
+
+            _ => {
+                if let Ok(number) = self.buffer.parse::<u32>() {
+                    return Token {
+                        kind: TokenKind::Number(number),
+                    };
+                }
+
+                return Token {
+                    kind: TokenKind::Word(self.buffer),
+                };
+            }
         }
     }
 }
