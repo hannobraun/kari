@@ -5,8 +5,8 @@ use crate::{
         Error,
     },
     expression::{
+        self,
         Expression,
-        ExpressionKind,
         List,
     },
     functions::{
@@ -64,7 +64,7 @@ impl Context for Evaluator {
         -> Result<(), Error>
     {
         for expression in expressions {
-            if let ExpressionKind::Word(word) = expression.data {
+            if let expression::Data::Word(word) = expression.data {
                 if let Some(list) = self.functions.get(&word) {
                     let list = list.clone();
                     self.evaluate(&mut list.0.into_iter())?;

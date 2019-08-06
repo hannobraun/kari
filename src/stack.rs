@@ -1,9 +1,9 @@
 use std::fmt;
 
 use crate::expression::{
+    self,
     Bool,
     Expression,
-    ExpressionKind,
     List,
     Number,
     ToExpression,
@@ -84,7 +84,7 @@ macro_rules! impl_push_pop {
                     match stack.pop_raw() {
                         Some(expression) => {
                             match expression.data {
-                                ExpressionKind::$type(expression) => {
+                                expression::Data::$type(expression) => {
                                     Ok(expression)
                                 }
                                 _ => {

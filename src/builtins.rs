@@ -10,8 +10,8 @@ use crate::{
         Context,
     },
     expression::{
+        self,
         Expression,
-        ExpressionKind,
         List,
         Number,
     },
@@ -102,7 +102,7 @@ fn define(context: &mut Context) -> Result {
     let name = name.0.clone().pop().unwrap();
 
     let name = match name.data {
-        ExpressionKind::Word(word) => {
+        expression::Data::Word(word) => {
             word
         }
         kind => {

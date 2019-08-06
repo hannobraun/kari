@@ -2,8 +2,8 @@ use std::fmt;
 
 use crate::{
     expression::{
+        self,
         Expression,
-        ExpressionKind,
         List,
         Number,
     },
@@ -40,19 +40,19 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
 
         let data = match token.kind {
             TokenKind::ListOpen => {
-                ExpressionKind::List(self.parse_list()?)
+                expression::Data::List(self.parse_list()?)
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                ExpressionKind::Number(Number(number))
+                expression::Data::Number(Number(number))
             }
             TokenKind::String(string) => {
-                ExpressionKind::String(string)
+                expression::Data::String(string)
             }
             TokenKind::Word(word) => {
-                ExpressionKind::Word(word)
+                expression::Data::Word(word)
             }
         };
 
@@ -75,19 +75,19 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let data = match token.kind {
                 TokenKind::ListOpen => {
-                    ExpressionKind::List(self.parse_list()?)
+                    expression::Data::List(self.parse_list()?)
                 }
                 TokenKind::ListClose => {
                     return Ok(list);
                 }
                 TokenKind::Number(number) => {
-                    ExpressionKind::Number(Number(number))
+                    expression::Data::Number(Number(number))
                 }
                 TokenKind::String(string) => {
-                    ExpressionKind::String(string)
+                    expression::Data::String(string)
                 }
                 TokenKind::Word(word) => {
-                    ExpressionKind::Word(word)
+                    expression::Data::Word(word)
                 }
             };
 
