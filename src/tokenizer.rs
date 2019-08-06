@@ -7,6 +7,7 @@ use crate::{
     reader::{
         self,
         Char,
+        Position,
         Reader,
     },
 };
@@ -40,6 +41,7 @@ impl<R> Tokenizer<R>
                         }
                         '"' => {
                             state = State::String;
+                            builder.process(c);
                         }
                         _ => {
                             if !c.is_whitespace() {
@@ -58,6 +60,7 @@ impl<R> Tokenizer<R>
                     match c.c {
                         '\\' => {
                             state = State::StringEscape;
+                            builder.process(c);
                         }
                         '"' => {
                             return Ok(builder.into_string());
@@ -93,22 +96,42 @@ impl<R> Tokenizer<R>
 
 struct TokenBuilder {
     buffer: String,
+    span:   Option<Span>,
 }
 
 impl TokenBuilder {
     fn new() -> Self {
         Self {
             buffer: String::new(),
+            span:   None,
+        }
+    }
+
+    fn process(&mut self, c: Char) {
+        match &mut self.span {
+            Some(span) => {
+                span.end = c.pos
+            }
+            None => {
+                self.span = Some(
+                    Span {
+                        start: c.pos,
+                        end:   c.pos,
+                    }
+                )
+            }
         }
     }
 
     fn store(&mut self, c: Char) {
+        self.process(c);
         self.buffer.push(c.c);
     }
 
     fn into_string(self) -> Token {
         Token {
             kind: TokenKind::String(self.buffer),
+            span: self.span.unwrap(),
         }
     }
 
@@ -129,6 +152,7 @@ impl TokenBuilder {
 
         Token {
             kind,
+            span: self.span.unwrap(),
         }
     }
 }
@@ -146,6 +170,7 @@ enum State {
 #[derive(Debug)]
 pub struct Token {
     pub kind: TokenKind,
+    pub span: Span,
 }
 
 
@@ -168,6 +193,13 @@ impl fmt::Display for TokenKind {
             TokenKind::Word(word)     => word.fmt(f),
         }
     }
+}
+
+
+#[derive(Clone, Copy, Debug)]
+pub struct Span {
+    pub start: Position,
+    pub end:   Position,
 }
 
 
