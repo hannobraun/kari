@@ -17,7 +17,7 @@ use std::{
 
 
 fn main() {
-    let result = match env::args().count() {
+    match env::args().count() {
         1 => {
             runner::run(io::stdin().lock())
         },
@@ -46,13 +46,5 @@ fn main() {
             print!("\nERROR: Expecting zero or one arguments\n\n");
             return;
         }
-    };
-
-    if let Err(error) = result {
-        print!("\nERROR: {}\n", error);
-        for span in error.span() {
-            print!("{:?}\n", span);
-        }
-        print!("\n");
     }
 }

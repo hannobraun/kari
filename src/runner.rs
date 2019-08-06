@@ -1,7 +1,6 @@
 use std::io;
 
 use crate::{
-    context,
     evaluator::Evaluator,
     parser::Parser,
     reader::Reader,
@@ -9,7 +8,7 @@ use crate::{
 };
 
 
-pub fn run<Program>(program: Program) -> Result<(), context::Error>
+pub fn run<Program>(program: Program)
     where Program: io::Read
 {
     let reader    = Reader::new(program);
@@ -17,5 +16,12 @@ pub fn run<Program>(program: Program) -> Result<(), context::Error>
     let parser    = Parser::new(tokenizer);
 
     let mut evaluator = Evaluator::new();
-    evaluator.run(parser)
+
+    if let Err(error) = evaluator.run(parser) {
+        print!("\nERROR: {}\n", error);
+        for span in error.span() {
+            print!("{:?}\n", span);
+        }
+        print!("\n");
+    }
 }
