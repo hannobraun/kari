@@ -3,6 +3,9 @@ use std::fmt;
 use crate::expression::{
     self,
     Expression,
+    From as _,
+    Into as _,
+    Name as _,
 };
 
 
@@ -63,31 +66,57 @@ pub trait Pop : Sized {
 }
 
 
-impl<T> Push for T where T: expression::Into {
-    type Data = T;
+impl Push for Expression {
+    type Data = Expression;
+
+    fn push(data: Self::Data, stack: &mut Stack) {
+        stack.push_raw(data)
+    }
+}
+
+impl Pop for Expression {
+    type Data = Expression;
+
+    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
+        stack.pop_raw()
+            .ok_or(
+                Error::StackEmpty {
+                    expected: Expression::NAME,
+                }
+            )
+    }
+}
+
+
+impl<T> Push for T
+    where expression::Data<T>: expression::Into
+{
+    type Data = expression::Data<T>;
 
     fn push(data: Self::Data, stack: &mut Stack) {
         stack.push_raw(data.into_expression())
     }
 }
 
-impl<T> Pop for T where T: expression::From + expression::Name {
-    type Data = T;
+impl<T> Pop for T
+    where expression::Data<T>: expression::From + expression::Name
+{
+    type Data = expression::Data<T>;
 
     fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
         match stack.pop_raw() {
             Some(expression) => {
-                T::from_expression(expression)
+                expression::Data::<T>::from_expression(expression)
                     .map_err(|expression|
                         Error::TypeError {
-                            expected: T::NAME,
+                            expected: expression::Data::<T>::NAME,
                             actual:   expression,
                         }
                     )
             }
             None => {
                 Err(Error::StackEmpty {
-                    expected: T::NAME,
+                    expected: expression::Data::<T>::NAME,
                 })
             }
         }
@@ -97,10 +126,10 @@ impl<T> Pop for T where T: expression::From + expression::Name {
 
 impl<A, B> Push for (A, B)
     where
-        A: Push<Data=A>,
-        B: Push<Data=B>,
+        expression::Data<A>: Push<Data=expression::Data<A>> + expression::Into,
+        expression::Data<B>: Push<Data=expression::Data<B>> + expression::Into,
 {
-    type Data = Self;
+    type Data = (expression::Data<A>, expression::Data<B>);
 
     fn push(data: Self::Data, stack: &mut Stack) {
         stack.push::<A>(data.0);
@@ -110,10 +139,12 @@ impl<A, B> Push for (A, B)
 
 impl<A, B> Pop for (A, B)
     where
-        A: Pop<Data=A>,
-        B: Pop<Data=B>,
+        A:                   Pop<Data=expression::Data<A>>,
+        B:                   Pop<Data=expression::Data<B>>,
+        expression::Data<A>: expression::From + expression::Name,
+        expression::Data<B>: expression::From + expression::Name,
 {
-    type Data = Self;
+    type Data = (expression::Data<A>, expression::Data<B>);
 
     fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
         let b = stack.pop::<B>()?;

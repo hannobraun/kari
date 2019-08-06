@@ -29,6 +29,9 @@ impl fmt::Display for Kind {
 }
 
 
+pub struct Data<T>(pub T);
+
+
 #[derive(Clone, Debug)]
 pub struct Bool(pub bool);
 
@@ -101,24 +104,24 @@ impl From for Expression {
 macro_rules! impl_expression {
     ($($ty:ident, $name:expr;)*) => {
         $(
-            impl Name for $ty {
+            impl Name for Data<$ty> {
                 const NAME: &'static str = $name;
             }
 
-            impl Into for $ty {
+            impl Into for Data<$ty> {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        kind: Kind::$ty(self),
+                        kind: Kind::$ty(self.0),
                     }
                 }
             }
 
-            impl From for $ty {
+            impl From for Data<$ty> {
                 fn from_expression(expression: Expression)
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
-                        Kind::$ty(kind) => Ok(kind),
+                        Kind::$ty(kind) => Ok(Data(kind)),
                         _               => Err(expression),
                     }
                 }

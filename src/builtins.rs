@@ -98,8 +98,8 @@ fn print(context: &mut Context) -> Result {
 fn define(context: &mut Context) -> Result {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
-    assert_eq!(name.0.len(), 1);
-    let name = name.0.clone().pop().unwrap();
+    assert_eq!((name.0).0.len(), 1);
+    let name = name.0.clone().0.pop().unwrap();
 
     let name = match name.kind {
         expression::Kind::Word(word) => {
@@ -113,13 +113,13 @@ fn define(context: &mut Context) -> Result {
         }
     };
 
-    context.define(name, body.clone());
+    context.define(name, body.0.clone());
 
     Ok(())
 }
 
 fn eval(context: &mut Context) -> Result {
-    let list = context.stack().pop::<List>()?;
+    let list = context.stack().pop::<List>()?.0;
     context.evaluate(&mut list.into_iter())?;
     Ok(())
 }
@@ -145,13 +145,13 @@ fn each(context: &mut Context) -> Result {
 
     context.stack().create_substack();
 
-    for item in list {
+    for item in list.0 {
         context.stack().push::<Expression>(item);
-        context.evaluate(&mut function.clone().into_iter())?;
+        context.evaluate(&mut function.0.clone().into_iter())?;
     }
 
     let list = context.stack().destroy_substack();
-    context.stack().push::<List>(List(list));
+    context.stack().push::<List>(expression::Data(List(list)));
 
     Ok(())
 }
@@ -159,12 +159,12 @@ fn each(context: &mut Context) -> Result {
 
 fn add(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push::<Number>(Number(a.0 + b.0));
+    context.stack().push::<Number>(expression::Data(Number((a.0).0 + (b.0).0)));
     Ok(())
 }
 
 fn mul(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push::<Number>(Number(a.0 * b.0));
+    context.stack().push::<Number>(expression::Data(Number((a.0).0 * (b.0).0)));
     Ok(())
 }
