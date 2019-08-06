@@ -16,6 +16,6 @@ pub fn run<Program>(program: Program) -> Result<(), context::Error>
     let tokenizer = Tokenizer::new(reader);
     let parser    = Parser::new(tokenizer);
 
-    let mut interpreter = Evaluator::new();
-    interpreter.run(parser)
+    let mut evaluator = Evaluator::new();
+    evaluator.run(parser)
 }
