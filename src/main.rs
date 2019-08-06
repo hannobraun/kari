@@ -4,6 +4,7 @@ mod evaluator;
 mod functions;
 mod parser;
 mod reader;
+mod recorder;
 mod runner;
 mod stack;
 mod stream;
