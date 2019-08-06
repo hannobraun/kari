@@ -163,6 +163,38 @@ impl fmt::Display for List {
 }
 
 
+pub trait ToExpression {
+    fn to_expression(self) -> Expression;
+}
+
+impl ToExpression for Expression {
+    fn to_expression(self) -> Expression {
+        self
+    }
+}
+
+macro_rules! impl_expression {
+    ($($name:ident;)*) => {
+        $(
+            impl ToExpression for $name {
+                fn to_expression(self) -> Expression {
+                    Expression {
+                        kind: ExpressionKind::$name(self),
+                    }
+                }
+            }
+        )*
+    }
+}
+
+impl_expression!(
+    Bool;
+    Number;
+    List;
+    String;
+);
+
+
 #[derive(Debug)]
 pub enum Error {
     Tokenizer(tokenizer::Error),

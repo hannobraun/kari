@@ -6,6 +6,7 @@ use crate::parser::{
     ExpressionKind,
     List,
     Number,
+    ToExpression,
 };
 
 
@@ -62,9 +63,9 @@ pub trait Pop : Sized {
 }
 
 
-impl Push for Expression {
+impl<T> Push for T where T: ToExpression {
     fn push(self, stack: &mut Stack) {
-        stack.push_raw(self)
+        stack.push_raw(self.to_expression())
     }
 }
 
@@ -78,16 +79,6 @@ impl Pop for Expression {
 macro_rules! impl_push_pop {
     ($($type:ident, $name:expr;)*) => {
         $(
-            impl Push for $type {
-                fn push(self, stack: &mut Stack) {
-                    stack.push(
-                        Expression {
-                            kind: ExpressionKind::$type(self),
-                        }
-                    )
-                }
-            }
-
             impl Pop for $type {
                 fn pop(stack: &mut Stack) -> Result<Self, Error> {
                     match stack.pop_raw() {
