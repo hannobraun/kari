@@ -87,8 +87,10 @@ impl<R> Reader<R> where R: Read {
 
         let c = Char {
             c,
-            column: self.next_column,
-            line:   self.next_line,
+            pos: Position {
+                column: self.next_column,
+                line:   self.next_line,
+            },
         };
 
         self.next_column += 1;
@@ -104,9 +106,8 @@ impl<R> Reader<R> where R: Read {
 
 #[derive(Clone, Copy)]
 pub struct Char {
-    pub c:      char,
-    pub column: usize,
-    pub line:   usize,
+    pub c:   char,
+    pub pos: Position,
 }
 
 impl Char {
@@ -119,6 +120,13 @@ impl PartialEq<char> for Char {
     fn eq(&self, other: &char) -> bool {
         self.c.eq(other)
     }
+}
+
+
+#[derive(Clone, Copy)]
+pub struct Position {
+    pub column: usize,
+    pub line:   usize,
 }
 
 
