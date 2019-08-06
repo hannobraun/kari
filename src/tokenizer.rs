@@ -6,6 +6,7 @@ use std::{
 use crate::{
     reader::{
         self,
+        Char,
         Reader,
     },
 };
@@ -25,8 +26,8 @@ impl<R> Tokenizer<R>
     }
 
     pub fn next(&mut self) -> Result<Token, Error> {
-        let mut token = String::new();
-        let mut state = State::Initial;
+        let mut builder = TokenBuilder::new();
+        let mut state   = State::Initial;
 
         loop {
             let c = self.reader.next()?;
@@ -40,10 +41,10 @@ impl<R> Tokenizer<R>
                         '"' => {
                             state = State::String;
                         }
-                        c => {
+                        _ => {
                             if !c.is_whitespace() {
                                 state = State::Word;
-                                token.push(c);
+                                builder.push(c);
                             }
                         }
                     }
@@ -60,18 +61,18 @@ impl<R> Tokenizer<R>
                         }
                         '"' => {
                             return Ok(Token {
-                                kind: TokenKind::String(token),
+                                kind: TokenKind::String(builder.buffer),
                             });
                         }
-                        c => {
-                            token.push(c);
+                        _ => {
+                            builder.push(c);
                         }
                     }
                 }
                 State::StringEscape => {
                     match c.c {
                         'n' => {
-                            token.push('\n');
+                            builder.push(Char { c: '\n', .. c });
                             state = State::String;
                         }
                         c => {
@@ -81,28 +82,47 @@ impl<R> Tokenizer<R>
                 }
                 State::Word => {
                     if c.is_whitespace() {
-                        match token.as_str() {
+                        match builder.buffer.as_str() {
                             "[" => return Ok(Token { kind: TokenKind::ListOpen }),
                             "]" => return Ok(Token { kind: TokenKind::ListClose }),
 
                             _ => {
-                                if let Ok(number) = token.parse::<u32>() {
+                                if let Ok(number) =
+                                    builder.buffer.parse::<u32>()
+                                {
                                     return Ok(Token {
                                         kind: TokenKind::Number(number),
                                     });
                                 }
 
                                 return Ok(Token {
-                                    kind: TokenKind::Word(token),
+                                    kind: TokenKind::Word(builder.buffer),
                                 });
                             }
                         }
                     }
 
-                    token.push(c.c);
+                    builder.push(c);
                 }
             }
         }
+    }
+}
+
+
+struct TokenBuilder {
+    buffer: String,
+}
+
+impl TokenBuilder {
+    fn new() -> Self {
+        Self {
+            buffer: String::new(),
+        }
+    }
+
+    fn push(&mut self, c: Char) {
+        self.buffer.push(c.c);
     }
 }
 
