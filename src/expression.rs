@@ -3,7 +3,7 @@ use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Expression {
-    pub data: Data,
+    pub kind: Data,
 }
 
 
@@ -59,7 +59,7 @@ impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[ ")?;
         for item in &self.0 {
-            write!(f, "{} ", item.data)?;
+            write!(f, "{} ", item.kind)?;
         }
         write!(f, "]")?;
 
@@ -108,7 +108,7 @@ macro_rules! impl_expression {
             impl Into for $ty {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        data: Data::$ty(self),
+                        kind: Data::$ty(self),
                     }
                 }
             }
@@ -117,8 +117,8 @@ macro_rules! impl_expression {
                 fn from_expression(expression: Expression)
                     -> Result<Self, Expression>
                 {
-                    match expression.data {
-                        Data::$ty(data) => Ok(data),
+                    match expression.kind {
+                        Data::$ty(kind) => Ok(kind),
                         _               => Err(expression),
                     }
                 }

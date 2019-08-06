@@ -38,7 +38,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let token = self.tokenizer.next()?;
 
-        let data = match token.kind {
+        let kind = match token.kind {
             TokenKind::ListOpen => {
                 expression::Data::List(self.parse_list()?)
             }
@@ -58,7 +58,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
 
         Ok(
             Expression {
-                data,
+                kind,
             }
         )
     }
@@ -73,7 +73,7 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            let data = match token.kind {
+            let kind = match token.kind {
                 TokenKind::ListOpen => {
                     expression::Data::List(self.parse_list()?)
                 }
@@ -93,7 +93,7 @@ impl<Tokenizer> Parser<Tokenizer>
 
             list.0.push(
                 Expression {
-                    data,
+                    kind,
                 }
             );
         }

@@ -130,7 +130,7 @@ impl fmt::Display for Error {
                     f,
                     "Type error: Expected `{}`, found `{}`",
                     expected,
-                    actual.data,
+                    actual.kind,
                 )?;
             }
             Error::StackEmpty { expected } => {

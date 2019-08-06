@@ -90,7 +90,7 @@ pub type Result = StdResult<(), context::Error>;
 
 fn print(context: &mut Context) -> Result {
     let expression = context.stack().pop::<Expression>()?;
-    print!("{}", expression.data);
+    print!("{}", expression.kind);
 
     Ok(())
 }
@@ -101,7 +101,7 @@ fn define(context: &mut Context) -> Result {
     assert_eq!(name.0.len(), 1);
     let name = name.0.clone().pop().unwrap();
 
-    let name = match name.data {
+    let name = match name.kind {
         expression::Data::Word(word) => {
             word
         }
