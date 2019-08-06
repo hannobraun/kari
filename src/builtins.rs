@@ -106,10 +106,10 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into,
     {
-        let result = f(((self.0).0, (self.1).0));
-        let span   = Span::merge((self.0).1, (self.0).1);
+        let result = f((self.0.data, self.1.data));
+        let span   = Span::merge(self.0.span, self.0.span);
 
-        expression::Data(result, span).into_expression()
+        expression::Data { data: result, span }.into_expression()
     }
 }
 
@@ -127,8 +127,8 @@ fn print(context: &mut Context) -> Result {
 fn define(context: &mut Context) -> Result {
     let (body, name) = context.stack().pop::<(List, List)>()?;
 
-    assert_eq!((name.0).0.len(), 1);
-    let name = name.0.clone().0.pop().unwrap();
+    assert_eq!(name.data.0.len(), 1);
+    let name = name.data.clone().0.pop().unwrap();
 
     let name = match name.kind {
         expression::Kind::Word(word) => {
@@ -142,14 +142,14 @@ fn define(context: &mut Context) -> Result {
         }
     };
 
-    context.define(name, body.0.clone());
+    context.define(name, body.data.clone());
 
     Ok(())
 }
 
 fn eval(context: &mut Context) -> Result {
-    let list = context.stack().pop::<List>()?.0;
-    context.evaluate(&mut list.into_iter())?;
+    let list = context.stack().pop::<List>()?;
+    context.evaluate(&mut list.data.into_iter())?;
     Ok(())
 }
 
@@ -174,15 +174,19 @@ fn each(context: &mut Context) -> Result {
 
     context.stack().create_substack();
 
-    for item in list.0 {
+    for item in list.data {
         context.stack().push::<Expression>(item);
-        context.evaluate(&mut function.0.clone().into_iter())?;
+        context.evaluate(&mut function.data.clone().into_iter())?;
     }
 
     let result = context.stack().destroy_substack();
 
-    let span = Span::merge(list.1, function.1);
-    context.stack().push::<List>(expression::Data(List(result), span));
+    let span = Span::merge(list.span, function.span);
+    let data = expression::Data {
+        data: List(result),
+        span,
+    };
+    context.stack().push::<List>(data);
 
     Ok(())
 }
