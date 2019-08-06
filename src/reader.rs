@@ -16,8 +16,7 @@ pub struct Reader<R> {
     buffer: [u8; 4],
     index:  usize,
 
-    next_column: usize,
-    next_line:   usize,
+    next_pos: Position,
 }
 
 impl<R> Reader<R> where R: Read {
@@ -28,8 +27,10 @@ impl<R> Reader<R> where R: Read {
             buffer: [0; 4],
             index:  0,
 
-            next_column: 0,
-            next_line:   0,
+            next_pos: Position {
+                column: 0,
+                line:   0,
+            },
         }
     }
 
@@ -87,16 +88,13 @@ impl<R> Reader<R> where R: Read {
 
         let c = Char {
             c,
-            pos: Position {
-                column: self.next_column,
-                line:   self.next_line,
-            },
+            pos: self.next_pos,
         };
 
-        self.next_column += 1;
+        self.next_pos.column += 1;
         if c.c == '\n' {
-            self.next_column = 0;
-            self.next_line += 1;
+            self.next_pos.column = 0;
+            self.next_pos.line += 1;
         }
 
         Ok(c)
