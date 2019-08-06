@@ -6,7 +6,7 @@ use std::{
     },
 };
 
-use crate::tokenizer::Span;
+use crate::span::Span;
 
 
 #[derive(Clone, Debug)]

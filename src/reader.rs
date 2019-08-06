@@ -6,7 +6,10 @@ use std::{
     },
 };
 
-use crate::stream::Stream;
+use crate::{
+    span::Position,
+    stream::Stream,
+};
 
 
 pub struct Reader<R> {
@@ -122,13 +125,6 @@ impl PartialEq<char> for Char {
     fn eq(&self, other: &char) -> bool {
         self.c.eq(other)
     }
-}
-
-
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Position {
-    pub line:   usize,
-    pub column: usize,
 }
 
 

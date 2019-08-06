@@ -16,7 +16,7 @@ use crate::{
         List,
         Number,
     },
-    tokenizer::Span,
+    span::Span,
 };
 
 

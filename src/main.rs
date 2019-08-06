@@ -7,6 +7,7 @@ mod parser;
 mod reader;
 mod recorder;
 mod runner;
+mod span;
 mod stack;
 mod stream;
 mod tokenizer;

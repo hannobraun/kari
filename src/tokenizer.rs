@@ -4,8 +4,8 @@ use crate::{
     reader::{
         self,
         Char,
-        Position,
     },
+    span::Span,
     stream::Stream,
 };
 
@@ -195,25 +195,6 @@ impl fmt::Display for TokenKind {
             TokenKind::String(string) => string.fmt(f),
             TokenKind::Word(word)     => word.fmt(f),
         }
-    }
-}
-
-
-#[derive(Clone, Copy, Debug)]
-pub struct Span {
-    pub start: Position,
-    pub end:   Position,
-}
-
-impl Span {
-    pub fn merge(mut self, other: Self) -> Self {
-        if self.start > other.start {
-            self.start = other.start;
-        }
-        if self.end < other.end {
-            self.end = other.end;
-        }
-        self
     }
 }
 

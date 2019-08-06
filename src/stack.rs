@@ -8,7 +8,7 @@ use crate::{
         Into as _,
         Name as _,
     },
-    tokenizer::Span,
+    span::Span,
 };
 
 

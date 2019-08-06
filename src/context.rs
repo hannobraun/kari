@@ -6,11 +6,11 @@ use crate::{
         List,
     },
     parser,
+    span::Span,
     stack::{
         self,
         Stack,
     },
-    tokenizer::Span,
 };
 
 

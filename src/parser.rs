@@ -7,10 +7,10 @@ use crate::{
         List,
         Number,
     },
+    span::Span,
     stream::Stream,
     tokenizer::{
         self,
-        Span,
         Token,
         TokenKind,
     },
