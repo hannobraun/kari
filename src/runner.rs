@@ -14,8 +14,7 @@ pub fn run<Program>(program: Program)
     let reader    = Reader::new(program);
     let tokenizer = Tokenizer::new(reader);
     let parser    = Parser::new(tokenizer);
-
-    let mut evaluator = Evaluator::new();
+    let evaluator = Evaluator::new();
 
     if let Err(error) = evaluator.run(parser) {
         print!("\nERROR: {}\n", error);

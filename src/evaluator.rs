@@ -32,7 +32,7 @@ impl Evaluator {
         }
     }
 
-    pub fn run<Parser>(&mut self, mut parser: Parser)
+    pub fn run<Parser>(mut self, mut parser: Parser)
         -> Result<(), Error>
         where Parser: Stream<Item=Expression, Error=parser::Error>
     {
