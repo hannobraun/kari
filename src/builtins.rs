@@ -11,6 +11,7 @@ use crate::{
     },
     expression::{
         self,
+        Bool,
         Expression,
         Into as _,
         List,
@@ -84,6 +85,7 @@ impl_builtin!(
 
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
+    Gt,  ">", gt,  (Number, Number) => Bool;
 );
 
 
@@ -205,6 +207,14 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(operator)?
         .compute(operator, |(a, b)| a * b);
+    context.stack().push_raw(result);
+    Ok(())
+}
+
+fn gt(operator: Span, context: &mut Context) -> Result {
+    let result = context
+        .stack().pop::<(Number, Number)>(operator)?
+        .compute(operator, |(a, b)| Bool(a > b));
     context.stack().push_raw(result);
     Ok(())
 }
