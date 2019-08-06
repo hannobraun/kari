@@ -44,7 +44,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::Parser(error) => {
-                write!(f, "Parser error:\n{:?}", error)?;
+                write!(f, "{}", error)?;
             }
             Error::UnknownFunction(name) => {
                 write!(f, "Unknown function: {}", name)?;

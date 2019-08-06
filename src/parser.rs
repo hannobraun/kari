@@ -151,3 +151,21 @@ impl From<tokenizer::Error> for Error {
         }
     }
 }
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::Tokenizer(error) => {
+                write!(f, "Tokenizer error:\n{:?}", error)?;
+            }
+            Error::UnexpectedToken(token) => {
+                write!(f, "Unexpected token:\n{:?}", token)?;
+            }
+            Error::EndOfStream => {
+                panic!("Error variant should not be display: {:?}", self);
+            }
+        }
+
+        Ok(())
+    }
+}
