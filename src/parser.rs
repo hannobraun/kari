@@ -30,14 +30,13 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let mut token = self.tokenizer.next()?;
+        let token = self.tokenizer.next()?;
 
         let data = match token.kind {
             TokenKind::ListOpen => {
                 ExpressionKind::List(self.parse_list()?)
             }
-            kind @ TokenKind::ListClose => {
-                token.kind = kind;
+            TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
