@@ -58,7 +58,7 @@ impl fmt::Display for Error {
                 write!(f, "{}", error)?;
             }
             Error::UnknownFunction(name) => {
-                write!(f, "Unknown function: {}", name)?;
+                write!(f, "Unknown function: `{}`", name)?;
             }
             Error::Stack(error) => {
                 write!(f, "Stack error:\n{:?}", error)?;

@@ -178,7 +178,7 @@ impl fmt::Display for Error {
                 write!(f, "Tokenizer error:\n{:?}", error)?;
             }
             Error::UnexpectedToken(token) => {
-                write!(f, "Unexpected token: {}", token.kind)?;
+                write!(f, "Unexpected token: `{}`", token.kind)?;
             }
             Error::EndOfStream => {
                 panic!("Error variant should not be display: {:?}", self);
