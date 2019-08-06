@@ -79,12 +79,12 @@ impl Kind for Expression {
 }
 
 macro_rules! impl_expression {
-    ($($name:ident;)*) => {
+    ($($ty:ident;)*) => {
         $(
-            impl Kind for $name {
+            impl Kind for $ty {
                 fn to_expression(self) -> Expression {
                     Expression {
-                        data: Data::$name(self),
+                        data: Data::$ty(self),
                     }
                 }
             }
