@@ -176,8 +176,8 @@ fn each(context: &mut Context) -> Result {
         context.evaluate(&mut function.0.clone().into_iter())?;
     }
 
-    let list = context.stack().destroy_substack();
-    context.stack().push::<List>(expression::Data(List(list)));
+    let result = context.stack().destroy_substack();
+    context.stack().push::<List>(expression::Data(List(result)));
 
     Ok(())
 }
