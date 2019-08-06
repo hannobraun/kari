@@ -44,7 +44,7 @@ impl<R> Tokenizer<R>
                         _ => {
                             if !c.is_whitespace() {
                                 state = State::Word;
-                                builder.push(c);
+                                builder.store(c);
                             }
                         }
                     }
@@ -63,14 +63,14 @@ impl<R> Tokenizer<R>
                             return Ok(builder.into_string());
                         }
                         _ => {
-                            builder.push(c);
+                            builder.store(c);
                         }
                     }
                 }
                 State::StringEscape => {
                     match c.c {
                         'n' => {
-                            builder.push(Char { c: '\n', .. c });
+                            builder.store(Char { c: '\n', .. c });
                             state = State::String;
                         }
                         c => {
@@ -83,7 +83,7 @@ impl<R> Tokenizer<R>
                         return Ok(builder.into_word());
                     }
 
-                    builder.push(c);
+                    builder.store(c);
                 }
             }
         }
@@ -102,7 +102,7 @@ impl TokenBuilder {
         }
     }
 
-    fn push(&mut self, c: Char) {
+    fn store(&mut self, c: Char) {
         self.buffer.push(c.c);
     }
 
