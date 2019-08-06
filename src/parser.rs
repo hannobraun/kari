@@ -45,7 +45,7 @@ impl<R> Parser<R>
         Ok(expression)
     }
 
-    pub fn parse_list(&mut self) -> Result<List, Error> {
+    fn parse_list(&mut self) -> Result<List, Error> {
         let mut list = List::new();
 
         loop {
