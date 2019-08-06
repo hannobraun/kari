@@ -1,5 +1,3 @@
-use std::io;
-
 use crate::{
     builtins::Builtins,
     context::{
@@ -13,7 +11,6 @@ use crate::{
         self,
         Expression,
         List,
-        Parser,
     },
     stack::Stack,
     stream::Stream,
@@ -35,9 +32,9 @@ impl Evaluator {
         }
     }
 
-    pub fn run<R>(&mut self, mut parser: Parser<R>)
+    pub fn run<Parser>(&mut self, mut parser: Parser)
         -> Result<(), Error>
-        where R: io::Read
+        where Parser: Stream<Item=Expression, Error=parser::Error>
     {
         loop {
             let expression = match parser.next() {
