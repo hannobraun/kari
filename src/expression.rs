@@ -48,7 +48,7 @@ pub struct Data<T> {
 pub struct Bool(pub bool);
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Number(pub u32);
 
 impl Add for Number {
