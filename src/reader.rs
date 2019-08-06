@@ -1,8 +1,5 @@
 use std::{
-    io::{
-        self,
-        prelude::*,
-    },
+    io,
     str::{
         self,
         Utf8Error,
@@ -19,7 +16,7 @@ pub struct Reader<R> {
     next_pos: Position,
 }
 
-impl<R> Reader<R> where R: Read {
+impl<R> Reader<R> where R: io::Read {
     pub fn new(input: R) -> Self {
         Reader {
             input,
