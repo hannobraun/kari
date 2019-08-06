@@ -80,7 +80,7 @@ impl Context for Evaluator {
                 );
             }
             else {
-                self.stack.push(expression);
+                self.stack.push::<Expression>(expression);
             }
         }
 

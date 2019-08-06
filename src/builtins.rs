@@ -133,8 +133,8 @@ fn drop(context: &mut Context) -> Result {
 fn dup(context: &mut Context) -> Result {
     let expression = context.stack().pop::<Expression>()?;
 
-    context.stack().push(expression.clone());
-    context.stack().push(expression);
+    context.stack().push::<Expression>(expression.clone());
+    context.stack().push::<Expression>(expression);
 
     Ok(())
 }
@@ -146,12 +146,12 @@ fn each(context: &mut Context) -> Result {
     context.stack().create_substack();
 
     for item in list {
-        context.stack().push(item);
+        context.stack().push::<Expression>(item);
         context.evaluate(&mut function.clone().into_iter())?;
     }
 
     let list = context.stack().destroy_substack();
-    context.stack().push(List(list));
+    context.stack().push::<List>(List(list));
 
     Ok(())
 }
@@ -159,12 +159,12 @@ fn each(context: &mut Context) -> Result {
 
 fn add(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push(Number(a.0 + b.0));
+    context.stack().push::<Number>(Number(a.0 + b.0));
     Ok(())
 }
 
 fn mul(context: &mut Context) -> Result {
     let (a, b) = context.stack().pop::<(Number, Number)>()?;
-    context.stack().push(Number(a.0 * b.0));
+    context.stack().push::<Number>(Number(a.0 * b.0));
     Ok(())
 }

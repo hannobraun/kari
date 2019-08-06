@@ -17,11 +17,11 @@ impl Stack {
         }
     }
 
-    pub fn push<T: Push>(&mut self, value: T) {
-        value.push(self)
+    pub fn push<T: Push>(&mut self, value: T::Data) {
+        T::push(value, self)
     }
 
-    pub fn pop<T: Pop>(&mut self) -> Result<T, Error> {
+    pub fn pop<T: Pop>(&mut self) -> Result<T::Data, Error> {
         T::pop(self)
     }
 
@@ -51,22 +51,30 @@ impl Stack {
 
 
 pub trait Push {
-    fn push(self, stack: &mut Stack);
+    type Data;
+
+    fn push(_: Self::Data, _: &mut Stack);
 }
 
 pub trait Pop : Sized {
-    fn pop(stack: &mut Stack) -> Result<Self, Error>;
+    type Data;
+
+    fn pop(_: &mut Stack) -> Result<Self::Data, Error>;
 }
 
 
 impl<T> Push for T where T: expression::Into {
-    fn push(self, stack: &mut Stack) {
-        stack.push_raw(self.into_expression())
+    type Data = T;
+
+    fn push(data: Self::Data, stack: &mut Stack) {
+        stack.push_raw(data.into_expression())
     }
 }
 
 impl<T> Pop for T where T: expression::From + expression::Name {
-    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+    type Data = T;
+
+    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
         match stack.pop_raw() {
             Some(expression) => {
                 T::from_expression(expression)
@@ -89,23 +97,27 @@ impl<T> Pop for T where T: expression::From + expression::Name {
 
 impl<A, B> Push for (A, B)
     where
-        A: Push,
-        B: Push,
+        A: Push<Data=A>,
+        B: Push<Data=B>,
 {
-    fn push(self, stack: &mut Stack) {
-        stack.push(self.0);
-        stack.push(self.1);
+    type Data = Self;
+
+    fn push(data: Self::Data, stack: &mut Stack) {
+        stack.push::<A>(data.0);
+        stack.push::<B>(data.1);
     }
 }
 
 impl<A, B> Pop for (A, B)
     where
-        A: Pop,
-        B: Pop,
+        A: Pop<Data=A>,
+        B: Pop<Data=B>,
 {
-    fn pop(stack: &mut Stack) -> Result<Self, Error> {
-        let b = stack.pop()?;
-        let a = stack.pop()?;
+    type Data = Self;
+
+    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
+        let b = stack.pop::<B>()?;
+        let a = stack.pop::<A>()?;
         Ok((a, b))
     }
 }
