@@ -30,14 +30,14 @@ impl Stack {
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self) -> Result<Expression, Error> {
+    pub fn pop_raw(&mut self) -> Option<Expression> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
-                return Ok(value)
+                return Some(value)
             }
         }
 
-        Err(Error::StackEmpty)
+        None
     }
 
     pub fn create_substack(&mut self) {
@@ -68,6 +68,7 @@ impl Push for Expression {
 impl Pop for Expression {
     fn pop(stack: &mut Stack) -> Result<Self, Error> {
         stack.pop_raw()
+            .ok_or(Error::StackEmpty)
     }
 }
 
