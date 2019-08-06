@@ -49,6 +49,6 @@ fn main() {
     };
 
     if let Err(error) = result {
-        print!("\nERROR: {:?}\n\n", error);
+        print!("\nERROR: {}\n\n", error);
     }
 }

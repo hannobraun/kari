@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{
     parser::{
         self,
@@ -35,5 +37,23 @@ impl From<stack::Error> for Error {
 impl From<parser::Error> for Error {
     fn from(from: parser::Error) -> Self {
         Error::Parser(from)
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::Parser(error) => {
+                write!(f, "Parser error:\n{:?}", error)?;
+            }
+            Error::UnknownFunction(name) => {
+                write!(f, "Unknown function: {}", name)?;
+            }
+            Error::Stack(error) => {
+                write!(f, "Stack error:\n{:?}", error)?;
+            }
+        }
+
+        Ok(())
     }
 }
