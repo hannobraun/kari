@@ -1,11 +1,14 @@
 use std::fmt;
 
-use crate::expression::{
-    self,
-    Expression,
-    From as _,
-    Into as _,
-    Name as _,
+use crate::{
+    expression::{
+        self,
+        Expression,
+        From as _,
+        Into as _,
+        Name as _,
+    },
+    tokenizer::Span,
 };
 
 
@@ -163,6 +166,15 @@ pub enum Error {
     StackEmpty {
         expected: &'static str,
     },
+}
+
+impl Error {
+    pub fn span(&self) -> Option<Span> {
+        match self {
+            Error::TypeError { actual, .. } => Some(actual.span),
+            Error::StackEmpty { .. }        => None,
+        }
+    }
 }
 
 impl fmt::Display for Error {

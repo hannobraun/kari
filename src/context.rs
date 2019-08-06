@@ -34,7 +34,7 @@ impl Error {
         match self {
             Error::Parser(error)                => error.span(),
             Error::UnknownFunction { span, .. } => Some(*span),
-            Error::Stack(_)                     => None,
+            Error::Stack(error)                 => error.span(),
         }
     }
 }
