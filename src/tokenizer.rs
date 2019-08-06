@@ -204,6 +204,15 @@ pub struct Span {
     pub end:   Position,
 }
 
+impl Span {
+    pub fn merge(a: Span, b: Span) -> Self {
+        Span {
+            start: if a.start < b.start { a.start } else { b.start },
+            end:   if a.end > b.end { a.end } else { b.end },
+        }
+    }
+}
+
 
 #[derive(Debug)]
 pub enum Error {

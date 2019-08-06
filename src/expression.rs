@@ -6,10 +6,13 @@ use std::{
     },
 };
 
+use crate::tokenizer::Span;
+
 
 #[derive(Clone, Debug)]
 pub struct Expression {
     pub kind: Kind,
+    pub span: Span,
 }
 
 
@@ -35,7 +38,7 @@ impl fmt::Display for Kind {
 }
 
 
-pub struct Data<T>(pub T);
+pub struct Data<T>(pub T, pub Span);
 
 
 #[derive(Clone, Debug)]
@@ -134,6 +137,7 @@ macro_rules! impl_expression {
                 fn into_expression(self) -> Expression {
                     Expression {
                         kind: Kind::$ty(self.0),
+                        span: self.1,
                     }
                 }
             }
@@ -143,7 +147,7 @@ macro_rules! impl_expression {
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
-                        Kind::$ty(kind) => Ok(Data(kind)),
+                        Kind::$ty(kind) => Ok(Data(kind, expression.span)),
                         _               => Err(expression),
                     }
                 }

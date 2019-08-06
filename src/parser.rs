@@ -59,6 +59,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
         Ok(
             Expression {
                 kind,
+                span: token.span,
             }
         )
     }
@@ -94,6 +95,7 @@ impl<Tokenizer> Parser<Tokenizer>
             list.0.push(
                 Expression {
                     kind,
+                    span: token.span,
                 }
             );
         }

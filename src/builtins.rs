@@ -16,6 +16,7 @@ use crate::{
         List,
         Number,
     },
+    tokenizer::Span,
 };
 
 
@@ -106,7 +107,9 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             expression::Data<R>: expression::Into,
     {
         let result = f(((self.0).0, (self.1).0));
-        expression::Data(result).into_expression()
+        let span   = Span::merge((self.0).1, (self.0).1);
+
+        expression::Data(result, span).into_expression()
     }
 }
 
@@ -177,7 +180,9 @@ fn each(context: &mut Context) -> Result {
     }
 
     let result = context.stack().destroy_substack();
-    context.stack().push::<List>(expression::Data(List(result)));
+
+    let span = Span::merge(list.1, function.1);
+    context.stack().push::<List>(expression::Data(List(result), span));
 
     Ok(())
 }
