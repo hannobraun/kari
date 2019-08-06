@@ -113,21 +113,22 @@ impl TokenBuilder {
     }
 
     fn into_word(self) -> Token {
-        match self.buffer.as_str() {
-            "[" => return Token { kind: TokenKind::ListOpen },
-            "]" => return Token { kind: TokenKind::ListClose },
+        let kind = match self.buffer.as_str() {
+            "[" => TokenKind::ListOpen,
+            "]" => TokenKind::ListClose,
 
             _ => {
                 if let Ok(number) = self.buffer.parse::<u32>() {
-                    return Token {
-                        kind: TokenKind::Number(number),
-                    };
+                    TokenKind::Number(number)
                 }
-
-                return Token {
-                    kind: TokenKind::Word(self.buffer),
-                };
+                else {
+                    TokenKind::Word(self.buffer)
+                }
             }
+        };
+
+        Token {
+            kind,
         }
     }
 }
