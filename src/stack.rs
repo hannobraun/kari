@@ -3,6 +3,7 @@ use std::fmt;
 use crate::parser::{
     Bool,
     Expression,
+    ExpressionKind,
     List,
     Number,
 };
@@ -79,21 +80,29 @@ macro_rules! impl_push_pop {
         $(
             impl Push for $type {
                 fn push(self, stack: &mut Stack) {
-                    stack.push(Expression::$type(self))
+                    stack.push(
+                        Expression {
+                            kind: ExpressionKind::$type(self),
+                        }
+                    )
                 }
             }
 
             impl Pop for $type {
                 fn pop(stack: &mut Stack) -> Result<Self, Error> {
                     match stack.pop_raw() {
-                        Some(Expression::$type(expression)) => {
-                            Ok(expression)
-                        }
                         Some(expression) => {
-                            Err(Error::TypeError {
-                                expected: $name,
-                                actual:   expression,
-                            })
+                            match expression.kind {
+                                ExpressionKind::$type(expression) => {
+                                    Ok(expression)
+                                }
+                                _ => {
+                                    Err(Error::TypeError {
+                                        expected: $name,
+                                        actual:   expression,
+                                    })
+                                }
+                            }
                         }
                         None => {
                             Err(Error::StackEmpty {
@@ -157,7 +166,7 @@ impl fmt::Display for Error {
                     f,
                     "Type error: Expected `{}`, found `{}`",
                     expected,
-                    actual,
+                    actual.kind,
                 )?;
             }
             Error::StackEmpty { expected } => {

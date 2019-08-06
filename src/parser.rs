@@ -32,21 +32,30 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let mut token = self.tokenizer.next()?;
 
-        let expression = match token.kind {
+        let kind = match token.kind {
             TokenKind::ListOpen => {
-                Expression::List(self.parse_list()?)
+                ExpressionKind::List(self.parse_list()?)
             }
             kind @ TokenKind::ListClose => {
                 token.kind = kind;
                 return Err(Error::UnexpectedToken(token));
             }
-
-            TokenKind::Number(number) => Expression::Number(Number(number)),
-            TokenKind::String(string) => Expression::String(string),
-            TokenKind::Word(word)     => Expression::Word(word),
+            TokenKind::Number(number) => {
+                ExpressionKind::Number(Number(number))
+            }
+            TokenKind::String(string) => {
+                ExpressionKind::String(string)
+            }
+            TokenKind::Word(word) => {
+                ExpressionKind::Word(word)
+            }
         };
 
-        Ok(expression)
+        Ok(
+            Expression {
+                kind,
+            }
+        )
     }
 }
 
@@ -59,27 +68,42 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            let expression = match token.kind {
+            let kind = match token.kind {
                 TokenKind::ListOpen => {
-                    Expression::List(self.parse_list()?)
+                    ExpressionKind::List(self.parse_list()?)
                 }
                 TokenKind::ListClose => {
                     return Ok(list);
                 }
-
-                TokenKind::Number(number) => Expression::Number(Number(number)),
-                TokenKind::String(string) => Expression::String(string),
-                TokenKind::Word(word)     => Expression::Word(word),
+                TokenKind::Number(number) => {
+                    ExpressionKind::Number(Number(number))
+                }
+                TokenKind::String(string) => {
+                    ExpressionKind::String(string)
+                }
+                TokenKind::Word(word) => {
+                    ExpressionKind::Word(word)
+                }
             };
 
-            list.0.push(expression);
+            list.0.push(
+                Expression {
+                    kind,
+                }
+            );
         }
     }
 }
 
 
 #[derive(Clone, Debug)]
-pub enum Expression {
+pub struct Expression {
+    pub kind: ExpressionKind,
+}
+
+
+#[derive(Clone, Debug)]
+pub enum ExpressionKind {
     Bool(Bool),
     Number(Number),
     List(List),
@@ -87,14 +111,14 @@ pub enum Expression {
     Word(String),
 }
 
-impl fmt::Display for Expression {
+impl fmt::Display for ExpressionKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Expression::Bool(b)        => b.0.fmt(f),
-            Expression::Number(number) => number.0.fmt(f),
-            Expression::List(list)     => list.fmt(f),
-            Expression::String(string) => string.fmt(f),
-            Expression::Word(word)     => word.fmt(f),
+            ExpressionKind::Bool(b)        => b.0.fmt(f),
+            ExpressionKind::Number(number) => number.0.fmt(f),
+            ExpressionKind::List(list)     => list.fmt(f),
+            ExpressionKind::String(string) => string.fmt(f),
+            ExpressionKind::Word(word)     => word.fmt(f),
         }
     }
 }
@@ -130,7 +154,7 @@ impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[ ")?;
         for item in &self.0 {
-            write!(f, "{} ", item)?;
+            write!(f, "{} ", item.kind)?;
         }
         write!(f, "]")?;
 

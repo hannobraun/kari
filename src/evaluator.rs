@@ -10,6 +10,7 @@ use crate::{
     parser::{
         self,
         Expression,
+        ExpressionKind,
         List,
     },
     stack::Stack,
@@ -63,7 +64,7 @@ impl Context for Evaluator {
         -> Result<(), Error>
     {
         for expression in expressions {
-            if let Expression::Word(word) = expression {
+            if let ExpressionKind::Word(word) = expression.kind {
                 if let Some(list) = self.functions.get(&word) {
                     let list = list.clone();
                     self.evaluate(&mut list.0.into_iter())?;
