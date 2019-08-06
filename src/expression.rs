@@ -1,4 +1,10 @@
-use std::fmt;
+use std::{
+    fmt,
+    ops::{
+        Add,
+        Mul,
+    },
+};
 
 
 #[derive(Clone, Debug)]
@@ -38,6 +44,22 @@ pub struct Bool(pub bool);
 
 #[derive(Clone, Debug)]
 pub struct Number(pub u32);
+
+impl Add for Number {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Number(self.0 + rhs.0)
+    }
+}
+
+impl Mul for Number {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Number(self.0 * rhs.0)
+    }
+}
 
 
 #[derive(Clone, Debug)]
