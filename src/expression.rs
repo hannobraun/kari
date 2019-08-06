@@ -68,23 +68,21 @@ impl fmt::Display for List {
 }
 
 
-pub trait Kind : Sized {
+pub trait Kind {
     const NAME: &'static str;
-
-    fn from_expression(expression: Expression) -> Result<Self, Expression>;
 }
 
 pub trait Into {
     fn into_expression(self) -> Expression;
 }
 
+pub trait From : Sized {
+    fn from_expression(expression: Expression) -> Result<Self, Expression>;
+}
+
 
 impl Kind for Expression {
     const NAME: &'static str = "expression";
-
-    fn from_expression(expression: Expression) -> Result<Self, Expression> {
-        Ok(expression)
-    }
 }
 
 impl Into for Expression {
@@ -93,26 +91,35 @@ impl Into for Expression {
     }
 }
 
+impl From for Expression {
+    fn from_expression(expression: Expression) -> Result<Self, Expression> {
+        Ok(expression)
+    }
+}
+
+
 macro_rules! impl_expression {
     ($($ty:ident, $name:expr;)*) => {
         $(
             impl Kind for $ty {
                 const NAME: &'static str = $name;
-
-                fn from_expression(expression: Expression)
-                    -> Result<Self, Expression>
-                {
-                    match expression.data {
-                        Data::$ty(data) => Ok(data),
-                        _               => Err(expression),
-                    }
-                }
             }
 
             impl Into for $ty {
                 fn into_expression(self) -> Expression {
                     Expression {
                         data: Data::$ty(self),
+                    }
+                }
+            }
+
+            impl From for $ty {
+                fn from_expression(expression: Expression)
+                    -> Result<Self, Expression>
+                {
+                    match expression.data {
+                        Data::$ty(data) => Ok(data),
+                        _               => Err(expression),
                     }
                 }
             }
