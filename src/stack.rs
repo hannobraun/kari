@@ -59,7 +59,7 @@ pub trait Pop : Sized {
 }
 
 
-impl<T> Push for T where T: expression::Kind {
+impl<T> Push for T where T: expression::Into {
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.into_expression())
     }

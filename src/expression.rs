@@ -71,19 +71,25 @@ impl fmt::Display for List {
 pub trait Kind : Sized {
     const NAME: &'static str;
 
-    fn into_expression(self) -> Expression;
     fn from_expression(expression: Expression) -> Result<Self, Expression>;
 }
+
+pub trait Into {
+    fn into_expression(self) -> Expression;
+}
+
 
 impl Kind for Expression {
     const NAME: &'static str = "expression";
 
-    fn into_expression(self) -> Expression {
-        self
-    }
-
     fn from_expression(expression: Expression) -> Result<Self, Expression> {
         Ok(expression)
+    }
+}
+
+impl Into for Expression {
+    fn into_expression(self) -> Expression {
+        self
     }
 }
 
@@ -93,18 +99,20 @@ macro_rules! impl_expression {
             impl Kind for $ty {
                 const NAME: &'static str = $name;
 
-                fn into_expression(self) -> Expression {
-                    Expression {
-                        data: Data::$ty(self),
-                    }
-                }
-
                 fn from_expression(expression: Expression)
                     -> Result<Self, Expression>
                 {
                     match expression.data {
                         Data::$ty(data) => Ok(data),
                         _               => Err(expression),
+                    }
+                }
+            }
+
+            impl Into for $ty {
+                fn into_expression(self) -> Expression {
+                    Expression {
+                        data: Data::$ty(self),
                     }
                 }
             }
