@@ -87,12 +87,6 @@ pub enum Expression {
     Word(String),
 }
 
-impl Default for Expression {
-    fn default() -> Self {
-        Expression::Number(Number(0))
-    }
-}
-
 impl fmt::Display for Expression {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
