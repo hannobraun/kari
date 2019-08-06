@@ -27,8 +27,8 @@ impl Stack {
         T::push(value, self)
     }
 
-    pub fn pop<T: Pop>(&mut self) -> Result<T::Data, Error> {
-        T::pop(self)
+    pub fn pop<T: Pop>(&mut self, operator: Span) -> Result<T::Data, Error> {
+        T::pop(self, operator)
     }
 
     pub fn push_raw(&mut self, value: Expression) {
@@ -65,7 +65,7 @@ pub trait Push {
 pub trait Pop : Sized {
     type Data;
 
-    fn pop(_: &mut Stack) -> Result<Self::Data, Error>;
+    fn pop(_: &mut Stack, operator: Span) -> Result<Self::Data, Error>;
 }
 
 
@@ -80,11 +80,12 @@ impl Push for Expression {
 impl Pop for Expression {
     type Data = Expression;
 
-    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
         stack.pop_raw()
             .ok_or(
                 Error::StackEmpty {
                     expected: Expression::NAME,
+                    operator,
                 }
             )
     }
@@ -106,7 +107,7 @@ impl<T> Pop for T
 {
     type Data = expression::Data<T>;
 
-    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
         match stack.pop_raw() {
             Some(expression) => {
                 expression::Data::<T>::from_expression(expression)
@@ -120,6 +121,7 @@ impl<T> Pop for T
             None => {
                 Err(Error::StackEmpty {
                     expected: expression::Data::<T>::NAME,
+                    operator,
                 })
             }
         }
@@ -149,9 +151,9 @@ impl<A, B> Pop for (A, B)
 {
     type Data = (expression::Data<A>, expression::Data<B>);
 
-    fn pop(stack: &mut Stack) -> Result<Self::Data, Error> {
-        let b = stack.pop::<B>()?;
-        let a = stack.pop::<A>()?;
+    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
+        let b = stack.pop::<B>(operator)?;
+        let a = stack.pop::<A>(operator)?;
         Ok((a, b))
     }
 }
@@ -165,14 +167,15 @@ pub enum Error {
     },
     StackEmpty {
         expected: &'static str,
+        operator: Span,
     },
 }
 
 impl Error {
     pub fn span(&self) -> Option<Span> {
         match self {
-            Error::TypeError { actual, .. } => Some(actual.span),
-            Error::StackEmpty { .. }        => None,
+            Error::TypeError { actual, .. }    => Some(actual.span),
+            Error::StackEmpty { operator, .. } => Some(*operator),
         }
     }
 }
@@ -188,7 +191,7 @@ impl fmt::Display for Error {
                     actual.kind,
                 )?;
             }
-            Error::StackEmpty { expected } => {
+            Error::StackEmpty { expected, .. } => {
                 write!(f, "Stack empty: Expected `{}`", expected)?;
             }
         }

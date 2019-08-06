@@ -117,15 +117,15 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
 pub type Result = StdResult<(), context::Error>;
 
 
-fn print(_: Span, context: &mut Context) -> Result {
-    let expression = context.stack().pop::<Expression>()?;
+fn print(operator: Span, context: &mut Context) -> Result {
+    let expression = context.stack().pop::<Expression>(operator)?;
     print!("{}", expression.kind);
 
     Ok(())
 }
 
-fn define(_operator: Span, context: &mut Context) -> Result {
-    let (body, name) = context.stack().pop::<(List, List)>()?;
+fn define(operator: Span, context: &mut Context) -> Result {
+    let (body, name) = context.stack().pop::<(List, List)>(operator)?;
 
     assert_eq!(name.data.0.len(), 1);
     let name = name.data.clone().0.pop().unwrap();
@@ -147,20 +147,20 @@ fn define(_operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn eval(_operator: Span, context: &mut Context) -> Result {
-    let list = context.stack().pop::<List>()?;
+fn eval(operator: Span, context: &mut Context) -> Result {
+    let list = context.stack().pop::<List>(operator)?;
     context.evaluate(&mut list.data.into_iter())?;
     Ok(())
 }
 
 
-fn drop(_: Span, context: &mut Context) -> Result {
-    context.stack().pop::<Expression>()?;
+fn drop(operator: Span, context: &mut Context) -> Result {
+    context.stack().pop::<Expression>(operator)?;
     Ok(())
 }
 
 fn dup(operator: Span, context: &mut Context) -> Result {
-    let mut expression = context.stack().pop::<Expression>()?;
+    let mut expression = context.stack().pop::<Expression>(operator)?;
 
     expression.span = operator.merge(expression.span);
 
@@ -172,7 +172,7 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 
 
 fn each(operator: Span, context: &mut Context) -> Result {
-    let (list, function) = context.stack().pop::<(List, List)>()?;
+    let (list, function) = context.stack().pop::<(List, List)>(operator)?;
 
     context.stack().create_substack();
 
@@ -195,7 +195,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
 fn add(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>()?
+        .stack().pop::<(Number, Number)>(operator)?
         .compute(operator, |(a, b)| a + b);
     context.stack().push_raw(result);
     Ok(())
@@ -203,7 +203,7 @@ fn add(operator: Span, context: &mut Context) -> Result {
 
 fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>()?
+        .stack().pop::<(Number, Number)>(operator)?
         .compute(operator, |(a, b)| a * b);
     context.stack().push_raw(result);
     Ok(())
