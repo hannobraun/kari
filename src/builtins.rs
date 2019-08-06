@@ -81,6 +81,7 @@ impl_builtin!(
     Drop, "drop", drop, Expression => ();
     Dup,  "dup",  dup,  Expression => (Expression, Expression);
 
+    If,   "if",   r#if, (List, List) => ();
     Each, "each", each, (List, List) => List;
 
     Add, "+", add, (Number, Number) => Number;
@@ -190,6 +191,18 @@ fn each(operator: Span, context: &mut Context) -> Result {
         span: operator.merge(list.span).merge(function.span),
     };
     context.stack().push::<List>(data);
+
+    Ok(())
+}
+
+
+fn r#if(operator: Span, context: &mut Context) -> Result {
+    let (function, condition) = context.stack().pop::<(List, List)>(operator)?;
+
+    context.evaluate(&mut condition.data.into_iter())?;
+    if context.stack().pop::<Bool>(operator)?.data.0 {
+        context.evaluate(&mut function.data.into_iter())?;
+    }
 
     Ok(())
 }

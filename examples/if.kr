@@ -1,0 +1,9 @@
+[ 1 2 3 ]
+[
+    [ print " " print ]
+    [ dup 1 > ]
+        if
+]
+    each
+
+"\n" print
