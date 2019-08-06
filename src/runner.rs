@@ -18,7 +18,7 @@ pub fn run<Program>(program: Program)
 
     if let Err(error) = evaluator.run(parser) {
         print!("\nERROR: {}\n", error);
-        for span in error.span() {
+        if let Some(span) = error.span() {
             print!("{:?}\n", span);
         }
         print!("\n");
