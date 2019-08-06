@@ -26,76 +26,93 @@ impl<R> Tokenizer<R>
 
     pub fn next(&mut self) -> Result<Token, Error> {
         let mut token = String::new();
+        let mut state = State::Initial;
 
-        let start = loop {
-            let c = self.reader.find(|c| !c.is_whitespace())?;
+        loop {
+            let c = self.reader.next()?;
 
-            match c.c {
-                '#' => {
-                    self.reader.find(|c| c == '\n')?;
+            match state {
+                State::Initial => {
+                    match c.c {
+                        '#' => {
+                            state = State::Comment;
+                        }
+                        '"' => {
+                            state = State::String;
+                        }
+                        c => {
+                            if !c.is_whitespace() {
+                                state = State::Word;
+                                token.push(c);
+                            }
+                        }
+                    }
                 }
-                _ => {
-                    break c;
+                State::Comment => {
+                    if c == '\n' {
+                        state = State::Initial;
+                    }
                 }
-            }
-        };
-
-        if start == '"' {
-            return consume_string(&mut token, &mut self.reader)
-                .map(|()| Token { kind: TokenKind::String(token) });
-        }
-
-        token.push(start.c);
-        self.reader.push_until(&mut token, |c| !c.is_whitespace())?;
-
-        match token.as_str() {
-            "[" => return Ok(Token { kind: TokenKind::ListOpen }),
-            "]" => return Ok(Token { kind: TokenKind::ListClose }),
-
-            _ => {
-                if let Ok(number) = token.parse::<u32>() {
-                    return Ok(Token { kind: TokenKind::Number(number) });
+                State::String => {
+                    match c.c {
+                        '\\' => {
+                            state = State::StringEscape;
+                        }
+                        '"' => {
+                            return Ok(Token {
+                                kind: TokenKind::String(token),
+                            });
+                        }
+                        c => {
+                            token.push(c);
+                        }
+                    }
                 }
+                State::StringEscape => {
+                    match c.c {
+                        'n' => {
+                            token.push('\n');
+                            state = State::String;
+                        }
+                        c => {
+                            return Err(Error::UnexpectedEscape(c));
+                        }
+                    }
+                }
+                State::Word => {
+                    if c.is_whitespace() {
+                        match token.as_str() {
+                            "[" => return Ok(Token { kind: TokenKind::ListOpen }),
+                            "]" => return Ok(Token { kind: TokenKind::ListClose }),
 
-                return Ok(Token { kind: TokenKind::Word(token) });
+                            _ => {
+                                if let Ok(number) = token.parse::<u32>() {
+                                    return Ok(Token {
+                                        kind: TokenKind::Number(number),
+                                    });
+                                }
+
+                                return Ok(Token {
+                                    kind: TokenKind::Word(token),
+                                });
+                            }
+                        }
+                    }
+
+                    token.push(c.c);
+                }
             }
         }
     }
 }
 
 
-fn consume_string<R>(token: &mut String, reader: &mut Reader<R>)
-    -> Result<(), Error>
-    where R: io::Read
-{
-    let mut escape = false;
-
-    loop {
-        let c = match reader.next() {
-            Ok(c)                           => c,
-            Err(reader::Error::EndOfStream) => return Ok(()),
-            Err(error)                      => return Err(error.into()),
-        };
-
-        if escape {
-            match c.c {
-                'n' => {
-                    token.push('\n');
-                    escape = false;
-                }
-                c => {
-                    return Err(Error::UnexpectedEscape(c));
-                }
-            }
-        }
-        else {
-            match c.c {
-                '"'  => return Ok(()),
-                '\\' => escape = true,
-                c    => token.push(c),
-            }
-        }
-    }
+enum State {
+    Initial,
+    Comment,
+    String,
+    StringEscape,
+    Word,
 }
 
 

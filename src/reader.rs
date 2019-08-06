@@ -99,34 +99,6 @@ impl<R> Reader<R> where R: Read {
 
         Ok(c)
     }
-
-    pub fn find<P>(&mut self, predicate: P) -> Result<Char, Error>
-        where P: Fn(Char) -> bool
-    {
-        loop {
-            let c = self.next()?;
-
-            if predicate(c) {
-                return Ok(c);
-            }
-        }
-    }
-
-    pub fn push_until<P>(&mut self, s: &mut String, predicate: P)
-        -> Result<(), Error>
-        where P: Fn(Char) -> bool
-    {
-        loop {
-            let c = self.next()?;
-
-            if predicate(c) {
-                s.push(c.c);
-            }
-            else {
-                return Ok(());
-            }
-        }
-    }
 }
 
 
