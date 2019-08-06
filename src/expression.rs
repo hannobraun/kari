@@ -68,7 +68,7 @@ impl fmt::Display for List {
 }
 
 
-pub trait Kind {
+pub trait Name {
     const NAME: &'static str;
 }
 
@@ -81,7 +81,7 @@ pub trait From : Sized {
 }
 
 
-impl Kind for Expression {
+impl Name for Expression {
     const NAME: &'static str = "expression";
 }
 
@@ -101,7 +101,7 @@ impl From for Expression {
 macro_rules! impl_expression {
     ($($ty:ident, $name:expr;)*) => {
         $(
-            impl Kind for $ty {
+            impl Name for $ty {
                 const NAME: &'static str = $name;
             }
 

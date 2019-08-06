@@ -65,7 +65,7 @@ impl<T> Push for T where T: expression::Into {
     }
 }
 
-impl<T> Pop for T where T: expression::From + expression::Kind {
+impl<T> Pop for T where T: expression::From + expression::Name {
     fn pop(stack: &mut Stack) -> Result<Self, Error> {
         match stack.pop_raw() {
             Some(expression) => {
