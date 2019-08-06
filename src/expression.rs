@@ -94,7 +94,7 @@ macro_rules! impl_expression {
 
 impl_expression!(
     Bool;
-    Number;
     List;
+    Number;
     String;
 );
