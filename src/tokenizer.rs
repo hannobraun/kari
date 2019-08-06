@@ -206,22 +206,14 @@ pub struct Span {
 }
 
 impl Span {
-    pub fn merge(spans: &[Span]) -> Self {
-        let start = spans
-            .iter()
-            .map(|span| span.start)
-            .min()
-            .unwrap();
-        let end = spans
-            .iter()
-            .map(|span| span.end)
-            .max()
-            .unwrap();
-
-        Span {
-            start,
-            end,
+    pub fn merge(mut self, other: Self) -> Self {
+        if self.start > other.start {
+            self.start = other.start;
         }
+        if self.end < other.end {
+            self.end = other.end;
+        }
+        self
     }
 }
 

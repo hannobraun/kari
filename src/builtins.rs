@@ -107,7 +107,7 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
             expression::Data<R>: expression::Into,
     {
         let data = f((self.0.data, self.1.data));
-        let span = Span::merge(&[operator, self.0.span, self.0.span]);
+        let span = operator.merge(self.0.span).merge(self.1.span);
 
         expression::Data { data, span }.into_expression()
     }
@@ -162,7 +162,7 @@ fn drop(_: Span, context: &mut Context) -> Result {
 fn dup(operator: Span, context: &mut Context) -> Result {
     let mut expression = context.stack().pop::<Expression>()?;
 
-    expression.span =  Span::merge(&[operator, expression.span]);
+    expression.span = operator.merge(expression.span);
 
     context.stack().push::<Expression>(expression.clone());
     context.stack().push::<Expression>(expression);
@@ -183,10 +183,9 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
     let result = context.stack().destroy_substack();
 
-    let span = Span::merge(&[operator, list.span, function.span]);
     let data = expression::Data {
         data: List(result),
-        span,
+        span: operator.merge(list.span).merge(function.span),
     };
     context.stack().push::<List>(data);
 
