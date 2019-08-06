@@ -83,18 +83,18 @@ macro_rules! impl_push_pop {
 
             impl Pop for $type {
                 fn pop(stack: &mut Stack) -> Result<Self, Error> {
-                    match Expression::pop(stack) {
-                        Ok(Expression::$type(expression)) => {
+                    match stack.pop_raw() {
+                        Some(Expression::$type(expression)) => {
                             Ok(expression)
                         }
-                        Ok(expression) => {
+                        Some(expression) => {
                             Err(Error::TypeError {
                                 expected: $name,
                                 actual:   expression,
                             })
                         }
-                        Err(error) => {
-                            Err(error)
+                        None => {
+                            Err(Error::StackEmpty)
                         }
                     }
                 }
