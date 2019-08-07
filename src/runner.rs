@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::{
+use crate::pipeline::{
     evaluator::Evaluator,
     parser::Parser,
     reader::Reader,

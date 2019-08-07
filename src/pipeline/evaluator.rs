@@ -1,23 +1,27 @@
 use std::fmt;
 
 use crate::{
-    builtins::Builtins,
-    context::{
-        self,
-        Context,
+    core::{
+        builtins::Builtins,
+        context::{
+            self,
+            Context,
+        },
+        expression::{
+            self,
+            Expression,
+            List,
+        },
+        functions::{
+            Functions,
+        },
+        span::Span,
+        stack::Stack,
     },
-    expression::{
-        self,
-        Expression,
-        List,
+    pipeline::{
+        parser,
+        stream::Stream,
     },
-    functions::{
-        Functions,
-    },
-    parser,
-    span::Span,
-    stack::Stack,
-    stream::Stream,
 };
 
 

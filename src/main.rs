@@ -1,16 +1,20 @@
-mod builtins;
-mod context;
-mod evaluator;
-mod expression;
-mod functions;
-mod parser;
-mod reader;
-mod recorder;
+mod core {
+    pub mod builtins;
+    pub mod context;
+    pub mod expression;
+    pub mod functions;
+    pub mod span;
+    pub mod stack;
+}
+mod pipeline {
+    pub mod evaluator;
+    pub mod parser;
+    pub mod reader;
+    pub mod recorder;
+    pub mod stream;
+    pub mod tokenizer;
+}
 mod runner;
-mod span;
-mod stack;
-mod stream;
-mod tokenizer;
 
 
 use std::{

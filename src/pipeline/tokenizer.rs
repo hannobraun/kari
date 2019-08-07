@@ -1,12 +1,14 @@
 use std::fmt;
 
 use crate::{
-    reader::{
-        self,
-        Char,
+    core::span::Span,
+    pipeline::{
+        reader::{
+            self,
+            Char,
+        },
+        stream::Stream,
     },
-    span::Span,
-    stream::Stream,
 };
 
 

@@ -6,7 +6,7 @@ use std::{
     },
 };
 
-use crate::span::Span;
+use crate::core::span::Span;
 
 
 #[derive(Clone, Debug)]

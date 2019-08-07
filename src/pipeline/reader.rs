@@ -7,8 +7,8 @@ use std::{
 };
 
 use crate::{
-    span::Position,
-    stream::Stream,
+    core::span::Position,
+    pipeline::stream::Stream,
 };
 
 

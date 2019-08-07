@@ -1,18 +1,22 @@
 use std::fmt;
 
 use crate::{
-    expression::{
-        self,
-        Expression,
-        List,
-        Number,
+    core::{
+        expression::{
+            self,
+            Expression,
+            List,
+            Number,
+        },
+        span::Span,
     },
-    span::Span,
-    stream::Stream,
-    tokenizer::{
-        self,
-        Token,
-        TokenKind,
+    pipeline::{
+        stream::Stream,
+        tokenizer::{
+            self,
+            Token,
+            TokenKind,
+        },
     },
 };
 
