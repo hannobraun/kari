@@ -14,7 +14,8 @@ mod pipeline {
     pub mod stream;
     pub mod tokenizer;
 }
-mod runner;
+
+mod interpreter;
 
 
 use std::{
@@ -27,7 +28,7 @@ use std::{
 fn main() {
     match env::args().count() {
         1 => {
-            runner::run("stdin", io::stdin().lock())
+            interpreter::run("stdin", io::stdin().lock())
         },
         2 => {
             // Can't panic, as we just verified that there are two arguments.
@@ -48,7 +49,7 @@ fn main() {
                 }
             };
 
-            runner::run(&path, file)
+            interpreter::run(&path, file)
         }
         _ => {
             print!("\nERROR: Expecting zero or one arguments\n\n");
