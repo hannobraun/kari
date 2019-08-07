@@ -38,7 +38,7 @@ fn main() {
             Arg::with_name("path")
                 .value_name("PATH")
                 .index(1)
-                .help("The example to execute, without the \".kr\" extension.")
+                .help("The program to execute, without the \".kr\" extension.")
         )
         .get_matches();
 
