@@ -40,11 +40,23 @@ fn main() {
                 .index(1)
                 .help("The program to execute, without the \".kr\" extension.")
         )
+        .arg(
+            Arg::with_name("test")
+                .long("test")
+                .short("t")
+                .help("Run a test if PATH is specified, all of them otherwise")
+        )
         .get_matches();
+
+    let kind = if args.is_present("test") {
+        ProgramKind::Test
+    } else {
+        ProgramKind::Regular
+    };
 
     match args.value_of("path") {
         Some(name) => {
-            run_program(name);
+            run_program(kind, name);
         }
         None => {
             interpreter::run("<stdin>", io::stdin().lock())
@@ -53,8 +65,8 @@ fn main() {
 }
 
 
-fn run_program(name: &str) {
-    let path = format!("kr/examples/{}.kr", name);
+fn run_program(kind: ProgramKind, name: &str) {
+    let path = format!("kr/{}/{}.kr", kind.base(), name);
     let file = match File::open(&path) {
         Ok(file) => {
             file
@@ -70,4 +82,19 @@ fn run_program(name: &str) {
     };
 
     interpreter::run(&path, file)
+}
+
+
+enum ProgramKind {
+    Regular,
+    Test,
+}
+
+impl ProgramKind {
+    fn base(&self) -> &'static str {
+        match self {
+            ProgramKind::Regular => "examples",
+            ProgramKind::Test    => "tests",
+        }
+    }
 }
