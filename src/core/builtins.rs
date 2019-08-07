@@ -75,8 +75,8 @@ macro_rules! impl_builtin {
 
 impl_builtin!(
     Print,  "print",  print,  Expression => ();
-    Eval,   "eval",   eval,   List => ();
     Define, "define", define, (List, List) => ();
+    Eval,   "eval",   eval,   List => ();
 
     Drop, "drop", drop, Expression => ();
     Dup,  "dup",  dup,  Expression => (Expression, Expression);
