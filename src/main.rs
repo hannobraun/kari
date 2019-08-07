@@ -27,6 +27,7 @@ use clap::{
     App,
     Arg,
 };
+use walkdir::WalkDir;
 
 
 fn main() {
@@ -60,7 +61,50 @@ fn main() {
             run_program(&path);
         }
         None => {
-            interpreter::run("<stdin>", io::stdin().lock())
+            match kind {
+                ProgramKind::Regular => {
+                    interpreter::run("<stdin>", io::stdin().lock())
+                }
+                ProgramKind::Test => {
+                    for result in WalkDir::new("kr/tests") {
+                        let entry = match result {
+                            Ok(entry) => {
+                                entry
+                            }
+                            Err(error) => {
+                                print!(
+                                    "ERROR: Error walking tests directory: {}",
+                                    error,
+                                );
+                                if let Some(path) = error.path() {
+                                    print!(" ({})\n", path.display());
+                                }
+                                return;
+                            }
+                        };
+
+                        let path = entry.path();
+                        let path = match path.to_str() {
+                            Some(path) => {
+                                path
+                            }
+                            None => {
+                                print!(
+                                    "ERROR: Cannot conver path to UTF-8: {}\n",
+                                    path.to_string_lossy(),
+                                );
+                                return;
+                            }
+                        };
+
+                        if !path.ends_with(".kr") {
+                            continue;
+                        }
+
+                        run_program(path);
+                    }
+                }
+            }
         }
     }
 }
