@@ -21,6 +21,7 @@ mod interpreter;
 use std::{
     fs::File,
     io,
+    process::exit,
 };
 
 use clap::{
@@ -79,7 +80,7 @@ fn main() {
                                 if let Some(path) = error.path() {
                                     print!(" ({})\n", path.display());
                                 }
-                                return;
+                                exit(1);
                             }
                         };
 
@@ -93,7 +94,7 @@ fn main() {
                                     "ERROR: Cannot conver path to UTF-8: {}\n",
                                     path.to_string_lossy(),
                                 );
-                                return;
+                                exit(1);
                             }
                         };
 
@@ -121,7 +122,7 @@ fn run_program(path: &str) {
                 path,
                 error,
             );
-            return;
+            exit(1);
         }
     };
 
