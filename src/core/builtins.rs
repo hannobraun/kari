@@ -101,8 +101,7 @@ pub trait Compute : Sized {
 
 }
 
-impl<A, B> Compute for (expression::Data<A>, expression::Data<B>)
-{
+impl<A, B> Compute for (expression::Data<A>, expression::Data<B>) {
     type Input = (A, B);
 
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
