@@ -53,11 +53,22 @@ impl Evaluator {
                     break;
                 }
                 Err(error) => {
-                    return Err(error.into());
+                    return Err(
+                        Error {
+                            kind: error.into(),
+                        }
+                    );
                 }
             };
 
-            self.evaluate(&mut Some(expression).into_iter())?;
+            let result = self.evaluate(&mut Some(expression).into_iter());
+            if let Err(error) = result {
+                return Err(
+                    Error {
+                        kind: error.into(),
+                    }
+                );
+            }
         }
 
         Ok(())
@@ -105,37 +116,42 @@ impl Context for Evaluator {
 }
 
 
-pub enum Error {
-    Context(context::Error),
-    Parser(parser::Error),
+pub struct Error {
+    pub kind: ErrorKind,
 }
 
 impl Error {
     pub fn span(&self) -> Option<Span> {
-        match self {
-            Error::Context(error) => error.span(),
-            Error::Parser(error)  => error.span(),
+        match &self.kind {
+            ErrorKind::Context(error) => error.span(),
+            ErrorKind::Parser(error)  => error.span(),
         }
-    }
-}
-
-impl From<context::Error> for Error {
-    fn from(from: context::Error) -> Self {
-        Error::Context(from)
-    }
-}
-
-impl From<parser::Error> for Error {
-    fn from(from: parser::Error) -> Self {
-        Error::Parser(from)
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Error::Context(error) => error.fmt(f),
-            Error::Parser(error)  => error.fmt(f),
+        match &self.kind {
+            ErrorKind::Context(error) => error.fmt(f),
+            ErrorKind::Parser(error)  => error.fmt(f),
         }
+    }
+}
+
+
+pub enum ErrorKind {
+    Context(context::Error),
+    Parser(parser::Error),
+}
+
+impl From<context::Error> for ErrorKind {
+    fn from(from: context::Error) -> Self {
+        ErrorKind::Context(from)
+    }
+}
+
+impl From<parser::Error> for ErrorKind {
+    fn from(from: parser::Error) -> Self {
+        ErrorKind::Parser(from)
     }
 }
