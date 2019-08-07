@@ -20,8 +20,8 @@ impl<Reader> Recorder<Reader> {
         }
     }
 
-    pub fn chars(self) -> Vec<Char> {
-        self.chars
+    pub fn chars(&self) -> &Vec<Char> {
+        &self.chars
     }
 }
 

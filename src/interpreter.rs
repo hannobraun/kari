@@ -23,7 +23,7 @@ pub fn run<Program>(name: &str, program: Program) -> bool
     let     evaluator = Evaluator::new();
 
     if let Err(error) = evaluator.run(parser) {
-        print_error(error, name, recorder);
+        print_error(error, name, &mut recorder);
         return false;
     }
 
@@ -32,9 +32,9 @@ pub fn run<Program>(name: &str, program: Program) -> bool
 
 
 fn print_error<Program>(
-        error:    Error,
-        program:  &str,
-    mut recorder: Recorder<Reader<Program>>,
+    error:    Error,
+    program:  &str,
+    recorder: &mut Recorder<Reader<Program>>,
 )
     where Program: io::Read
 {
@@ -48,7 +48,7 @@ fn print_error<Program>(
             }
         }
 
-        let mut chars = recorder.chars();
+        let mut chars = recorder.chars().clone();
         chars.retain(|c|
 
             c.pos.line >= span.start.line
