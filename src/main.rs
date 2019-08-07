@@ -56,7 +56,8 @@ fn main() {
 
     match args.value_of("path") {
         Some(name) => {
-            run_program(kind, name);
+            let path = format!("kr/{}/{}.kr", kind.base(), name);
+            run_program(&path);
         }
         None => {
             interpreter::run("<stdin>", io::stdin().lock())
@@ -65,9 +66,8 @@ fn main() {
 }
 
 
-fn run_program(kind: ProgramKind, name: &str) {
-    let path = format!("kr/{}/{}.kr", kind.base(), name);
-    let file = match File::open(&path) {
+fn run_program(path: &str) {
+    let file = match File::open(path) {
         Ok(file) => {
             file
         }
@@ -81,7 +81,7 @@ fn run_program(kind: ProgramKind, name: &str) {
         }
     };
 
-    interpreter::run(&path, file)
+    interpreter::run(path, file)
 }
 
 
