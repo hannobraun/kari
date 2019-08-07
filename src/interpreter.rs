@@ -38,16 +38,16 @@ fn print_error<Program>(
 )
     where Program: io::Read
 {
+    // Read the rest of the line, so the error isn't cut off.
+    while let Ok(c) = recorder.next() {
+        if c == '\n' {
+            break;
+        }
+    }
+
     print!("\nERROR: {}\n", error);
 
     if let Some(span) = error.span() {
-        // Read the rest of the line, so the error isn't cut off.
-        while let Ok(c) = recorder.next() {
-            if c == '\n' {
-                break;
-            }
-        }
-
         let mut chars = recorder.chars().clone();
         chars.retain(|c|
 
