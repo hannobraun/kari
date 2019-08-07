@@ -16,7 +16,10 @@ use crate::core::{
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
     fn define(&mut self, name: String, body: List);
-    fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
+    fn evaluate(&mut self,
+        operator:    Option<Span>,
+        expressions: &mut Iterator<Item=Expression>,
+    )
         -> Result<(), Error>;
 }
 

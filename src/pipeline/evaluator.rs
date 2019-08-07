@@ -26,17 +26,19 @@ use crate::{
 
 
 pub struct Evaluator {
-    builtins:  Builtins,
-    stack:     Stack,
-    functions: Functions,
+    builtins:    Builtins,
+    stack:       Stack,
+    functions:   Functions,
+    stack_trace: Vec<Span>,
 }
 
 impl Evaluator {
     pub fn new() -> Self {
         Self {
-            builtins:  Builtins::new(),
-            stack:     Stack::new(),
-            functions: Functions::new(),
+            builtins:    Builtins::new(),
+            stack:       Stack::new(),
+            functions:   Functions::new(),
+            stack_trace: Vec::new(),
         }
     }
 
@@ -55,17 +57,22 @@ impl Evaluator {
                 Err(error) => {
                     return Err(
                         Error {
-                            kind: error.into(),
+                            kind:        error.into(),
+                            stack_trace: self.stack_trace,
                         }
                     );
                 }
             };
 
-            let result = self.evaluate(&mut Some(expression).into_iter());
+            let result = self.evaluate(
+                None,
+                &mut Some(expression).into_iter(),
+            );
             if let Err(error) = result {
                 return Err(
                     Error {
-                        kind: error.into(),
+                        kind:        error.into(),
+                        stack_trace: self.stack_trace,
                     }
                 );
             }
@@ -84,14 +91,24 @@ impl Context for Evaluator {
         self.functions.define(name, body);
     }
 
-    fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
+    fn evaluate(&mut self,
+        operator:    Option<Span>,
+        expressions: &mut Iterator<Item=Expression>,
+    )
         -> Result<(), context::Error>
     {
+        if let Some(operator) = operator {
+            self.stack_trace.push(operator);
+        }
+
         for expression in expressions {
             if let expression::Kind::Word(word) = expression.kind {
                 if let Some(list) = self.functions.get(&word) {
                     let list = list.clone();
-                    self.evaluate(&mut list.0.into_iter())?;
+                    self.evaluate(
+                        Some(expression.span),
+                        &mut list.0.into_iter(),
+                    )?;
                     continue;
                 }
                 if let Some(builtin) = self.builtins.builtin(&word) {
@@ -111,13 +128,18 @@ impl Context for Evaluator {
             }
         }
 
+        if let Some(_) = operator {
+            self.stack_trace.pop();
+        }
+
         Ok(())
     }
 }
 
 
 pub struct Error {
-    pub kind: ErrorKind,
+    pub kind:        ErrorKind,
+    pub stack_trace: Vec<Span>,
 }
 
 impl Error {

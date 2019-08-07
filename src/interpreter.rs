@@ -61,6 +61,15 @@ fn print_error<Program>(
         );
     }
 
+    for span in error.stack_trace.into_iter().rev() {
+        print!("\n\nCalled by:\n");
+        print_span(
+            span,
+            program,
+            &mut recorder.chars().clone(),
+        );
+    }
+
     print!("\n");
 }
 

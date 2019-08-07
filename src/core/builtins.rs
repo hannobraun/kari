@@ -173,7 +173,10 @@ fn fail(operator: Span, _: &mut Context) -> Result {
 
 fn eval(operator: Span, context: &mut Context) -> Result {
     let list = context.stack().pop::<List>(operator)?;
-    context.evaluate(&mut list.data.into_iter())?;
+    context.evaluate(
+        Some(operator),
+        &mut list.data.into_iter(),
+    )?;
     Ok(())
 }
 
@@ -202,7 +205,10 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
     for item in list.data {
         context.stack().push::<Expression>(item);
-        context.evaluate(&mut function.data.clone().into_iter())?;
+        context.evaluate(
+            Some(operator),
+            &mut function.data.clone().into_iter(),
+        )?;
     }
 
     let result = context.stack().destroy_substack();
@@ -220,9 +226,12 @@ fn each(operator: Span, context: &mut Context) -> Result {
 fn r#if(operator: Span, context: &mut Context) -> Result {
     let (function, condition) = context.stack().pop::<(List, List)>(operator)?;
 
-    context.evaluate(&mut condition.data.into_iter())?;
+    context.evaluate(Some(operator), &mut condition.data.into_iter())?;
     if context.stack().pop::<Bool>(operator)?.data.0 {
-        context.evaluate(&mut function.data.into_iter())?;
+        context.evaluate(
+            Some(operator),
+            &mut function.data.into_iter(),
+        )?;
     }
 
     Ok(())
