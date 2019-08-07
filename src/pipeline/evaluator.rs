@@ -46,9 +46,15 @@ impl Evaluator {
     {
         loop {
             let expression = match parser.next() {
-                Ok(expression)                  => expression,
-                Err(parser::Error::EndOfStream) => break,
-                Err(error)                      => return Err(error.into()),
+                Ok(expression) => {
+                    expression
+                }
+                Err(parser::Error::EndOfStream) => {
+                    break;
+                }
+                Err(error) => {
+                    return Err(error.into());
+                }
             };
 
             self.evaluate(&mut Some(expression).into_iter())?;
