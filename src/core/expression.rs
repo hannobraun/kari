@@ -3,6 +3,7 @@ use std::{
     ops::{
         Add,
         Mul,
+        Not,
     },
 };
 
@@ -46,6 +47,14 @@ pub struct Data<T> {
 
 #[derive(Clone, Debug)]
 pub struct Bool(pub bool);
+
+impl Not for Bool {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        Bool(self.0.not())
+    }
+}
 
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
