@@ -34,7 +34,7 @@ fn main() {
             // Can't panic, as we just verified that there are two arguments.
             let name = env::args().skip(1).next().unwrap();
 
-            let path = format!("examples/{}.kr", name);
+            let path = format!("kr/examples/{}.kr", name);
             let file = match File::open(&path) {
                 Ok(file) => {
                     file
