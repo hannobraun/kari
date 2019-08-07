@@ -94,7 +94,7 @@ impl_builtin!(
 pub trait Compute : Sized {
     type Input;
 
-    fn compute<F, R>(self, operator: Span, _: F) -> Expression
+    fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into;
