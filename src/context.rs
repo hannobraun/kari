@@ -5,7 +5,6 @@ use crate::{
         Expression,
         List,
     },
-    parser,
     span::Span,
     stack::{
         self,
@@ -24,7 +23,6 @@ pub trait Context {
 
 #[derive(Debug)]
 pub enum Error {
-    Parser(parser::Error),
     UnknownFunction { name: String, span: Span },
     Stack(stack::Error),
 }
@@ -32,7 +30,6 @@ pub enum Error {
 impl Error {
     pub fn span(&self) -> Option<Span> {
         match self {
-            Error::Parser(error)                => error.span(),
             Error::UnknownFunction { span, .. } => Some(*span),
             Error::Stack(error)                 => error.span(),
         }
@@ -45,18 +42,9 @@ impl From<stack::Error> for Error {
     }
 }
 
-impl From<parser::Error> for Error {
-    fn from(from: parser::Error) -> Self {
-        Error::Parser(from)
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Parser(error) => {
-                write!(f, "{}", error)?;
-            }
             Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)?;
             }

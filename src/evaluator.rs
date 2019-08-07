@@ -1,8 +1,10 @@
+use std::fmt;
+
 use crate::{
     builtins::Builtins,
     context::{
+        self,
         Context,
-        Error,
     },
     expression::{
         self,
@@ -13,6 +15,7 @@ use crate::{
         Functions,
     },
     parser,
+    span::Span,
     stack::Stack,
     stream::Stream,
 };
@@ -61,7 +64,7 @@ impl Context for Evaluator {
     }
 
     fn evaluate(&mut self, expressions: &mut Iterator<Item=Expression>)
-        -> Result<(), Error>
+        -> Result<(), context::Error>
     {
         for expression in expressions {
             if let expression::Kind::Word(word) = expression.kind {
@@ -76,7 +79,7 @@ impl Context for Evaluator {
                 }
 
                 return Err(
-                    Error::UnknownFunction {
+                    context::Error::UnknownFunction {
                         name: word.to_string(),
                         span: expression.span,
                     }
@@ -88,5 +91,41 @@ impl Context for Evaluator {
         }
 
         Ok(())
+    }
+}
+
+
+pub enum Error {
+    Context(context::Error),
+    Parser(parser::Error),
+}
+
+impl Error {
+    pub fn span(&self) -> Option<Span> {
+        match self {
+            Error::Context(error) => error.span(),
+            Error::Parser(error)  => error.span(),
+        }
+    }
+}
+
+impl From<context::Error> for Error {
+    fn from(from: context::Error) -> Self {
+        Error::Context(from)
+    }
+}
+
+impl From<parser::Error> for Error {
+    fn from(from: parser::Error) -> Self {
+        Error::Parser(from)
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::Context(error) => error.fmt(f),
+            Error::Parser(error)  => error.fmt(f),
+        }
     }
 }
