@@ -35,14 +35,14 @@ fn main() {
         .author("Hanno Braun <hb@hannobraun.de>")
         .about("Interpreter for the Kari prorgamming language")
         .arg(
-            Arg::with_name("example")
+            Arg::with_name("path")
                 .value_name("PATH")
                 .index(1)
                 .help("The example to execute, without the \".kr\" extension.")
         )
         .get_matches();
 
-    match args.value_of("example") {
+    match args.value_of("path") {
         Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
             let file = match File::open(&path) {
