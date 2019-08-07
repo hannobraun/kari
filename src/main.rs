@@ -64,7 +64,7 @@ fn main() {
         None => {
             match kind {
                 ProgramKind::Regular => {
-                    interpreter::run("<stdin>", io::stdin().lock())
+                    interpreter::run("<stdin>", io::stdin().lock());
                 }
                 ProgramKind::Test => {
                     for result in WalkDir::new("kr/tests") {
