@@ -51,7 +51,7 @@ fn main() {
                 }
                 Err(error) => {
                     print!(
-                        "\nERROR: Failed to open file file {} ({})\n\n",
+                        "\nERROR: Failed to open file {} ({})\n\n",
                         path,
                         error,
                     );
