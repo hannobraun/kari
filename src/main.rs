@@ -44,25 +44,30 @@ fn main() {
 
     match args.value_of("path") {
         Some(name) => {
-            let path = format!("kr/examples/{}.kr", name);
-            let file = match File::open(&path) {
-                Ok(file) => {
-                    file
-                }
-                Err(error) => {
-                    print!(
-                        "\nERROR: Failed to open file {} ({})\n\n",
-                        path,
-                        error,
-                    );
-                    return;
-                }
-            };
-
-            interpreter::run(&path, file)
+            run_program(name);
         }
         None => {
             interpreter::run("stdin", io::stdin().lock())
         }
     }
+}
+
+
+fn run_program(name: &str) {
+    let path = format!("kr/examples/{}.kr", name);
+    let file = match File::open(&path) {
+        Ok(file) => {
+            file
+        }
+        Err(error) => {
+            print!(
+                "\nERROR: Failed to open file {} ({})\n\n",
+                path,
+                error,
+            );
+            return;
+        }
+    };
+
+    interpreter::run(&path, file)
 }
