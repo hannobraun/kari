@@ -47,7 +47,7 @@ fn main() {
             run_program(name);
         }
         None => {
-            interpreter::run("stdin", io::stdin().lock())
+            interpreter::run("<stdin>", io::stdin().lock())
         }
     }
 }
