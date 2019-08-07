@@ -19,21 +19,31 @@ mod interpreter;
 
 
 use std::{
-    env,
     fs::File,
     io,
 };
 
+use clap::{
+    App,
+    Arg,
+};
+
 
 fn main() {
-    match env::args().count() {
-        1 => {
-            interpreter::run("stdin", io::stdin().lock())
-        },
-        2 => {
-            // Can't panic, as we just verified that there are two arguments.
-            let name = env::args().skip(1).next().unwrap();
+    let args = App::new("Kari")
+        .version(env!("CARGO_PKG_VERSION"))
+        .author("Hanno Braun <hb@hannobraun.de>")
+        .about("Interpreter for the Kari prorgamming language")
+        .arg(
+            Arg::with_name("example")
+                .value_name("PATH")
+                .index(1)
+                .help("The example to execute, without the \".kr\" extension.")
+        )
+        .get_matches();
 
+    match args.value_of("example") {
+        Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
             let file = match File::open(&path) {
                 Ok(file) => {
@@ -51,9 +61,8 @@ fn main() {
 
             interpreter::run(&path, file)
         }
-        _ => {
-            print!("\nERROR: Expecting zero or one arguments\n\n");
-            return;
+        None => {
+            interpreter::run("stdin", io::stdin().lock())
         }
     }
 }
