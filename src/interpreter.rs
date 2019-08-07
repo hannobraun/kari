@@ -10,7 +10,7 @@ use crate::pipeline::{
 };
 
 
-pub fn run<Program>(name: &str, program: Program)
+pub fn run<Program>(name: &str, program: Program) -> bool
     where Program: io::Read
 {
     let     reader    = Reader::new(program);
@@ -91,5 +91,9 @@ pub fn run<Program>(name: &str, program: Program)
         }
 
         print!("\n");
+
+        return false;
     }
+
+    true
 }

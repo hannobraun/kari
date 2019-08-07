@@ -67,6 +67,8 @@ fn main() {
                     interpreter::run("<stdin>", io::stdin().lock());
                 }
                 ProgramKind::Test => {
+                    print!("\n");
+
                     for result in WalkDir::new("kr/tests") {
                         let entry = match result {
                             Ok(entry) => {
@@ -102,8 +104,13 @@ fn main() {
                             continue;
                         }
 
-                        run_program(path);
+                        let success = run_program(path);
+                        if success {
+                            print!("    OK {}\n", path);
+                        }
                     }
+
+                    print!("\n");
                 }
             }
         }
@@ -111,7 +118,7 @@ fn main() {
 }
 
 
-fn run_program(path: &str) {
+fn run_program(path: &str) -> bool {
     let file = match File::open(path) {
         Ok(file) => {
             file
