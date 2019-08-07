@@ -86,6 +86,7 @@ impl_builtin!(
 
     Add, "+", add, (Number, Number) => Number;
     Mul, "*", mul, (Number, Number) => Number;
+    Eq,  "=", eq,  (Number, Number) => Bool;
     Gt,  ">", gt,  (Number, Number) => Bool;
 );
 
@@ -220,6 +221,14 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(operator)?
         .compute(operator, |(a, b)| a * b);
+    context.stack().push_raw(result);
+    Ok(())
+}
+
+fn eq(operator: Span, context: &mut Context) -> Result {
+    let result = context
+        .stack().pop::<(Number, Number)>(operator)?
+        .compute(operator, |(a, b)| Bool(a == b));
     context.stack().push_raw(result);
     Ok(())
 }
