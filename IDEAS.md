@@ -9,7 +9,6 @@ If I ever end up modelling side effects somehow, then `Evaluator` could be turne
 ### Error Messages
 
 - Add spans to functions, so a type error for a function can point to where the function is defined.
-- Pass an optional span to `context.evaluate`, so the result of the evaluation gets a span that fully reflects where it came frome.
 - Make it possible to return multiple spans per error. For example the type error message can point to the expression that has the wrong type, as well as the operator that expects a different one.
 - Give spans a type, so operands and operators can be colored differently in error messages.
 - Extend the spans of expressions that are the result of an evaluation, so they also point to the operator that did the evaluation (like `eval`, `each`). This requires support for discontinuous spans, or maybe expressions can just have different spans.
