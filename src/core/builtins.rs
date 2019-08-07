@@ -84,10 +84,11 @@ impl_builtin!(
     If,   "if",   r#if, (List, List) => ();
     Each, "each", each, (List, List) => List;
 
-    Add, "+", add, (Number, Number) => Number;
-    Mul, "*", mul, (Number, Number) => Number;
-    Eq,  "=", eq,  (Number, Number) => Bool;
-    Gt,  ">", gt,  (Number, Number) => Bool;
+    Add, "+",   add, (Number, Number) => Number;
+    Mul, "*",   mul, (Number, Number) => Number;
+    Eq,  "=",   eq,  (Number, Number) => Bool;
+    Gt,  ">",   gt,  (Number, Number) => Bool;
+    Not, "not", not, Bool => Bool;
 );
 
 
@@ -99,6 +100,21 @@ pub trait Compute : Sized {
             F: Fn(Self::Input) -> R,
             expression::Data<R>: expression::Into;
 
+}
+
+impl<T> Compute for expression::Data<T> {
+    type Input = T;
+
+    fn compute<F, R>(self, operator: Span, f: F) -> Expression
+        where
+            F: Fn(Self::Input) -> R,
+            expression::Data<R>: expression::Into
+    {
+        let data = f(self.data);
+        let span = operator.merge(self.span);
+
+        expression::Data { data, span }.into_expression()
+    }
 }
 
 impl<A, B> Compute for (expression::Data<A>, expression::Data<B>) {
@@ -236,6 +252,14 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(operator)?
         .compute(operator, |(a, b)| Bool(a > b));
+    context.stack().push_raw(result);
+    Ok(())
+}
+
+fn not(operator: Span, context: &mut Context) -> Result {
+    let result = context
+        .stack().pop::<Bool>(operator)?
+        .compute(operator, |b| !b);
     context.stack().push_raw(result);
     Ok(())
 }
