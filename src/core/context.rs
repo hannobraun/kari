@@ -23,6 +23,7 @@ pub trait Context {
 
 #[derive(Debug)]
 pub enum Error {
+    Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
     Stack(stack::Error),
 }
@@ -30,6 +31,7 @@ pub enum Error {
 impl Error {
     pub fn span(&self) -> Option<Span> {
         match self {
+            Error::Failure { operator }         => Some(*operator),
             Error::UnknownFunction { span, .. } => Some(*span),
             Error::Stack(error)                 => error.span(),
         }
@@ -45,6 +47,9 @@ impl From<stack::Error> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Error::Failure { .. } => {
+                write!(f, "Explicit failure")?;
+            }
             Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)?;
             }

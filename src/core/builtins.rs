@@ -76,6 +76,7 @@ macro_rules! impl_builtin {
 impl_builtin!(
     Print,  "print",  print,  Expression => ();
     Define, "define", define, (List, List) => ();
+    Fail,   "fail",   fail,   () => ();
     Eval,   "eval",   eval,   List => ();
 
     Drop, "drop", drop, Expression => ();
@@ -164,6 +165,10 @@ fn define(operator: Span, context: &mut Context) -> Result {
     context.define(name, body.data.clone());
 
     Ok(())
+}
+
+fn fail(operator: Span, _: &mut Context) -> Result {
+    Err(context::Error::Failure { operator })
 }
 
 fn eval(operator: Span, context: &mut Context) -> Result {
