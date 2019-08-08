@@ -42,7 +42,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let c = loop {
+        loop {
             if self.buffer_i >= self.buffer.len() {
                 // This can only happen if an error occured before.
                 return Err(Error::EndOfStream);
@@ -73,7 +73,22 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
 
                     // Can't panic. We just asserted that there is exactly one
                     // char.
-                    break s.chars().next().unwrap();
+                    let c = s.chars().next().unwrap();
+
+                    self.buffer_i = 0;
+
+                    let c = Char {
+                        c,
+                        pos: self.next_pos,
+                    };
+
+                    self.next_pos.column += 1;
+                    if c.c == '\n' {
+                        self.next_pos.column = 0;
+                        self.next_pos.line += 1;
+                    }
+
+                    return Ok(c);
                 }
                 Err(error) => {
                     match self.buffer_i {
@@ -89,22 +104,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                     }
                 }
             }
-        };
-
-        self.buffer_i = 0;
-
-        let c = Char {
-            c,
-            pos: self.next_pos,
-        };
-
-        self.next_pos.column += 1;
-        if c.c == '\n' {
-            self.next_pos.column = 0;
-            self.next_pos.line += 1;
         }
-
-        Ok(c)
     }
 }
 
