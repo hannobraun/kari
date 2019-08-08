@@ -21,7 +21,7 @@ use crate::core::{
 };
 
 
-pub struct Builtins(HashMap<&'static str, &'static Builtin>);
+pub struct Builtins(HashMap<&'static str, Builtin>);
 
 impl Builtins {
     pub fn new() -> Self {
@@ -34,7 +34,7 @@ impl Builtins {
         Self(b)
     }
 
-    pub fn builtin(&self, name: &str) -> Option<&'static Builtin> {
+    pub fn builtin(&self, name: &str) -> Option<Builtin> {
         self.0
             .get(name)
             .map(|builtin| *builtin)
@@ -42,49 +42,36 @@ impl Builtins {
 }
 
 
-pub trait Builtin {
-    fn run(&self, operator: Span, _: &mut Context) -> Result;
-}
+type Builtin = fn(Span, &mut Context) -> Result;
+
 
 macro_rules! impl_builtin {
-    ($($ty:ident, $name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
-        fn builtins() -> Vec<(&'static str, &'static Builtin)> {
+    ($($name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
+        fn builtins() -> Vec<(&'static str, Builtin)> {
             vec![
-                $(($name, &$ty),)*
+                $(($name, $fn),)*
             ]
         }
-
-        $(
-            pub struct $ty;
-
-            impl Builtin for $ty {
-                fn run(&self, operator: Span, context: &mut Context)
-                    -> Result
-                {
-                    $fn(operator, context)
-                }
-            }
-        )*
     }
 }
 
 impl_builtin!(
-    Print,  "print",  print,  Expression => ();
-    Define, "define", define, (List, List) => ();
-    Fail,   "fail",   fail,   () => ();
-    Eval,   "eval",   eval,   List => ();
+    "print",  print,  Expression => ();
+    "define", define, (List, List) => ();
+    "fail",   fail,   () => ();
+    "eval",   eval,   List => ();
 
-    Drop, "drop", drop, Expression => ();
-    Dup,  "dup",  dup,  Expression => (Expression, Expression);
+    "drop", drop, Expression => ();
+    "dup",  dup,  Expression => (Expression, Expression);
 
-    If,   "if",   r#if, (List, List) => ();
-    Each, "each", each, (List, List) => List;
+    "if",   r#if, (List, List) => ();
+    "each", each, (List, List) => List;
 
-    Add, "+",   add, (Number, Number) => Number;
-    Mul, "*",   mul, (Number, Number) => Number;
-    Eq,  "=",   eq,  (Number, Number) => Bool;
-    Gt,  ">",   gt,  (Number, Number) => Bool;
-    Not, "not", not, Bool => Bool;
+    "+",   add, (Number, Number) => Number;
+    "*",   mul, (Number, Number) => Number;
+    "=",   eq,  (Number, Number) => Bool;
+    ">",   gt,  (Number, Number) => Bool;
+    "not", not, Bool => Bool;
 );
 
 
