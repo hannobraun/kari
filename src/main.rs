@@ -6,6 +6,7 @@ mod pipeline;
 
 
 use std::{
+    borrow::Cow,
     fs::File,
     io::stdin,
     process::exit,
@@ -47,13 +48,13 @@ fn main() {
     match args.value_of("path") {
         Some(name) => {
             let path = format!("kr/{}/{}.kr", kind.base(), name);
-            run_program(&path);
+            run_program(path.into());
         }
         None => {
             match kind {
                 ProgramKind::Regular => {
                     interpreter::run(
-                        "<stdin>",
+                        "<stdin>".into(),
                         AccReader::new(stdin().lock()),
                     );
                 }
@@ -95,7 +96,7 @@ fn main() {
                             continue;
                         }
 
-                        let success = run_program(path);
+                        let success = run_program(path.into());
                         if success {
                             print!("    OK {}\n", path);
                         }
@@ -109,8 +110,8 @@ fn main() {
 }
 
 
-fn run_program(path: &str) -> bool {
-    let file = match File::open(path) {
+fn run_program(path: Cow<str>) -> bool {
+    let file = match File::open(path.as_ref()) {
         Ok(file) => {
             file
         }
