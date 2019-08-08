@@ -21,7 +21,9 @@ use crate::{
 pub fn run<Stream>(name: Cow<str>, mut stream: Stream) -> bool
     where Stream: io::Read + io::Seek
 {
-    if let Err(error) = Evaluator::run(pipeline::new(stream.by_ref())) {
+    let pipeline = pipeline::new(stream.by_ref());
+
+    if let Err(error) = Evaluator::run(pipeline) {
         if let Err(error) = print_error(error, &name, stream) {
             print!("Error printing error: {}\n", error)
         }
