@@ -1,5 +1,8 @@
 #[derive(Clone, Debug, Default)]
 pub struct Span {
+    /// The stream this span refers to
+    pub stream: String,
+
     /// The position of the first character in the span
     pub start: Position,
 

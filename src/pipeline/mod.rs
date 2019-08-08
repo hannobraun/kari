@@ -10,11 +10,12 @@ use reader::Reader;
 use tokenizer::Tokenizer;
 
 
-pub fn new<Stream>(stream: Stream) -> Parser<Tokenizer<Reader<Stream>>>
+pub fn new<Stream>(name: String, stream: Stream)
+    -> Parser<Tokenizer<Reader<Stream>>>
     where Stream: io::Read
 {
     let reader    = Reader::new(stream);
-    let tokenizer = Tokenizer::new(reader);
+    let tokenizer = Tokenizer::new(reader, name);
     let parser    = Parser::new(tokenizer);
 
     parser

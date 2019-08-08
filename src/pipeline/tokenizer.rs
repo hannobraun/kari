@@ -16,12 +16,14 @@ use crate::{
 
 pub struct Tokenizer<Reader> {
     reader: Reader,
+    stream: String,
 }
 
 impl<Reader> Tokenizer<Reader> {
-    pub fn new(reader: Reader) -> Self {
+    pub fn new(reader: Reader, stream: String) -> Self {
         Self {
             reader,
+            stream,
         }
     }
 }
@@ -33,7 +35,7 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let mut builder = TokenBuilder::new();
+        let mut builder = TokenBuilder::new(self.stream.clone());
         let mut state   = State::Initial;
 
         loop {
@@ -103,13 +105,15 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
 
 struct TokenBuilder {
     buffer: String,
+    stream: Option<String>,
     span:   Option<Span>,
 }
 
 impl TokenBuilder {
-    fn new() -> Self {
+    fn new(stream: String) -> Self {
         Self {
             buffer: String::new(),
+            stream: Some(stream),
             span:   None,
         }
     }
@@ -122,8 +126,9 @@ impl TokenBuilder {
             None => {
                 self.span = Some(
                     Span {
-                        start: c.pos,
-                        end:   c.pos,
+                        stream: self.stream.take().unwrap(),
+                        start:  c.pos,
+                        end:    c.pos,
                     }
                 )
             }
