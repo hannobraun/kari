@@ -132,7 +132,9 @@ fn print_span<Stream>(
             }
         }
 
-        print!("\n");
+        if line_number != span.end.line {
+            print!("\n");
+        }
     }
 
     Ok(())
