@@ -1,12 +1,5 @@
-mod data {
-    pub mod character;
-    pub mod expression;
-    pub mod span;
-    pub mod stack;
-    pub mod token;
-}
-
 mod builtins;
+mod data;
 mod evaluator;
 mod interpreter;
 mod pipeline;
