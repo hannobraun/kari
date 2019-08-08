@@ -27,8 +27,8 @@ impl Builtins {
     pub fn new() -> Self {
         let mut b = HashMap::new();
 
-        for builtin in builtins() {
-            b.insert(builtin.name(), builtin);
+        for (name, builtin) in builtins() {
+            b.insert(name, builtin);
         }
 
         Self(b)
@@ -43,15 +43,14 @@ impl Builtins {
 
 
 pub trait Builtin {
-    fn name(&self) -> &'static str;
     fn run(&self, operator: Span, _: &mut Context) -> Result;
 }
 
 macro_rules! impl_builtin {
     ($($ty:ident, $name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
-        fn builtins() -> Vec<&'static Builtin> {
+        fn builtins() -> Vec<(&'static str, &'static Builtin)> {
             vec![
-                $(&$ty,)*
+                $(($name, &$ty),)*
             ]
         }
 
@@ -59,10 +58,6 @@ macro_rules! impl_builtin {
             pub struct $ty;
 
             impl Builtin for $ty {
-                fn name(&self) -> &'static str {
-                    $name
-                }
-
                 fn run(&self, operator: Span, context: &mut Context)
                     -> Result
                 {
