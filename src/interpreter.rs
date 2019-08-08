@@ -89,7 +89,7 @@ fn print_span(
         span.start.line + 1,
         span.start.column + 1,
     );
-    print!("      |\n");
+    print!("\n");
 
     // This makes heavy assumptions about the structure of `chars`,
     // namely that chars' position's are consecutive, that chars in the
@@ -122,7 +122,7 @@ fn print_span(
         }
         print!("\n");
 
-        print!("      | ");
+        print!("        ");
         for column in 0 ..= last.column {
             if column >= start_column && column <= end_column {
                 print!("^");
