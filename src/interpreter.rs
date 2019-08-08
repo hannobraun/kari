@@ -9,13 +9,11 @@ use std::{
 
 use crate::{
     core::span::Span,
-    pipeline::{
-        self,
-        evaluator::{
-            Error,
-            Evaluator,
-        },
+    evaluator::{
+        Error,
+        Evaluator,
     },
+    pipeline,
 };
 
 

@@ -7,6 +7,7 @@ mod core {
     pub mod stack;
 }
 
+mod evaluator;
 mod interpreter;
 mod pipeline;
 
