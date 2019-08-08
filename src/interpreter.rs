@@ -13,7 +13,7 @@ use crate::{
             Reader,
         },
         recorder::Recorder,
-        stage::Stage,
+        stage::Stage as _,
         tokenizer::Tokenizer,
     },
 };
