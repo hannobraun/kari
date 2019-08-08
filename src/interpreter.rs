@@ -1,4 +1,11 @@
-use std::io;
+use std::{
+    io::{
+        self,
+        SeekFrom,
+    },
+    iter::repeat,
+    str::from_utf8,
+};
 
 use crate::{
     core::span::Span,
@@ -8,28 +15,26 @@ use crate::{
             Evaluator,
         },
         parser::Parser,
-        reader::{
-            Char,
-            Reader,
-        },
+        reader::Reader,
         recorder::Recorder,
         tokenizer::Tokenizer,
-        Stage as _,
     },
 };
 
 
-pub fn run<Stream>(name: &str, stream: Stream) -> bool
-    where Stream: io::Read
+pub fn run<Stream>(name: &str, mut stream: Stream) -> bool
+    where Stream: io::Read + io::Seek
 {
-    let     reader    = Reader::new(stream);
+    let     reader    = Reader::new(stream.by_ref());
     let mut recorder  = Recorder::new(reader);
     let     tokenizer = Tokenizer::new(&mut recorder);
     let     parser    = Parser::new(tokenizer);
     let     evaluator = Evaluator::new();
 
     if let Err(error) = evaluator.run(parser) {
-        print_error(error, name, &mut recorder);
+        if let Err(error) = print_error(error, name, stream) {
+            print!("Error printing error: {}\n", error)
+        }
         return false;
     }
 
@@ -38,27 +43,21 @@ pub fn run<Stream>(name: &str, stream: Stream) -> bool
 
 
 fn print_error<Stream>(
-    error:    Error,
-    name:     &str,
-    recorder: &mut Recorder<Reader<Stream>>,
+        error:  Error,
+        name:   &str,
+    mut stream: Stream,
 )
-    where Stream: io::Read
+    -> io::Result<()>
+    where Stream: io::Read + io::Seek
 {
-    // Read the rest of the line, so the error isn't cut off.
-    while let Ok(c) = recorder.next() {
-        if c == '\n' {
-            break;
-        }
-    }
-
     print!("\nERROR: {}\n", error);
 
     if let Some(span) = error.span() {
         print_span(
             span,
             name,
-            &mut recorder.chars().clone(),
-        );
+            &mut stream,
+        )?;
     }
 
     for span in error.stack_trace.into_iter().rev() {
@@ -66,27 +65,33 @@ fn print_error<Stream>(
         print_span(
             span,
             name,
-            &mut recorder.chars().clone(),
-        );
+            &mut stream,
+        )?;
     }
 
     print!("\n");
+
+    Ok(())
 }
 
-fn print_span(
-    span:  Span,
-    name:  &str,
-    chars: &mut Vec<Char>,
-) {
-    chars.retain(|c|
-        c.pos.line >= span.start.line
-            && c.pos.line <= span.end.line
-    );
-    if let Some(last) = chars.last() {
-        if last.c == '\n' {
-            chars.pop();
-        }
-    }
+fn print_span<Stream>(
+    span:   Span,
+    name:   &str,
+    stream: &mut Stream,
+)
+    -> io::Result<()>
+    where Stream: io::Read + io::Seek
+{
+    let start = search_backward(span.start.index, stream)?;
+    let end   = search_forward(span.end.index, stream)?;
+
+    let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
+    stream.seek(SeekFrom::Start(start as u64))?;
+    stream.read_exact(&mut buffer)?;
+
+    // Can't fail. If this weren't UTF-8, we never would have gotten to the
+    // stage where we need to render a span.
+    let buffer = from_utf8(&buffer).unwrap();
 
     print!(
         "  => {}:{}:{}\n",
@@ -96,19 +101,11 @@ fn print_span(
     );
     print!("\n");
 
-    // This makes heavy assumptions about the structure of `chars`,
-    // namely that chars' position's are consecutive, that chars in the
-    // same line actually have the same line recorded in their position,
-    // stuff like that.
-    for (i, line) in chars.split(|c| c.c == '\n').enumerate() {
+    for (i, line) in buffer.lines().enumerate() {
         let line_number = span.start.line + i;
-        let line_len    = line.len();
+        let line_len    = line.chars().count();
 
-        print!("{:5} | ", line_number + 1);
-        for c in line {
-            print!("{}", c.c);
-        }
-        print!("\n");
+        print!("{:5} | {}\n", line_number + 1, line);
 
         let start_column = if line_number == span.start.line {
             span.start.column
@@ -138,5 +135,58 @@ fn print_span(
         }
 
         print!("\n");
+    }
+
+    Ok(())
+}
+
+
+fn search_backward<Stream>(from: usize, stream: &mut Stream)
+    -> io::Result<usize>
+    where Stream: io::Read + io::Seek
+{
+    stream.seek(SeekFrom::Start(from as u64 + 1))?;
+
+    while stream.seek(SeekFrom::Current(0))? > 1 {
+        stream.seek(SeekFrom::Current(-2))?;
+
+        let mut buffer = [0];
+        stream.read(&mut buffer)?;
+
+        if buffer[0] == b'\n' {
+            let pos = stream.seek(SeekFrom::Current(0))?;
+            return Ok(pos as usize);
+        }
+    }
+
+    Ok(0)
+}
+
+fn search_forward<Stream>(from: usize, stream: &mut Stream)
+    -> io::Result<usize>
+    where Stream: io::Read + io::Seek
+{
+    stream.seek(SeekFrom::Start(from as u64))?;
+
+    loop {
+        let pos = stream.seek(SeekFrom::Current(0))?;
+
+        let mut buffer = [0];
+        match stream.read(&mut buffer) {
+            Ok(_) => {
+                if buffer[0] == b'\n' {
+                    let pos = stream.seek(SeekFrom::Current(0))?;
+                    return Ok(pos as usize);
+                }
+            }
+            Err(error) => {
+                if let io::ErrorKind::UnexpectedEof = error.kind() {
+                    return Ok(pos as usize);
+                }
+                else {
+                    return Err(error);
+                }
+            }
+        }
     }
 }

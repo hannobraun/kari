@@ -19,10 +19,6 @@ impl<Reader> Recorder<Reader> {
             chars: Vec::new(),
         }
     }
-
-    pub fn chars(&self) -> &Vec<Char> {
-        &self.chars
-    }
 }
 
 impl<Reader> pipeline::Stage for Recorder<Reader>
