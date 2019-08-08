@@ -41,17 +41,17 @@ impl Evaluator {
     pub fn run<Stream>(name: Cow<str>, mut stream: Stream) -> bool
         where Stream: io::Read + io::Seek
     {
-        let pipeline = pipeline::new(
-            name.clone().into_owned(),
-            stream.by_ref(),
-        );
-
         let evaluator = Self {
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
             stack_trace: Vec::new(),
         };
+
+        let pipeline = pipeline::new(
+            name.clone().into_owned(),
+            stream.by_ref(),
+        );
 
         if let Err(error) = evaluator.evaluate_expressions(pipeline) {
             if let Err(error) = error::print(error, &name, stream) {
