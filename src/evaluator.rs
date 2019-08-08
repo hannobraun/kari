@@ -1,6 +1,8 @@
 use std::{
+    borrow::Cow,
     collections::HashMap,
     fmt,
+    io,
 };
 
 use crate::{
@@ -20,6 +22,7 @@ use crate::{
         span::Span,
         stack::Stack,
     },
+    error,
     pipeline::{
         self,
         parser,
@@ -35,10 +38,14 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
-    pub fn run<Parser>(parser: Parser)
-        -> Result<(), Error>
-        where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
+    pub fn run<Stream>(name: Cow<str>, mut stream: Stream) -> bool
+        where Stream: io::Read + io::Seek
     {
+        let pipeline = pipeline::new(
+            name.clone().into_owned(),
+            stream.by_ref(),
+        );
+
         let evaluator = Self {
             builtins:    Builtins::new(),
             stack:       Stack::new(),
@@ -46,7 +53,14 @@ impl Evaluator {
             stack_trace: Vec::new(),
         };
 
-        evaluator.evaluate_expressions(parser)
+        if let Err(error) = evaluator.evaluate_expressions(pipeline) {
+            if let Err(error) = error::print(error, &name, stream) {
+                print!("Error printing error: {}\n", error)
+            }
+            return false;
+        }
+
+        true
     }
 
     fn evaluate_expressions<Parser>(mut self, mut parser: Parser)

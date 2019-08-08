@@ -2,7 +2,6 @@ mod builtins;
 mod data;
 mod error;
 mod evaluator;
-mod interpreter;
 mod pipeline;
 
 
@@ -19,6 +18,8 @@ use clap::{
     Arg,
 };
 use walkdir::WalkDir;
+
+use evaluator::Evaluator;
 
 
 fn main() {
@@ -54,7 +55,7 @@ fn main() {
         None => {
             match kind {
                 ProgramKind::Regular => {
-                    interpreter::run(
+                    Evaluator::run(
                         "<stdin>".into(),
                         AccReader::new(stdin().lock()),
                     );
@@ -126,7 +127,7 @@ fn run_program(path: Cow<str>) -> bool {
         }
     };
 
-    interpreter::run(path, file)
+    Evaluator::run(path, file)
 }
 
 
