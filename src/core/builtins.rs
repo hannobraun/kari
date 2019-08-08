@@ -21,7 +21,8 @@ use crate::core::{
 };
 
 
-type Builtin = fn(Span, &mut Context) -> Result;
+pub type Builtin = fn(Span, &mut Context) -> Result;
+pub type Result  = StdResult<(), context::Error>;
 
 
 pub struct Builtins(HashMap<&'static str, Builtin>);
@@ -114,9 +115,6 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>) {
         expression::Data { data, span }.into_expression()
     }
 }
-
-
-pub type Result = StdResult<(), context::Error>;
 
 
 fn print(operator: Span, context: &mut Context) -> Result {
