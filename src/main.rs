@@ -57,7 +57,10 @@ fn main() {
         None => {
             match kind {
                 ProgramKind::Regular => {
-                    interpreter::run("<stdin>", io::stdin().lock());
+                    interpreter::run(
+                        "<stdin>",
+                        io::stdin().lock(),
+                    );
                 }
                 ProgramKind::Test => {
                     print!("\n");
