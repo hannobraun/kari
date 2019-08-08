@@ -56,7 +56,7 @@ fn main() {
                 ProgramKind::Regular => {
                     Evaluator::run(
                         "<stdin>".into(),
-                        AccReader::new(stdin().lock()),
+                        Box::new(AccReader::new(stdin())),
                     );
                 }
                 ProgramKind::Test => {
@@ -126,7 +126,7 @@ fn run_program(path: Cow<str>) -> bool {
         }
     };
 
-    Evaluator::run(path, file)
+    Evaluator::run(path, Box::new(file))
 }
 
 

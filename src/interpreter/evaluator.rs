@@ -21,7 +21,10 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    interpreter::error::Error,
+    interpreter::{
+        error::Error,
+        stream::Stream,
+    },
     pipeline::{
         self,
         parser,
@@ -29,18 +32,16 @@ use crate::{
 };
 
 
-pub struct Evaluator<Stream: io::Read + io::Seek> {
-    streams:     HashMap<String, Stream>,
+pub struct Evaluator {
+    streams:     HashMap<String, Box<Stream>>,
     builtins:    Builtins,
     stack:       Stack,
     functions:   HashMap<String, List>,
     stack_trace: Vec<Span>,
 }
 
-impl<Stream> Evaluator<Stream>
-    where Stream: io::Read + io::Seek
-{
-    pub fn run(name: Cow<str>, mut stream: Stream) -> bool {
+impl Evaluator {
+    pub fn run(name: Cow<str>, mut stream: Box<Stream>) -> bool {
         let mut evaluator = Self {
             streams:     HashMap::new(),
             builtins:    Builtins::new(),
@@ -108,7 +109,7 @@ impl<Stream> Evaluator<Stream>
     }
 }
 
-impl<Stream> Context for Evaluator<Stream>
+impl Context for Evaluator
     where Stream: io::Read + io::Seek
 {
     fn stack(&mut self) -> &mut Stack {

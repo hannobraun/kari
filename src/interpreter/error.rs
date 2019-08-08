@@ -12,6 +12,7 @@ use std::{
 use crate::{
     builtins::context,
     data::span::Span,
+    interpreter::stream::Stream,
     pipeline::parser,
 };
 
@@ -22,11 +23,10 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn print<Stream>(self,
-        streams: &mut HashMap<String, Stream>,
+    pub fn print(self,
+        streams: &mut HashMap<String, Box<Stream>>,
     )
         -> io::Result<()>
-        where Stream: io::Read + io::Seek
     {
         print!("\nERROR: {}\n", self);
 
