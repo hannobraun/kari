@@ -97,8 +97,10 @@ impl Context for Evaluator {
     )
         -> Result<(), context::Error>
     {
+        let mut pop_operator = false;
         if let Some(operator) = operator {
             self.stack_trace.push(operator);
+            pop_operator = true;
         }
 
         for expression in expressions {
@@ -128,7 +130,7 @@ impl Context for Evaluator {
             }
         }
 
-        if operator.is_some() {
+        if pop_operator {
             self.stack_trace.pop();
         }
 
