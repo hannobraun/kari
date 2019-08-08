@@ -19,8 +19,8 @@ use crate::{
 };
 
 
-pub fn run<Program>(name: &str, program: Program) -> bool
-    where Program: io::Read
+pub fn run<Stream>(name: &str, program: Stream) -> bool
+    where Stream: io::Read
 {
     let     reader    = Reader::new(program);
     let mut recorder  = Recorder::new(reader);
@@ -37,12 +37,12 @@ pub fn run<Program>(name: &str, program: Program) -> bool
 }
 
 
-fn print_error<Program>(
+fn print_error<Stream>(
     error:    Error,
     program:  &str,
-    recorder: &mut Recorder<Reader<Program>>,
+    recorder: &mut Recorder<Reader<Stream>>,
 )
-    where Program: io::Read
+    where Stream: io::Read
 {
     // Read the rest of the line, so the error isn't cut off.
     while let Ok(c) = recorder.next() {
