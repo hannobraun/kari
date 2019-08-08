@@ -46,7 +46,7 @@ type Builtin = fn(Span, &mut Context) -> Result;
 
 
 macro_rules! builtins {
-    ($($name:expr, $fn:ident, $input:ty => $output:ty;)*) => {
+    ($($name:expr, $fn:ident;)*) => {
         fn builtins() -> Vec<(&'static str, Builtin)> {
             vec![
                 $(($name, $fn),)*
@@ -56,22 +56,22 @@ macro_rules! builtins {
 }
 
 builtins!(
-    "print",  print,  Expression => ();
-    "define", define, (List, List) => ();
-    "fail",   fail,   () => ();
-    "eval",   eval,   List => ();
+    "print",  print;
+    "define", define;
+    "fail",   fail;
+    "eval",   eval;
 
-    "drop", drop, Expression => ();
-    "dup",  dup,  Expression => (Expression, Expression);
+    "drop", drop;
+    "dup",  dup;
 
-    "if",   r#if, (List, List) => ();
-    "each", each, (List, List) => List;
+    "if",   r#if;
+    "each", each;
 
-    "+",   add, (Number, Number) => Number;
-    "*",   mul, (Number, Number) => Number;
-    "=",   eq,  (Number, Number) => Bool;
-    ">",   gt,  (Number, Number) => Bool;
-    "not", not, Bool => Bool;
+    "+",   add;
+    "*",   mul;
+    "=",   eq;
+    ">",   gt;
+    "not", not;
 );
 
 
