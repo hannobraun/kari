@@ -142,15 +142,6 @@ pub struct Error {
     pub stack_trace: Vec<Span>,
 }
 
-impl Error {
-    pub fn span(&self) -> Option<Span> {
-        match &self.kind {
-            ErrorKind::Context(error) => error.span(),
-            ErrorKind::Parser(error)  => error.span(),
-        }
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.kind {
@@ -164,6 +155,15 @@ impl fmt::Display for Error {
 pub enum ErrorKind {
     Context(context::Error),
     Parser(parser::Error),
+}
+
+impl ErrorKind {
+    pub fn span(&self) -> Option<Span> {
+        match self {
+            ErrorKind::Context(error) => error.span(),
+            ErrorKind::Parser(error)  => error.span(),
+        }
+    }
 }
 
 impl From<context::Error> for ErrorKind {

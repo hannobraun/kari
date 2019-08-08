@@ -41,7 +41,7 @@ fn print_error<Stream>(
 {
     print!("\nERROR: {}\n", error);
 
-    if let Some(span) = error.span() {
+    if let Some(span) = error.kind.span() {
         print_span(
             span,
             name,
