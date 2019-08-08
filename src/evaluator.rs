@@ -128,7 +128,7 @@ impl Context for Evaluator {
             }
         }
 
-        if let Some(_) = operator {
+        if operator.is_some() {
             self.stack_trace.pop();
         }
 
