@@ -2,7 +2,7 @@ mod builtins {
     pub mod builtins;
     pub mod context;
 }
-mod core {
+mod data {
     pub mod expression;
     pub mod functions;
     pub mod span;

@@ -8,7 +8,7 @@ use std::{
 };
 
 use crate::{
-    core::span::Span,
+    data::span::Span,
     evaluator::{
         Error,
         Evaluator,

@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    core::span::Span,
+    data::span::Span,
     pipeline::{
         self,
         reader::{

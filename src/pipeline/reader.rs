@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    core::span::Position,
+    data::span::Position,
     pipeline,
 };
 
