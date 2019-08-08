@@ -15,8 +15,8 @@ use crate::{
 pub struct Reader<R> {
     input: R,
 
-    buffer: [u8; 4],
-    index:  usize,
+    buffer:   [u8; 4],
+    buffer_i: usize,
 
     next_pos: Position,
 }
@@ -26,8 +26,8 @@ impl<R> Reader<R> {
         Reader {
             input,
 
-            buffer: [0; 4],
-            index:  0,
+            buffer:   [0; 4],
+            buffer_i: 0,
 
             next_pos: Position {
                 column: 0,
@@ -43,15 +43,15 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let c = loop {
-            if self.index >= self.buffer.len() {
+            if self.buffer_i >= self.buffer.len() {
                 // This can only happen if an error occured before.
                 return Err(Error::EndOfStream);
             }
 
             let result = self.input.read_exact(
-                &mut self.buffer[self.index ..= self.index]
+                &mut self.buffer[self.buffer_i ..= self.buffer_i]
             );
-            self.index += 1;
+            self.buffer_i += 1;
 
             match result {
                 Ok(()) => (),
@@ -67,7 +67,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                 }
             }
 
-            match str::from_utf8(&self.buffer[.. self.index]) {
+            match str::from_utf8(&self.buffer[.. self.buffer_i]) {
                 Ok(s) => {
                     assert_eq!(s.chars().count(), 1);
 
@@ -76,7 +76,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                     break s.chars().next().unwrap();
                 }
                 Err(error) => {
-                    match self.index {
+                    match self.buffer_i {
                         i if i == 4 => {
                             return Err(Error::Utf8(error).into());
                         }
@@ -91,7 +91,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
             }
         };
 
-        self.index = 0;
+        self.buffer_i = 0;
 
         let c = Char {
             c,
