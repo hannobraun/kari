@@ -1,6 +1,7 @@
 use std::{
     borrow::Cow,
     collections::HashMap,
+    fs::File,
     io,
 };
 
@@ -15,6 +16,7 @@ use crate::{
     data::{
         expression::{
             self,
+            Data,
             Expression,
             List,
         },
@@ -27,6 +29,7 @@ use crate::{
     },
     pipeline::{
         self,
+        Stage as _,
         parser,
     },
 };
@@ -118,6 +121,39 @@ impl Context for Evaluator
 
     fn define(&mut self, name: String, body: List) {
         self.functions.insert(name, body);
+    }
+
+    fn load(&mut self, name: String) -> Result<Data<List>, context::Error> {
+        let     path   = format!("kr/src/{}.kr", name);
+        let mut stream = File::open(&path)?;
+
+        let mut parser      = pipeline::new(path.clone(), &mut stream);
+        let mut expressions = Vec::new();
+        loop {
+            match parser.next() {
+                Ok(expression)                  => expressions.push(expression),
+                Err(parser::Error::EndOfStream) => break,
+                Err(error)                      => return Err(error.into()),
+            }
+        }
+
+        self.streams.insert(path, Box::new(stream));
+
+        let start = expressions
+            .first()
+            .map(|expression| expression.span.clone())
+            .unwrap_or(Span::default());
+        let end = expressions
+            .last()
+            .map(|expression| expression.span.clone())
+            .unwrap_or(Span::default());
+
+        Ok(
+            Data {
+                data: List(expressions),
+                span: start.merge(end),
+            }
+        )
     }
 
     fn evaluate(&mut self,

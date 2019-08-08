@@ -41,6 +41,7 @@ builtins!(
     "define", define;
     "fail",   fail;
     "eval",   eval;
+    "load",   load;
 
     "drop", drop;
     "dup",  dup;
@@ -137,6 +138,13 @@ fn eval(operator: Span, context: &mut Context) -> Result {
         Some(operator),
         &mut list.data.into_iter(),
     )?;
+    Ok(())
+}
+
+fn load(operator: Span, context: &mut Context) -> Result {
+    let path = context.stack().pop::<String>(&operator)?;
+    let list = context.load(path.data)?;
+    context.stack().push::<List>(list);
     Ok(())
 }
 
