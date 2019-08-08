@@ -2,11 +2,11 @@ use std::fmt;
 
 use crate::{
     builtins::Builtins,
+    context::{
+        self,
+        Context,
+    },
     core::{
-        context::{
-            self,
-            Context,
-        },
         expression::{
             self,
             Expression,

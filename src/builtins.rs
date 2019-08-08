@@ -4,20 +4,22 @@ use std::{
     vec,
 };
 
-use crate::core::{
+use crate::{
     context::{
         self,
         Context,
     },
-    expression::{
-        self,
-        Bool,
-        Expression,
-        Into as _,
-        List,
-        Number,
+    core::{
+        expression::{
+            self,
+            Bool,
+            Expression,
+            Into as _,
+            List,
+            Number,
+        },
+        span::Span,
     },
-    span::Span,
 };
 
 
