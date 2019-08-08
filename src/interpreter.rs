@@ -97,11 +97,11 @@ fn print_span(
     // stuff like that.
     for (i, line) in chars.split(|c| c.c == '\n').enumerate() {
         let line_number = span.start.line + i;
+        let line_len    = line.len();
 
-        let last = match line.last() {
-            Some(last) => last.pos,
-            None       => continue,
-        };
+        if line_len == 0 {
+            continue;
+        }
 
         let start_column = if line_number == span.start.line {
             span.start.column
@@ -113,7 +113,7 @@ fn print_span(
             span.end.column
         }
         else {
-            last.column
+            line_len
         };
 
         print!("{:5} | ", line_number + 1);
@@ -123,7 +123,7 @@ fn print_span(
         print!("\n");
 
         print!("        ");
-        for column in 0 ..= last.column {
+        for column in 0 .. line_len {
             if column >= start_column && column <= end_column {
                 print!("^");
             }
