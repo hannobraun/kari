@@ -4,14 +4,58 @@ use std::{
         self,
         SeekFrom,
     },
+    fmt,
     iter::repeat,
     str::from_utf8,
 };
 
 use crate::{
+    builtins::context,
     data::span::Span,
-    interpreter::evaluator::Error,
+    pipeline::parser,
 };
+
+
+pub struct Error {
+    pub kind:        ErrorKind,
+    pub stack_trace: Vec<Span>,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self.kind {
+            ErrorKind::Context(error) => error.fmt(f),
+            ErrorKind::Parser(error)  => error.fmt(f),
+        }
+    }
+}
+
+
+pub enum ErrorKind {
+    Context(context::Error),
+    Parser(parser::Error),
+}
+
+impl ErrorKind {
+    pub fn span(self) -> Option<Span> {
+        match self {
+            ErrorKind::Context(error) => error.span(),
+            ErrorKind::Parser(error)  => error.span(),
+        }
+    }
+}
+
+impl From<context::Error> for ErrorKind {
+    fn from(from: context::Error) -> Self {
+        ErrorKind::Context(from)
+    }
+}
+
+impl From<parser::Error> for ErrorKind {
+    fn from(from: parser::Error) -> Self {
+        ErrorKind::Parser(from)
+    }
+}
 
 
 pub fn print<Stream>(
