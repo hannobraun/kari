@@ -4,7 +4,6 @@ mod builtins {
 }
 mod data {
     pub mod expression;
-    pub mod functions;
     pub mod span;
     pub mod stack;
 }

@@ -1,4 +1,7 @@
-use std::fmt;
+use std::{
+    collections::HashMap,
+    fmt,
+};
 
 use crate::{
     builtins::{
@@ -14,9 +17,6 @@ use crate::{
             Expression,
             List,
         },
-        functions::{
-            Functions,
-        },
         span::Span,
         stack::Stack,
     },
@@ -30,7 +30,7 @@ use crate::{
 pub struct Evaluator {
     builtins:    Builtins,
     stack:       Stack,
-    functions:   Functions,
+    functions:   HashMap<String, List>,
     stack_trace: Vec<Span>,
 }
 
@@ -42,7 +42,7 @@ impl Evaluator {
         let mut evaluator = Self {
             builtins:    Builtins::new(),
             stack:       Stack::new(),
-            functions:   Functions::new(),
+            functions:   HashMap::new(),
             stack_trace: Vec::new(),
         };
 
@@ -88,7 +88,7 @@ impl Context for Evaluator {
     }
 
     fn define(&mut self, name: String, body: List) {
-        self.functions.define(name, body);
+        self.functions.insert(name, body);
     }
 
     fn evaluate(&mut self,
