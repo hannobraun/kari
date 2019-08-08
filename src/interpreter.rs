@@ -16,7 +16,6 @@ use crate::{
         },
         parser::Parser,
         reader::Reader,
-        recorder::Recorder,
         tokenizer::Tokenizer,
     },
 };
@@ -25,11 +24,10 @@ use crate::{
 pub fn run<Stream>(name: &str, mut stream: Stream) -> bool
     where Stream: io::Read + io::Seek
 {
-    let     reader    = Reader::new(stream.by_ref());
-    let mut recorder  = Recorder::new(reader);
-    let     tokenizer = Tokenizer::new(&mut recorder);
-    let     parser    = Parser::new(tokenizer);
-    let     evaluator = Evaluator::new();
+    let reader    = Reader::new(stream.by_ref());
+    let tokenizer = Tokenizer::new(reader);
+    let parser    = Parser::new(tokenizer);
+    let evaluator = Evaluator::new();
 
     if let Err(error) = evaluator.run(parser) {
         if let Err(error) = print_error(error, name, stream) {
