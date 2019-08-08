@@ -19,10 +19,10 @@ use crate::{
 };
 
 
-pub fn run<Stream>(name: &str, program: Stream) -> bool
+pub fn run<Stream>(name: &str, stream: Stream) -> bool
     where Stream: io::Read
 {
-    let     reader    = Reader::new(program);
+    let     reader    = Reader::new(stream);
     let mut recorder  = Recorder::new(reader);
     let     tokenizer = Tokenizer::new(&mut recorder);
     let     parser    = Parser::new(tokenizer);
