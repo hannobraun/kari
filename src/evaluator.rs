@@ -41,7 +41,7 @@ impl Evaluator {
     pub fn run<Stream>(name: Cow<str>, mut stream: Stream) -> bool
         where Stream: io::Read + io::Seek
     {
-        let evaluator = Self {
+        let mut evaluator = Self {
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
@@ -63,7 +63,7 @@ impl Evaluator {
         true
     }
 
-    fn evaluate_expressions<Parser>(mut self, mut parser: Parser)
+    fn evaluate_expressions<Parser>(&mut self, mut parser: Parser)
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
     {
@@ -79,7 +79,7 @@ impl Evaluator {
                     return Err(
                         Error {
                             kind:        error.into(),
-                            stack_trace: self.stack_trace,
+                            stack_trace: self.stack_trace.clone(),
                         }
                     );
                 }
@@ -93,7 +93,7 @@ impl Evaluator {
                 return Err(
                     Error {
                         kind:        error.into(),
-                        stack_trace: self.stack_trace,
+                        stack_trace: self.stack_trace.clone(),
                     }
                 );
             }
