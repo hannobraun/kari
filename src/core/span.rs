@@ -1,7 +1,10 @@
 #[derive(Clone, Copy, Debug)]
 pub struct Span {
+    /// The position of the first character in the span
     pub start: Position,
-    pub end:   Position,
+
+    /// The position of the last character in the span
+    pub end: Position,
 }
 
 impl Span {
