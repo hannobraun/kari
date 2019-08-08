@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Span {
     /// The position of the first character in the span
     pub start: Position,
@@ -20,7 +20,7 @@ impl Span {
 }
 
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Position {
     /// The line, starting at 0
     pub line: usize,
