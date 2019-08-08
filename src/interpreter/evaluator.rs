@@ -21,10 +21,7 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    interpreter::error::{
-        self,
-        Error,
-    },
+    interpreter::error::Error,
     pipeline::{
         self,
         parser,
@@ -64,7 +61,7 @@ impl<Stream> Evaluator<Stream>
                 stream,
             );
 
-            if let Err(error) = error::print(error, &mut evaluator.streams) {
+            if let Err(error) = error.print(&mut evaluator.streams) {
                 print!("Error printing error: {}\n", error)
             }
             return false;

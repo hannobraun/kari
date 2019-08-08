@@ -21,6 +21,36 @@ pub struct Error {
     pub stack_trace: Vec<Span>,
 }
 
+impl Error {
+    pub fn print<Stream>(self,
+        streams: &mut HashMap<String, Stream>,
+    )
+        -> io::Result<()>
+        where Stream: io::Read + io::Seek
+    {
+        print!("\nERROR: {}\n", self);
+
+        if let Some(span) = self.kind.span() {
+            print_span(
+                span,
+                streams,
+            )?;
+        }
+
+        for span in self.stack_trace.into_iter().rev() {
+            print!("\nCalled by:\n");
+            print_span(
+                span,
+                streams,
+            )?;
+        }
+
+        print!("\n");
+
+        Ok(())
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.kind {
@@ -57,35 +87,6 @@ impl From<parser::Error> for ErrorKind {
     }
 }
 
-
-pub fn print<Stream>(
-    error:   Error,
-    streams: &mut HashMap<String, Stream>,
-)
-    -> io::Result<()>
-    where Stream: io::Read + io::Seek
-{
-    print!("\nERROR: {}\n", error);
-
-    if let Some(span) = error.kind.span() {
-        print_span(
-            span,
-            streams,
-        )?;
-    }
-
-    for span in error.stack_trace.into_iter().rev() {
-        print!("\nCalled by:\n");
-        print_span(
-            span,
-            streams,
-        )?;
-    }
-
-    print!("\n");
-
-    Ok(())
-}
 
 fn print_span<Stream>(
     span:    Span,
