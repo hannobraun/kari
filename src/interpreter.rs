@@ -73,7 +73,7 @@ fn print_error<Stream>(
     print!("\n");
 }
 
-fn print_span(span: Span, program: &str, chars: &mut Vec<Char>) {
+fn print_span(span: Span, name: &str, chars: &mut Vec<Char>) {
     chars.retain(|c|
         c.pos.line >= span.start.line
             && c.pos.line <= span.end.line
@@ -81,7 +81,7 @@ fn print_span(span: Span, program: &str, chars: &mut Vec<Char>) {
 
     print!(
         "  => {}:{}:{}\n",
-        program,
+        name,
         span.start.line + 1,
         span.start.column + 1,
     );
