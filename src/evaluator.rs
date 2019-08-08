@@ -1,10 +1,12 @@
 use std::fmt;
 
 use crate::{
-    builtins::Builtins,
-    context::{
-        self,
-        Context,
+    builtins::{
+        builtins::Builtins,
+        context::{
+            self,
+            Context,
+        },
     },
     core::{
         expression::{

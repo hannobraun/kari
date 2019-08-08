@@ -1,3 +1,7 @@
+mod builtins {
+    pub mod builtins;
+    pub mod context;
+}
 mod core {
     pub mod expression;
     pub mod functions;
@@ -5,8 +9,6 @@ mod core {
     pub mod stack;
 }
 
-mod builtins;
-mod context;
 mod evaluator;
 mod interpreter;
 mod pipeline;
