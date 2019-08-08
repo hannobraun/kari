@@ -30,18 +30,20 @@ use crate::{
 };
 
 
-pub struct Evaluator {
+pub struct Evaluator<Stream: io::Read + io::Seek> {
+    streams:     HashMap<String, Stream>,
     builtins:    Builtins,
     stack:       Stack,
     functions:   HashMap<String, List>,
     stack_trace: Vec<Span>,
 }
 
-impl Evaluator {
-    pub fn run<Stream>(name: Cow<str>, mut stream: Stream) -> bool
-        where Stream: io::Read + io::Seek
-    {
+impl<Stream> Evaluator<Stream>
+    where Stream: io::Read + io::Seek
+{
+    pub fn run(name: Cow<str>, mut stream: Stream) -> bool {
         let mut evaluator = Self {
+            streams:     HashMap::new(),
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
@@ -50,11 +52,17 @@ impl Evaluator {
 
         let pipeline = pipeline::new(
             name.clone().into_owned(),
-            stream.by_ref(),
+            &mut stream,
         );
 
-        if let Err(error) = evaluator.evaluate_expressions(pipeline) {
-            if let Err(error) = error::print(error, stream) {
+        let result = evaluator.evaluate_expressions(pipeline);
+        if let Err(error) = result {
+            evaluator.streams.insert(
+                name.into_owned(),
+                stream,
+            );
+
+            if let Err(error) = error::print(error, &mut evaluator.streams) {
                 print!("Error printing error: {}\n", error)
             }
             return false;
@@ -101,7 +109,9 @@ impl Evaluator {
     }
 }
 
-impl Context for Evaluator {
+impl<Stream> Context for Evaluator<Stream>
+    where Stream: io::Read + io::Seek
+{
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
     }

@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     io::{
         self,
         SeekFrom,
@@ -14,8 +15,8 @@ use crate::{
 
 
 pub fn print<Stream>(
-        error:  Error,
-    mut stream: Stream,
+    error:   Error,
+    streams: &mut HashMap<String, Stream>,
 )
     -> io::Result<()>
     where Stream: io::Read + io::Seek
@@ -25,7 +26,7 @@ pub fn print<Stream>(
     if let Some(span) = error.kind.span() {
         print_span(
             span,
-            &mut stream,
+            streams,
         )?;
     }
 
@@ -33,7 +34,7 @@ pub fn print<Stream>(
         print!("\nCalled by:\n");
         print_span(
             span,
-            &mut stream,
+            streams,
         )?;
     }
 
@@ -43,12 +44,16 @@ pub fn print<Stream>(
 }
 
 fn print_span<Stream>(
-    span:   Span,
-    stream: &mut Stream,
+    span:    Span,
+    streams: &mut HashMap<String, Stream>,
 )
     -> io::Result<()>
     where Stream: io::Read + io::Seek
 {
+    let stream = streams
+        .get_mut(&span.stream)
+        .unwrap();
+
     let start = search_backward(span.start.index, stream)?;
     let end   = search_forward(span.end.index, stream)?;
 
