@@ -131,5 +131,7 @@ fn print_span(
                 print!(" ");
             }
         }
+
+        print!("\n");
     }
 }
