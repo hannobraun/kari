@@ -39,7 +39,7 @@ pub fn run<Stream>(name: &str, stream: Stream) -> bool
 
 fn print_error<Stream>(
     error:    Error,
-    program:  &str,
+    name:     &str,
     recorder: &mut Recorder<Reader<Stream>>,
 )
     where Stream: io::Read
@@ -56,7 +56,7 @@ fn print_error<Stream>(
     if let Some(span) = error.span() {
         print_span(
             span,
-            program,
+            name,
             &mut recorder.chars().clone(),
         );
     }
@@ -65,7 +65,7 @@ fn print_error<Stream>(
         print!("\n\nCalled by:\n");
         print_span(
             span,
-            program,
+            name,
             &mut recorder.chars().clone(),
         );
     }
