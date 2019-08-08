@@ -83,12 +83,12 @@ impl Pop for Expression {
 
     fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
         stack.pop_raw()
-            .ok_or(
+            .ok_or_else(|| {
                 Error::StackEmpty {
                     expected: Expression::NAME,
                     operator,
                 }
-            )
+            })
     }
 }
 
