@@ -7,7 +7,10 @@ use std::{
 };
 
 use crate::{
-    data::span::Position,
+    data::{
+        character::Char,
+        span::Position,
+    },
     pipeline,
 };
 
@@ -110,25 +113,6 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                 }
             }
         }
-    }
-}
-
-
-#[derive(Clone, Copy, Debug)]
-pub struct Char {
-    pub c:   char,
-    pub pos: Position,
-}
-
-impl Char {
-    pub fn is_whitespace(&self) -> bool {
-        self.c.is_whitespace()
-    }
-}
-
-impl PartialEq<char> for Char {
-    fn eq(&self, other: &char) -> bool {
-        self.c.eq(other)
     }
 }
 

@@ -1,5 +1,6 @@
 use crate::{
     data::{
+        character::Char,
         span::Span,
         token::{
             Token,
@@ -8,10 +9,7 @@ use crate::{
     },
     pipeline::{
         self,
-        reader::{
-            self,
-            Char,
-        },
+        reader,
     },
 };
 

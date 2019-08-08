@@ -3,6 +3,7 @@ mod builtins {
     pub mod context;
 }
 mod data {
+    pub mod character;
     pub mod expression;
     pub mod span;
     pub mod stack;
