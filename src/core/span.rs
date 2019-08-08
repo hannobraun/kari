@@ -24,4 +24,7 @@ pub struct Position {
 
     /// The column, starting at 0
     pub column: usize,
+
+    /// The byte index within the stream
+    pub index: usize,
 }

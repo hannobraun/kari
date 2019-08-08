@@ -32,6 +32,7 @@ impl<R> Reader<R> {
             next_pos: Position {
                 column: 0,
                 line:   0,
+                index:  0,
             },
         }
     }
@@ -78,8 +79,6 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                     // char.
                     let c = s.chars().next().unwrap();
 
-                    self.buffer_i = 0;
-
                     let c = Char {
                         c,
                         pos: self.next_pos,
@@ -90,6 +89,9 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
                         self.next_pos.column = 0;
                         self.next_pos.line += 1;
                     }
+
+                    self.next_pos.index += self.buffer_i;
+                    self.buffer_i = 0;
 
                     return Ok(c);
                 }
