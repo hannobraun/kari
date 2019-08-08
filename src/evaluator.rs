@@ -1,8 +1,8 @@
 use std::fmt;
 
 use crate::{
+    builtins::Builtins,
     core::{
-        builtins::Builtins,
         context::{
             self,
             Context,
