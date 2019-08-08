@@ -29,7 +29,7 @@ use walkdir::WalkDir;
 fn main() {
     let args = App::new("Kari")
         .version(env!("CARGO_PKG_VERSION"))
-        .author("Hanno Braun <hb@hannobraun.de>")
+        .author(env!("CARGO_PKG_AUTHORS"))
         .about("Interpreter for the Kari prorgamming language")
         .arg(
             Arg::with_name("path")
