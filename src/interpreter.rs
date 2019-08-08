@@ -10,13 +10,11 @@ use std::{
 use crate::{
     core::span::Span,
     pipeline::{
+        self,
         evaluator::{
             Error,
             Evaluator,
         },
-        parser::Parser,
-        reader::Reader,
-        tokenizer::Tokenizer,
     },
 };
 
@@ -24,11 +22,7 @@ use crate::{
 pub fn run<Stream>(name: &str, mut stream: Stream) -> bool
     where Stream: io::Read + io::Seek
 {
-    let reader    = Reader::new(stream.by_ref());
-    let tokenizer = Tokenizer::new(reader);
-    let parser    = Parser::new(tokenizer);
-
-    if let Err(error) = Evaluator::run(parser) {
+    if let Err(error) = Evaluator::run(pipeline::new(stream.by_ref())) {
         if let Err(error) = print_error(error, name, stream) {
             print!("Error printing error: {}\n", error)
         }
