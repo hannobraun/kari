@@ -105,7 +105,7 @@ fn print_span<Stream>(
             0
         };
         let end_column = if line_number == span.end.line {
-            span.end.column
+            span.end.column + 1
         }
         else {
             line_len
@@ -117,7 +117,7 @@ fn print_span<Stream>(
 
         print!("        ");
         for column in 0 .. line_len {
-            if column >= start_column && column <= end_column {
+            if column >= start_column && column <  end_column {
                 print!("^");
             }
             else {
