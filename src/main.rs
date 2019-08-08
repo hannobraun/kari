@@ -11,7 +11,7 @@ mod pipeline {
     pub mod parser;
     pub mod reader;
     pub mod recorder;
-    pub mod stream;
+    pub mod stage;
     pub mod tokenizer;
 }
 

@@ -20,7 +20,7 @@ use crate::{
     },
     pipeline::{
         parser,
-        stream::Stream,
+        stage::Stage,
     },
 };
 
@@ -44,7 +44,7 @@ impl Evaluator {
 
     pub fn run<Parser>(mut self, mut parser: Parser)
         -> Result<(), Error>
-        where Parser: Stream<Item=Expression, Error=parser::Error>
+        where Parser: Stage<Item=Expression, Error=parser::Error>
     {
         loop {
             let expression = match parser.next() {

@@ -11,7 +11,7 @@ use crate::{
         span::Span,
     },
     pipeline::{
-        stream::Stream,
+        stage::Stage,
         tokenizer::{
             self,
             Token,
@@ -33,8 +33,8 @@ impl<Tokenizer> Parser<Tokenizer> {
     }
 }
 
-impl<Tokenizer> Stream for Parser<Tokenizer>
-    where Tokenizer: Stream<Item=Token, Error=tokenizer::Error>
+impl<Tokenizer> Stage for Parser<Tokenizer>
+    where Tokenizer: Stage<Item=Token, Error=tokenizer::Error>
 {
     type Item  = Expression;
     type Error = Error;
@@ -70,7 +70,7 @@ impl<Tokenizer> Stream for Parser<Tokenizer>
 }
 
 impl<Tokenizer> Parser<Tokenizer>
-    where Tokenizer: Stream<Item=Token, Error=tokenizer::Error>
+    where Tokenizer: Stage<Item=Token, Error=tokenizer::Error>
 {
     fn parse_list(&mut self) -> Result<List, Error> {
         let mut list = List::new();

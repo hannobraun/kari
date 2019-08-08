@@ -1,15 +1,15 @@
-pub trait Stream {
+pub trait Stage {
     type Item;
     type Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error>;
 }
 
-impl<T> Stream for &'_ mut T where T: Stream {
+impl<T> Stage for &'_ mut T where T: Stage {
     type Item  = T::Item;
     type Error = T::Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        <T as Stream>::next(self)
+        <T as Stage>::next(self)
     }
 }

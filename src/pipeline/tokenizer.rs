@@ -7,7 +7,7 @@ use crate::{
             self,
             Char,
         },
-        stream::Stream,
+        stage::Stage,
     },
 };
 
@@ -24,8 +24,8 @@ impl<Reader> Tokenizer<Reader> {
     }
 }
 
-impl<Reader> Stream for Tokenizer<Reader>
-    where Reader: Stream<Item=Char, Error=reader::Error>
+impl<Reader> Stage for Tokenizer<Reader>
+    where Reader: Stage<Item=Char, Error=reader::Error>
 {
     type Item  = Token;
     type Error = Error;

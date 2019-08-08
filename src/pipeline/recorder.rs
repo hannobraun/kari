@@ -3,7 +3,7 @@ use crate::pipeline::{
         self,
         Char,
     },
-    stream::Stream,
+    stage::Stage,
 };
 
 
@@ -25,8 +25,8 @@ impl<Reader> Recorder<Reader> {
     }
 }
 
-impl<Reader> Stream for Recorder<Reader>
-    where Reader: Stream<Item=Char, Error=reader::Error>
+impl<Reader> Stage for Recorder<Reader>
+    where Reader: Stage<Item=Char, Error=reader::Error>
 {
     type Item  = Reader::Item;
     type Error = Reader::Error;
