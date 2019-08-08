@@ -33,19 +33,17 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
-    pub fn new() -> Self {
-        Self {
+    pub fn run<Parser>(mut parser: Parser)
+        -> Result<(), Error>
+        where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
+    {
+        let mut evaluator = Self {
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   Functions::new(),
             stack_trace: Vec::new(),
-        }
-    }
+        };
 
-    pub fn run<Parser>(mut self, mut parser: Parser)
-        -> Result<(), Error>
-        where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
-    {
         loop {
             let expression = match parser.next() {
                 Ok(expression) => {
@@ -58,13 +56,13 @@ impl Evaluator {
                     return Err(
                         Error {
                             kind:        error.into(),
-                            stack_trace: self.stack_trace,
+                            stack_trace: evaluator.stack_trace,
                         }
                     );
                 }
             };
 
-            let result = self.evaluate(
+            let result = evaluator.evaluate(
                 None,
                 &mut Some(expression).into_iter(),
             );
@@ -72,7 +70,7 @@ impl Evaluator {
                 return Err(
                     Error {
                         kind:        error.into(),
-                        stack_trace: self.stack_trace,
+                        stack_trace: evaluator.stack_trace,
                     }
                 );
             }

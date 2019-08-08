@@ -27,9 +27,8 @@ pub fn run<Stream>(name: &str, mut stream: Stream) -> bool
     let reader    = Reader::new(stream.by_ref());
     let tokenizer = Tokenizer::new(reader);
     let parser    = Parser::new(tokenizer);
-    let evaluator = Evaluator::new();
 
-    if let Err(error) = evaluator.run(parser) {
+    if let Err(error) = Evaluator::run(parser) {
         if let Err(error) = print_error(error, name, stream) {
             print!("Error printing error: {}\n", error)
         }
