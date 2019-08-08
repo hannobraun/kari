@@ -78,8 +78,8 @@ fn print_span<Stream>(
     stream.seek(SeekFrom::Start(start as u64))?;
     stream.read_exact(&mut buffer)?;
 
-    // Can't fail. If this weren't UTF-8, we never would have gotten to the
-    // stage where we need to render a span.
+    // Can't fail. If this wasn't UTF-8, we never would have gotten to the point
+    // where we need to render a span.
     let buffer = from_utf8(&buffer).unwrap();
 
     print!(
