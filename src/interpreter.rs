@@ -82,6 +82,11 @@ fn print_span(
         c.pos.line >= span.start.line
             && c.pos.line <= span.end.line
     );
+    if let Some(last) = chars.last() {
+        if last.c == '\n' {
+            chars.pop();
+        }
+    }
 
     print!(
         "  => {}:{}:{}\n",
@@ -98,10 +103,6 @@ fn print_span(
     for (i, line) in chars.split(|c| c.c == '\n').enumerate() {
         let line_number = span.start.line + i;
         let line_len    = line.len();
-
-        if line_len == 0 {
-            continue;
-        }
 
         print!("{:5} | ", line_number + 1);
         for c in line {
@@ -121,6 +122,10 @@ fn print_span(
         else {
             line_len
         };
+
+        if start_column == end_column {
+            continue;
+        }
 
         print!("        ");
         for column in 0 .. line_len {
