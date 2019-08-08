@@ -91,30 +91,28 @@ fn print_span(span: Span, name: &str, chars: &mut Vec<Char>) {
     // namely that chars' position's are consecutive, that chars in the
     // same line actually have the same line recorded in their position,
     // stuff like that.
-    for line in chars.split(|c| c.c == '\n') {
-        let first = match line.first() {
-            Some(first) => first.pos,
-            None        => continue,
-        };
+    for (i, line) in chars.split(|c| c.c == '\n').enumerate() {
+        let line_number = span.start.line + i;
+
         let last = match line.last() {
             Some(last) => last.pos,
             None       => continue,
         };
 
-        let start_column = if first.line == span.start.line {
+        let start_column = if line_number == span.start.line {
             span.start.column
         }
         else {
             0
         };
-        let end_column = if first.line == span.end.line {
+        let end_column = if line_number == span.end.line {
             span.end.column
         }
         else {
             last.column
         };
 
-        print!("{:5} | ", first.line + 1);
+        print!("{:5} | ", line_number + 1);
         for c in line {
             print!("{}", c.c);
         }
