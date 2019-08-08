@@ -69,6 +69,9 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
 
             match str::from_utf8(&self.buffer[.. self.buffer_i]) {
                 Ok(s) => {
+                    // Unless there's a bug in this method that causes multiple
+                    // good characters to be in the buffer at once, this should
+                    // never panic.
                     assert_eq!(s.chars().count(), 1);
 
                     // Can't panic. We just asserted that there is exactly one
