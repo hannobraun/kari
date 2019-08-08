@@ -1,0 +1,3 @@
+[ [ fail ] [ not ] if ]
+[ assert ]
+    define

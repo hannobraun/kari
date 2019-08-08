@@ -1,8 +1,4 @@
-[
-    [ fail ] [ not ] if
-]
-[ assert ]
-    define
+"std" load eval
 
 2 4 + 7 *
 42 = assert
