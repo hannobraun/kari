@@ -114,7 +114,7 @@ impl<R> pipeline::Stage for Reader<R> where R: io::Read {
 }
 
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Char {
     pub c:   char,
     pub pos: Position,
