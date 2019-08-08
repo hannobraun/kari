@@ -21,6 +21,9 @@ use crate::core::{
 };
 
 
+type Builtin = fn(Span, &mut Context) -> Result;
+
+
 pub struct Builtins(HashMap<&'static str, Builtin>);
 
 impl Builtins {
@@ -40,9 +43,6 @@ impl Builtins {
             .map(|builtin| *builtin)
     }
 }
-
-
-type Builtin = fn(Span, &mut Context) -> Result;
 
 
 macro_rules! builtins {
