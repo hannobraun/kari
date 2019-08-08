@@ -103,6 +103,12 @@ fn print_span(
             continue;
         }
 
+        print!("{:5} | ", line_number + 1);
+        for c in line {
+            print!("{}", c.c);
+        }
+        print!("\n");
+
         let start_column = if line_number == span.start.line {
             span.start.column
         }
@@ -115,12 +121,6 @@ fn print_span(
         else {
             line_len
         };
-
-        print!("{:5} | ", line_number + 1);
-        for c in line {
-            print!("{}", c.c);
-        }
-        print!("\n");
 
         print!("        ");
         for column in 0 .. line_len {
