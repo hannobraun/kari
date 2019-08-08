@@ -1,7 +1,6 @@
 mod builtins;
 mod data;
-mod error;
-mod evaluator;
+mod interpreter;
 mod pipeline;
 
 
@@ -19,7 +18,7 @@ use clap::{
 };
 use walkdir::WalkDir;
 
-use evaluator::Evaluator;
+use interpreter::evaluator::Evaluator;
 
 
 fn main() {

@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     data::span::Span,
-    evaluator::Error,
+    interpreter::evaluator::Error,
 };
 
 

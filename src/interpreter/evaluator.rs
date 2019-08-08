@@ -22,7 +22,7 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    error,
+    interpreter::error,
     pipeline::{
         self,
         parser,
