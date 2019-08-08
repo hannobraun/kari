@@ -98,14 +98,14 @@ impl<A, B> Compute for (expression::Data<A>, expression::Data<B>) {
 
 
 fn print(operator: Span, context: &mut Context) -> Result {
-    let expression = context.stack().pop::<Expression>(operator)?;
+    let expression = context.stack().pop::<Expression>(&operator)?;
     print!("{}", expression.kind);
 
     Ok(())
 }
 
 fn define(operator: Span, context: &mut Context) -> Result {
-    let (body, name) = context.stack().pop::<(List, List)>(operator)?;
+    let (body, name) = context.stack().pop::<(List, List)>(&operator)?;
 
     assert_eq!(name.data.0.len(), 1);
     let name = name.data.clone().0.pop().unwrap();
@@ -132,7 +132,7 @@ fn fail(operator: Span, _: &mut Context) -> Result {
 }
 
 fn eval(operator: Span, context: &mut Context) -> Result {
-    let list = context.stack().pop::<List>(operator)?;
+    let list = context.stack().pop::<List>(&operator)?;
     context.evaluate(
         Some(operator),
         &mut list.data.into_iter(),
@@ -142,12 +142,12 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 
 
 fn drop(operator: Span, context: &mut Context) -> Result {
-    context.stack().pop::<Expression>(operator)?;
+    context.stack().pop::<Expression>(&operator)?;
     Ok(())
 }
 
 fn dup(operator: Span, context: &mut Context) -> Result {
-    let mut expression = context.stack().pop::<Expression>(operator)?;
+    let mut expression = context.stack().pop::<Expression>(&operator)?;
 
     expression.span = operator.merge(expression.span);
 
@@ -159,7 +159,7 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 
 
 fn each(operator: Span, context: &mut Context) -> Result {
-    let (list, function) = context.stack().pop::<(List, List)>(operator)?;
+    let (list, function) = context.stack().pop::<(List, List)>(&operator)?;
 
     context.stack().create_substack();
 
@@ -184,10 +184,10 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
 
 fn r#if(operator: Span, context: &mut Context) -> Result {
-    let (function, condition) = context.stack().pop::<(List, List)>(operator)?;
+    let (function, condition) = context.stack().pop::<(List, List)>(&operator)?;
 
     context.evaluate(Some(operator), &mut condition.data.into_iter())?;
-    if context.stack().pop::<Bool>(operator)?.data.0 {
+    if context.stack().pop::<Bool>(&operator)?.data.0 {
         context.evaluate(
             Some(operator),
             &mut function.data.into_iter(),
@@ -200,7 +200,7 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
 
 fn add(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>(operator)?
+        .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| a + b);
     context.stack().push_raw(result);
     Ok(())
@@ -208,7 +208,7 @@ fn add(operator: Span, context: &mut Context) -> Result {
 
 fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>(operator)?
+        .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| a * b);
     context.stack().push_raw(result);
     Ok(())
@@ -216,7 +216,7 @@ fn mul(operator: Span, context: &mut Context) -> Result {
 
 fn eq(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>(operator)?
+        .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| Bool(a == b));
     context.stack().push_raw(result);
     Ok(())
@@ -224,7 +224,7 @@ fn eq(operator: Span, context: &mut Context) -> Result {
 
 fn gt(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<(Number, Number)>(operator)?
+        .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| Bool(a > b));
     context.stack().push_raw(result);
     Ok(())
@@ -232,7 +232,7 @@ fn gt(operator: Span, context: &mut Context) -> Result {
 
 fn not(operator: Span, context: &mut Context) -> Result {
     let result = context
-        .stack().pop::<Bool>(operator)?
+        .stack().pop::<Bool>(&operator)?
         .compute(operator, |b| !b);
     context.stack().push_raw(result);
     Ok(())

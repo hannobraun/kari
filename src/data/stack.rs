@@ -28,7 +28,7 @@ impl Stack {
         T::push(value, self)
     }
 
-    pub fn pop<T: Pop>(&mut self, operator: Span) -> Result<T::Data, Error> {
+    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T::Data, Error> {
         T::pop(self, operator)
     }
 
@@ -66,7 +66,7 @@ pub trait Push {
 pub trait Pop : Sized {
     type Data;
 
-    fn pop(_: &mut Stack, operator: Span) -> Result<Self::Data, Error>;
+    fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Data, Error>;
 }
 
 
@@ -81,12 +81,12 @@ impl Push for Expression {
 impl Pop for Expression {
     type Data = Expression;
 
-    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         stack.pop_raw()
             .ok_or_else(|| {
                 Error::StackEmpty {
                     expected: Expression::NAME,
-                    operator,
+                    operator: operator.clone(),
                 }
             })
     }
@@ -108,7 +108,7 @@ impl<T> Pop for T
 {
     type Data = expression::Data<T>;
 
-    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         match stack.pop_raw() {
             Some(expression) => {
                 expression::Data::<T>::from_expression(expression)
@@ -122,7 +122,7 @@ impl<T> Pop for T
             None => {
                 Err(Error::StackEmpty {
                     expected: expression::Data::<T>::NAME,
-                    operator,
+                    operator: operator.clone(),
                 })
             }
         }
@@ -152,7 +152,7 @@ impl<A, B> Pop for (A, B)
 {
     type Data = (expression::Data<A>, expression::Data<B>);
 
-    fn pop(stack: &mut Stack, operator: Span) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         let b = stack.pop::<B>(operator)?;
         let a = stack.pop::<A>(operator)?;
         Ok((a, b))
