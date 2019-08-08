@@ -54,7 +54,7 @@ impl Evaluator {
         );
 
         if let Err(error) = evaluator.evaluate_expressions(pipeline) {
-            if let Err(error) = error::print(error, &name, stream) {
+            if let Err(error) = error::print(error, stream) {
                 print!("Error printing error: {}\n", error)
             }
             return false;

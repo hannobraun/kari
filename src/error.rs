@@ -15,7 +15,6 @@ use crate::{
 
 pub fn print<Stream>(
         error:  Error,
-        name:   &str,
     mut stream: Stream,
 )
     -> io::Result<()>
@@ -26,7 +25,6 @@ pub fn print<Stream>(
     if let Some(span) = error.kind.span() {
         print_span(
             span,
-            name,
             &mut stream,
         )?;
     }
@@ -35,7 +33,6 @@ pub fn print<Stream>(
         print!("\nCalled by:\n");
         print_span(
             span,
-            name,
             &mut stream,
         )?;
     }
@@ -47,7 +44,6 @@ pub fn print<Stream>(
 
 fn print_span<Stream>(
     span:   Span,
-    name:   &str,
     stream: &mut Stream,
 )
     -> io::Result<()>
@@ -66,7 +62,7 @@ fn print_span<Stream>(
 
     print!(
         "  => {}:{}:{}\n",
-        name,
+        span.stream,
         span.start.line + 1,
         span.start.column + 1,
     );
