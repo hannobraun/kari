@@ -6,6 +6,7 @@ mod data {
     pub mod expression;
     pub mod span;
     pub mod stack;
+    pub mod token;
 }
 
 mod evaluator;

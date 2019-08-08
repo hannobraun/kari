@@ -9,14 +9,14 @@ use crate::{
             Number,
         },
         span::Span,
-    },
-    pipeline::{
-        self,
-        tokenizer::{
-            self,
+        token::{
             Token,
             TokenKind,
         },
+    },
+    pipeline::{
+        self,
+        tokenizer,
     },
 };
 
