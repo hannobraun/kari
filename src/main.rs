@@ -1,5 +1,6 @@
 mod builtins;
 mod data;
+mod error;
 mod evaluator;
 mod interpreter;
 mod pipeline;
