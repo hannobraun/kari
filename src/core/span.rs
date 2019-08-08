@@ -19,6 +19,9 @@ impl Span {
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Position {
-    pub line:   usize,
+    /// The line, starting at 0
+    pub line: usize,
+
+    /// The column, starting at 0
     pub column: usize,
 }
