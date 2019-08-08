@@ -17,6 +17,7 @@ use std::{
     process::exit,
 };
 
+use acc_reader::AccReader;
 use clap::{
     App,
     Arg,
@@ -59,7 +60,7 @@ fn main() {
                 ProgramKind::Regular => {
                     interpreter::run(
                         "<stdin>",
-                        stdin().lock(),
+                        AccReader::new(stdin().lock()),
                     );
                 }
                 ProgramKind::Test => {
