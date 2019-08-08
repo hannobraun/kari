@@ -52,7 +52,7 @@ fn print_error<Stream>(
     }
 
     for span in error.stack_trace.into_iter().rev() {
-        print!("\n\nCalled by:\n");
+        print!("\nCalled by:\n");
         print_span(
             span,
             name,
@@ -125,9 +125,7 @@ fn print_span<Stream>(
             }
         }
 
-        if line_number != span.end.line {
-            print!("\n");
-        }
+        print!("\n");
     }
 
     Ok(())
