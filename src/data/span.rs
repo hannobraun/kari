@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Span {
     /// The position of the first character in the span
     pub start: Position,

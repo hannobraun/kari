@@ -166,7 +166,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     for item in list.data {
         context.stack().push::<Expression>(item);
         context.evaluate(
-            Some(operator),
+            Some(operator.clone()),
             &mut function.data.clone().into_iter(),
         )?;
     }
@@ -186,7 +186,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
 fn r#if(operator: Span, context: &mut Context) -> Result {
     let (function, condition) = context.stack().pop::<(List, List)>(&operator)?;
 
-    context.evaluate(Some(operator), &mut condition.data.into_iter())?;
+    context.evaluate(Some(operator.clone()), &mut condition.data.into_iter())?;
     if context.stack().pop::<Bool>(&operator)?.data.0 {
         context.evaluate(
             Some(operator),
