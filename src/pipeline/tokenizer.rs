@@ -3,11 +3,11 @@ use std::fmt;
 use crate::{
     core::span::Span,
     pipeline::{
+        self,
         reader::{
             self,
             Char,
         },
-        stage::Stage,
     },
 };
 
@@ -24,8 +24,8 @@ impl<Reader> Tokenizer<Reader> {
     }
 }
 
-impl<Reader> Stage for Tokenizer<Reader>
-    where Reader: Stage<Item=Char, Error=reader::Error>
+impl<Reader> pipeline::Stage for Tokenizer<Reader>
+    where Reader: pipeline::Stage<Item=Char, Error=reader::Error>
 {
     type Item  = Token;
     type Error = Error;

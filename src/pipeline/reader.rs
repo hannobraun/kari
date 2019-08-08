@@ -8,7 +8,7 @@ use std::{
 
 use crate::{
     core::span::Position,
-    pipeline::stage::Stage,
+    pipeline,
 };
 
 
@@ -37,7 +37,7 @@ impl<R> Reader<R> {
     }
 }
 
-impl<R> Stage for Reader<R> where R: io::Read {
+impl<R> pipeline::Stage for Reader<R> where R: io::Read {
     type Item  = Char;
     type Error = Error;
 
