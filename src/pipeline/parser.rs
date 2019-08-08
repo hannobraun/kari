@@ -115,7 +115,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(&self) -> Option<Span> {
+    pub fn span(self) -> Option<Span> {
         match self {
             Error::Tokenizer(_)           => None,
             Error::UnexpectedToken(token) => Some(token.span),

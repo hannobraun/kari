@@ -40,10 +40,10 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(&self) -> Option<Span> {
+    pub fn span(self) -> Option<Span> {
         match self {
-            Error::Failure { operator }         => Some(*operator),
-            Error::UnknownFunction { span, .. } => Some(*span),
+            Error::Failure { operator }         => Some(operator),
+            Error::UnknownFunction { span, .. } => Some(span),
             Error::Io(_)                        => None,
             Error::Parser(error)                => error.span(),
             Error::Stack(error)                 => error.span(),

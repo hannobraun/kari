@@ -173,10 +173,10 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(&self) -> Option<Span> {
+    pub fn span(self) -> Option<Span> {
         match self {
             Error::TypeError { actual, .. }    => Some(actual.span),
-            Error::StackEmpty { operator, .. } => Some(*operator),
+            Error::StackEmpty { operator, .. } => Some(operator),
         }
     }
 }

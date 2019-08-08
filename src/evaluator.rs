@@ -158,7 +158,7 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn span(&self) -> Option<Span> {
+    pub fn span(self) -> Option<Span> {
         match self {
             ErrorKind::Context(error) => error.span(),
             ErrorKind::Parser(error)  => error.span(),
