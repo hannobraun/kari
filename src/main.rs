@@ -1,7 +1,3 @@
-mod builtins {
-    pub mod builtins;
-    pub mod context;
-}
 mod data {
     pub mod character;
     pub mod expression;
@@ -10,6 +6,7 @@ mod data {
     pub mod token;
 }
 
+mod builtins;
 mod evaluator;
 mod interpreter;
 mod pipeline;
