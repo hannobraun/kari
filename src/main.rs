@@ -13,7 +13,7 @@ mod pipeline;
 
 use std::{
     fs::File,
-    io,
+    io::stdin,
     process::exit,
 };
 
@@ -59,7 +59,7 @@ fn main() {
                 ProgramKind::Regular => {
                     interpreter::run(
                         "<stdin>",
-                        io::stdin().lock(),
+                        stdin().lock(),
                     );
                 }
                 ProgramKind::Test => {
