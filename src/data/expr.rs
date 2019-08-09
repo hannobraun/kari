@@ -12,6 +12,11 @@ use std::{
 use crate::data::span::Span;
 
 
+pub trait Expr {
+    const NAME: &'static str;
+}
+
+
 #[derive(Clone, Debug)]
 pub struct Any {
     pub kind: Kind,
@@ -21,7 +26,7 @@ pub struct Any {
 impl Any {
     pub fn check<T>(self) -> Result<T, Error>
         where
-            T: From + Name,
+            T: Expr + From,
     {
         T::from_expr(self)
             .map_err(|expression|
@@ -64,7 +69,7 @@ macro_rules! kinds {
                 }
             }
 
-            impl Name for $ty {
+            impl Expr for $ty {
                 const NAME: &'static str = $name;
             }
 
@@ -199,10 +204,6 @@ fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
 }
 
 
-pub trait Name {
-    const NAME: &'static str;
-}
-
 pub trait Into {
     fn into_expr(self) -> Any;
 }
@@ -212,7 +213,7 @@ pub trait From : Sized {
 }
 
 
-impl Name for Any {
+impl Expr for Any {
     const NAME: &'static str = "expression";
 }
 

@@ -3,7 +3,7 @@ use std::fmt;
 use crate::data::{
     expr::{
         self,
-        Name as _,
+        Expr,
     },
     span::Span,
 };
@@ -88,7 +88,7 @@ pub trait Pop : Sized {
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
 }
 
-impl<T> Pop for T where T: expr::From + expr::Name {
+impl<T> Pop for T where T: Expr +  expr::From {
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
         Ok(stack.pop_raw(operator)?.check::<T>()?)
     }
