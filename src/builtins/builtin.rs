@@ -112,21 +112,10 @@ fn define(operator: Span, context: &mut Context) -> Result {
     let (body, name) = expr::E2(body, name).check::<expr::List, expr::List>()?;
 
     assert_eq!(name.value.inner.len(), 1);
-    let name = name.value.clone().inner.pop().unwrap();
+    let name = name.value.clone().inner.pop().unwrap()
+        .check::<expr::Word>()?;
 
-    let name = match name.kind {
-        expr::Kind::Word(word) => {
-            word
-        }
-        kind => {
-            panic!(
-                "Unexpected expression: {:?}\n",
-                kind,
-            );
-        }
-    };
-
-    context.define(name, body.value.clone());
+    context.define(name.value, body.value.clone());
 
     Ok(())
 }
