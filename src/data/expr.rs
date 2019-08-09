@@ -1,5 +1,6 @@
 use std::{
     fmt,
+    mem::discriminant,
     string::String as StdString,
 };
 
@@ -135,6 +136,48 @@ kinds!(
     Word,   "word",   StdString;
 );
 
+
+impl PartialEq for Kind {
+    fn eq(&self, other: &Self) -> bool {
+        // Determines equality based on data, ignoring spans.
+        match (self, other) {
+            (Kind::Bool(a),   Kind::Bool(b))   => return a == b,
+            (Kind::Number(a), Kind::Number(b)) => return a == b,
+            (Kind::String(a), Kind::String(b)) => return a == b,
+            (Kind::Word(a),   Kind::Word(b))   => return a == b,
+
+            (Kind::List(a), Kind::List(b)) => {
+                if a.len() != b.len() {
+                    return false;
+                }
+
+                for (a, b) in a.iter().zip(b.iter()) {
+                    if a.kind != b.kind {
+                        return false;
+                    }
+                }
+
+                true
+            }
+
+            _ => {
+                // When this was written, all the same-variant combinations were
+                // covered. But surely more variants will be added, making this
+                // code incomplete.
+                //
+                // Panic, if we detect that both variants are the same, as that
+                // means this code needs to be extended.
+                assert_eq!(discriminant(self), discriminant(other));
+
+                // If we haven't panicked by this point, we have two different
+                // variants, which can't be equal.
+                false
+            }
+        }
+    }
+}
+
+impl Eq for Kind {}
 
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
