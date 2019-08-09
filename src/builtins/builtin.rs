@@ -12,6 +12,7 @@ use crate::{
         expression::{
             self,
             Bool,
+            Check as _,
             Expression,
             Into as _,
             List,
@@ -102,14 +103,17 @@ impl<A, B> Compute for (WithSpan<A>, WithSpan<B>) {
 
 
 fn print(operator: Span, context: &mut Context) -> Result {
-    let expression = context.stack().pop::<Expression>(&operator)?;
+    let expression = context.stack().pop_raw(&operator)?;
     print!("{}", expression.kind);
 
     Ok(())
 }
 
 fn define(operator: Span, context: &mut Context) -> Result {
-    let (body, name) = context.stack().pop::<(List, List)>(&operator)?;
+    let name = context.stack().pop_raw(&operator)?;
+    let body = context.stack().pop_raw(&operator)?;
+
+    let (body, name): (WithSpan<List>, WithSpan<List>) = (body, name).check()?;
 
     assert_eq!(name.value.0.len(), 1);
     let name = name.value.clone().0.pop().unwrap();
@@ -136,7 +140,7 @@ fn fail(operator: Span, _: &mut Context) -> Result {
 }
 
 fn eval(operator: Span, context: &mut Context) -> Result {
-    let list = context.stack().pop::<List>(&operator)?;
+    let list: WithSpan<List> = context.stack().pop_raw(&operator)?.check()?;
     context.evaluate(
         Some(operator),
         &mut list.value.into_iter(),
@@ -145,7 +149,7 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 }
 
 fn load(operator: Span, context: &mut Context) -> Result {
-    let path = context.stack().pop::<String>(&operator)?;
+    let path: WithSpan<String> = context.stack().pop_raw(&operator)?.check()?;
     let list = context.load(path.value)?;
     context.stack().push(list);
     Ok(())
@@ -153,12 +157,12 @@ fn load(operator: Span, context: &mut Context) -> Result {
 
 
 fn drop(operator: Span, context: &mut Context) -> Result {
-    context.stack().pop::<Expression>(&operator)?;
+    context.stack().pop_raw(&operator)?;
     Ok(())
 }
 
 fn dup(operator: Span, context: &mut Context) -> Result {
-    let mut expression = context.stack().pop::<Expression>(&operator)?;
+    let mut expression = context.stack().pop_raw(&operator)?;
 
     expression.span = operator.merge(expression.span);
 
@@ -169,7 +173,11 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 
 
 fn each(operator: Span, context: &mut Context) -> Result {
-    let (list, function) = context.stack().pop::<(List, List)>(&operator)?;
+    let function = context.stack().pop_raw(&operator)?;
+    let list     = context.stack().pop_raw(&operator)?;
+
+    let (list, function): (WithSpan<List>, WithSpan<List>) =
+        (list, function).check()?;
 
     context.stack().create_substack();
 
@@ -194,7 +202,11 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
 
 fn r#if(operator: Span, context: &mut Context) -> Result {
-    let (function, condition) = context.stack().pop::<(List, List)>(&operator)?;
+    let condition = context.stack().pop_raw(&operator)?;
+    let function  = context.stack().pop_raw(&operator)?;
+
+    let (function, condition): (WithSpan<List>, WithSpan<List>) =
+        (function, condition).check()?;
 
     context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
     if context.stack().pop::<Bool>(&operator)?.value.0 {
@@ -209,41 +221,58 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
 
 
 fn add(operator: Span, context: &mut Context) -> Result {
-    let result = context
-        .stack().pop::<(Number, Number)>(&operator)?
-        .compute(operator, |(a, b)| a + b);
+    let b = context.stack().pop_raw(&operator)?;
+    let a = context.stack().pop_raw(&operator)?;
+
+    let result = (a, b)
+        .check()?
+        .compute(operator, |(a, b): (Number, Number)| a + b);
+
     context.stack().push(result);
     Ok(())
 }
 
 fn mul(operator: Span, context: &mut Context) -> Result {
-    let result = context
-        .stack().pop::<(Number, Number)>(&operator)?
-        .compute(operator, |(a, b)| a * b);
+    let b = context.stack().pop_raw(&operator)?;
+    let a = context.stack().pop_raw(&operator)?;
+
+    let result = (a, b)
+        .check()?
+        .compute(operator, |(a, b): (Number, Number)| a * b);
+
     context.stack().push(result);
     Ok(())
 }
 
 fn eq(operator: Span, context: &mut Context) -> Result {
-    let result = context
-        .stack().pop::<(Number, Number)>(&operator)?
-        .compute(operator, |(a, b)| Bool(a == b));
+    let b = context.stack().pop_raw(&operator)?;
+    let a = context.stack().pop_raw(&operator)?;
+
+    let result = (a, b)
+        .check()?
+        .compute(operator, |(a, b): (Number, Number)| Bool(a == b));
+
     context.stack().push(result);
     Ok(())
 }
 
 fn gt(operator: Span, context: &mut Context) -> Result {
-    let result = context
-        .stack().pop::<(Number, Number)>(&operator)?
-        .compute(operator, |(a, b)| Bool(a > b));
+    let b = context.stack().pop_raw(&operator)?;
+    let a = context.stack().pop_raw(&operator)?;
+
+    let result = (a, b)
+        .check()?
+        .compute(operator, |(a, b): (Number, Number)| Bool(a > b));
+
     context.stack().push(result);
     Ok(())
 }
 
 fn not(operator: Span, context: &mut Context) -> Result {
-    let result = context
-        .stack().pop::<Bool>(&operator)?
-        .compute(operator, |b| !b);
+    let b: WithSpan<Bool> = context.stack().pop_raw(&operator)?.check()?;
+
+    let result = b.compute(operator, |b: Bool| !b);
+
     context.stack().push(result);
     Ok(())
 }
