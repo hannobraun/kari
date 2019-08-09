@@ -39,14 +39,19 @@ impl Stack {
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self) -> Option<Expression> {
+    pub fn pop_raw(&mut self, operator: &Span) -> Result<Expression, Error> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
-                return Some(value)
+                return Ok(value)
             }
         }
 
-        None
+        Err(
+            Error::StackEmpty {
+                expected: Expression::NAME,
+                operator: operator.clone(),
+            }
+        )
     }
 
     pub fn create_substack(&mut self) {
@@ -94,13 +99,7 @@ impl Pop for Expression {
     type Data = Expression;
 
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
-        stack.pop_raw()
-            .ok_or_else(|| {
-                Error::StackEmpty {
-                    expected: Expression::NAME,
-                    operator: operator.clone(),
-                }
-            })
+        stack.pop_raw(operator)
     }
 }
 
@@ -110,8 +109,8 @@ impl<T> Pop for T
     type Data = WithSpan<T>;
 
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
-        match stack.pop_raw() {
-            Some(expression) => {
+        match stack.pop_raw(operator) {
+            Ok(expression) => {
                 WithSpan::<T>::from_expression(expression)
                     .map_err(|expression|
                         Error::TypeError {
@@ -120,11 +119,8 @@ impl<T> Pop for T
                         }
                     )
             }
-            None => {
-                Err(Error::StackEmpty {
-                    expected: WithSpan::<T>::NAME,
-                    operator: operator.clone(),
-                })
+            Err(error) => {
+                Err(error)
             }
         }
     }
