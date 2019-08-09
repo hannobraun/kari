@@ -54,7 +54,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
                 expression::Kind::Number(Number(number))
             }
             TokenKind::String(string) => {
-                expression::Kind::String(string)
+                expression::Kind::String(expression::String(string))
             }
             TokenKind::Word(word) => {
                 expression::Kind::Word(Word(word))
@@ -90,7 +90,7 @@ impl<Tokenizer> Parser<Tokenizer>
                     expression::Kind::Number(Number(number))
                 }
                 TokenKind::String(string) => {
-                    expression::Kind::String(string)
+                    expression::Kind::String(expression::String(string))
                 }
                 TokenKind::Word(word) => {
                     expression::Kind::Word(Word(word))

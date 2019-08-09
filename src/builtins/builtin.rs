@@ -149,7 +149,9 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 }
 
 fn load(operator: Span, context: &mut Context) -> Result {
-    let path: WithSpan<String> = context.stack().pop_raw(&operator)?.check()?;
+    let path: WithSpan<expression::String> = context.stack()
+        .pop_raw(&operator)?
+        .check()?;
     let list = context.load(path.value)?;
     context.stack().push(list);
     Ok(())

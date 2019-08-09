@@ -126,8 +126,10 @@ impl Context for Evaluator
         self.functions.insert(name.0, body);
     }
 
-    fn load(&mut self, name: String) -> Result<WithSpan<List>, context::Error> {
-        let     path   = format!("kr/src/{}.kr", name);
+    fn load(&mut self, name: expression::String)
+        -> Result<WithSpan<List>, context::Error>
+    {
+        let     path   = format!("kr/src/{}.kr", name.0);
         let mut stream = File::open(&path)?;
 
         let mut parser      = pipeline::new(path.clone(), &mut stream);
