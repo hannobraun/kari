@@ -14,6 +14,8 @@ use crate::data::span::Span;
 
 pub trait Expr {
     const NAME: &'static str;
+
+    fn into_expr(self) -> Any;
 }
 
 
@@ -40,9 +42,7 @@ impl Any {
 
 impl Expr for Any {
     const NAME: &'static str = "expression";
-}
 
-impl Into for Any {
     fn into_expr(self) -> Any {
         self
     }
@@ -87,9 +87,7 @@ macro_rules! kinds {
 
             impl Expr for $ty {
                 const NAME: &'static str = $name;
-            }
 
-            impl Into for $ty {
                 fn into_expr(self) -> Any {
                     Any {
                         kind: Kind::$ty(self.inner),
@@ -219,10 +217,6 @@ fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
     Ok(())
 }
 
-
-pub trait Into {
-    fn into_expr(self) -> Any;
-}
 
 pub trait From : Sized {
     fn from_expr(expression: Any) -> Result<Self, Any>;
