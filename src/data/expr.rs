@@ -133,6 +133,7 @@ kinds!(
     Number, "number", u32;
     List,   "list",   Vec<Any>;
     String, "string", StdString;
+    Symbol, "symbol", StdString;
     Word,   "word",   StdString;
 );
 
@@ -144,6 +145,7 @@ impl PartialEq for Kind {
             (Kind::Bool(a),   Kind::Bool(b))   => return a == b,
             (Kind::Number(a), Kind::Number(b)) => return a == b,
             (Kind::String(a), Kind::String(b)) => return a == b,
+            (Kind::Symbol(a), Kind::Symbol(b)) => return a == b,
             (Kind::Word(a),   Kind::Word(b))   => return a == b,
 
             (Kind::List(a), Kind::List(b)) => {
@@ -186,6 +188,7 @@ impl fmt::Display for Kind {
             Kind::Number(number) => number.fmt(f),
             Kind::List(list)     => fmt_list(list, f),
             Kind::String(string) => string.fmt(f),
+            Kind::Symbol(symbol) => write!(f, ":{}", symbol),
             Kind::Word(word)     => word.fmt(f),
         }
     }
