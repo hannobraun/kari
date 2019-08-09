@@ -180,3 +180,65 @@ impl_expression!(
     Number, "number";
     String, "string";
 );
+
+
+pub trait Check<T> {
+    fn check(self) -> Result<T, Error>;
+}
+
+impl<T> Check<T> for Expression
+    where
+        T: From + Name
+{
+    fn check(self) -> Result<T, Error> {
+        T::from_expression(self)
+            .map_err(|expression|
+                Error::TypeError {
+                    expected: T::NAME,
+                    actual:   expression,
+                }
+            )
+    }
+}
+
+impl<A, B> Check<(A, B)> for (Expression, Expression)
+    where
+        A: From + Name,
+        B: From + Name,
+{
+    fn check(self) -> Result<(A, B), Error> {
+        Ok((self.0.check()?, self.1.check()?))
+    }
+}
+
+
+#[derive(Debug)]
+pub enum Error {
+    TypeError {
+        expected: &'static str,
+        actual:   Expression,
+    },
+}
+
+impl Error {
+    pub fn span(self) -> Option<Span> {
+        match self {
+            Error::TypeError { actual, .. } => Some(actual.span),
+        }
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::TypeError { expected, actual } => {
+                write!(
+                    f,
+                    "Type error: Expected `{}`, found `{}`",
+                    expected,
+                    actual.kind,
+                )
+            }
+        }
+    }
+}

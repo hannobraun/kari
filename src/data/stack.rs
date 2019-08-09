@@ -3,8 +3,8 @@ use std::fmt;
 use crate::data::{
     expression::{
         self,
+        Check as _,
         Expression,
-        From as _,
         Name as _,
     },
     span::{
@@ -111,13 +111,7 @@ impl<T> Pop for T
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         match stack.pop_raw(operator) {
             Ok(expression) => {
-                WithSpan::<T>::from_expression(expression)
-                    .map_err(|expression|
-                        Error::TypeError {
-                            expected: WithSpan::<T>::NAME,
-                            actual:   expression,
-                        }
-                    )
+                Ok(expression.check()?)
             }
             Err(error) => {
                 Err(error)
@@ -145,38 +139,36 @@ impl<A, B> Pop for (A, B)
 
 #[derive(Debug)]
 pub enum Error {
-    TypeError {
-        expected: &'static str,
-        actual:   Expression,
-    },
     StackEmpty {
         expected: &'static str,
         operator: Span,
     },
+    Expression(expression::Error),
 }
 
 impl Error {
     pub fn span(self) -> Option<Span> {
         match self {
-            Error::TypeError { actual, .. }    => Some(actual.span),
             Error::StackEmpty { operator, .. } => Some(operator),
+            Error::Expression(error)           => error.span(),
         }
+    }
+}
+
+impl From<expression::Error> for Error {
+    fn from(from: expression::Error) -> Self {
+        Error::Expression(from)
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::TypeError { expected, actual } => {
-                write!(
-                    f,
-                    "Type error: Expected `{}`, found `{}`",
-                    expected,
-                    actual.kind,
-                )?;
-            }
             Error::StackEmpty { expected, .. } => {
                 write!(f, "Stack empty: Expected `{}`", expected)?;
+            }
+            Error::Expression(error) => {
+                error.fmt(f)?;
             }
         }
 
