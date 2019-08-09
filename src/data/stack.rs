@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::data::{
-    expression::{
+    expr::{
         self,
         Expression,
         Name as _,
@@ -62,7 +62,7 @@ pub trait Push {
 
 impl<T> Push for T
     where
-        T: expression::Into,
+        T: expr::Into,
 {
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.into_expression())
@@ -71,8 +71,8 @@ impl<T> Push for T
 
 impl<A, B> Push for (A, B)
     where
-        A: Push + expression::Into,
-        B: Push + expression::Into,
+        A: Push + expr::Into,
+        B: Push + expr::Into,
 {
     fn push(self, stack: &mut Stack) {
         stack.push(self.0);
@@ -87,7 +87,7 @@ pub enum Error {
         expected: &'static str,
         operator: Span,
     },
-    Expression(expression::Error),
+    Expression(expr::Error),
 }
 
 impl Error {
@@ -99,8 +99,8 @@ impl Error {
     }
 }
 
-impl From<expression::Error> for Error {
-    fn from(from: expression::Error) -> Self {
+impl From<expr::Error> for Error {
+    fn from(from: expr::Error) -> Self {
         Error::Expression(from)
     }
 }

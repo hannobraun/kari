@@ -9,7 +9,7 @@ use crate::{
         Context,
     },
     data::{
-        expression::{
+        expr::{
             self,
             Bool,
             Expression,
@@ -67,7 +67,7 @@ pub trait Compute : Sized {
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
-            WithSpan<R>: expression::Into;
+            WithSpan<R>: expr::Into;
 
 }
 
@@ -77,7 +77,7 @@ impl<T> Compute for WithSpan<T> {
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F:           Fn(Self::Input) -> R,
-            WithSpan<R>: expression::Into
+            WithSpan<R>: expr::Into
     {
         let value = f(self.value);
         let span  = operator.merge(self.span);
@@ -92,7 +92,7 @@ impl<A, B> Compute for (WithSpan<A>, WithSpan<B>) {
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F:           Fn(Self::Input) -> R,
-            WithSpan<R>: expression::Into,
+            WithSpan<R>: expr::Into,
     {
         let value = f((self.0.value, self.1.value));
         let span  = operator.merge(self.0.span).merge(self.1.span);
@@ -119,7 +119,7 @@ fn define(operator: Span, context: &mut Context) -> Result {
     let name = name.value.clone().0.pop().unwrap();
 
     let name = match name.kind {
-        expression::Kind::Word(word) => {
+        expr::Kind::Word(word) => {
             word
         }
         kind => {
@@ -149,7 +149,7 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 }
 
 fn load(operator: Span, context: &mut Context) -> Result {
-    let path: WithSpan<expression::String> = context.stack()
+    let path: WithSpan<expr::String> = context.stack()
         .pop_raw(&operator)?
         .check()?;
     let list = context.load(path.value)?;

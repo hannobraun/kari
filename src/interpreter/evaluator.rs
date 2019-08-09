@@ -14,7 +14,7 @@ use crate::{
         },
     },
     data::{
-        expression::{
+        expr::{
             self,
             Expression,
             List,
@@ -126,7 +126,7 @@ impl Context for Evaluator
         self.functions.insert(name.0, body);
     }
 
-    fn load(&mut self, name: expression::String)
+    fn load(&mut self, name: expr::String)
         -> Result<WithSpan<List>, context::Error>
     {
         let     path   = format!("kr/src/{}.kr", name.0);
@@ -174,7 +174,7 @@ impl Context for Evaluator
         }
 
         for expression in expressions {
-            if let expression::Kind::Word(word) = expression.kind {
+            if let expr::Kind::Word(word) = expression.kind {
                 if let Some(list) = self.functions.get(&word.0) {
                     let list = list.clone();
                     self.evaluate(

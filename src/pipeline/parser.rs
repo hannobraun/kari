@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{
     data::{
-        expression::{
+        expr::{
             self,
             Expression,
             List,
@@ -45,19 +45,19 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 
         let kind = match token.kind {
             TokenKind::ListOpen => {
-                expression::Kind::List(self.parse_list()?)
+                expr::Kind::List(self.parse_list()?)
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                expression::Kind::Number(Number(number))
+                expr::Kind::Number(Number(number))
             }
             TokenKind::String(string) => {
-                expression::Kind::String(expression::String(string))
+                expr::Kind::String(expr::String(string))
             }
             TokenKind::Word(word) => {
-                expression::Kind::Word(Word(word))
+                expr::Kind::Word(Word(word))
             }
         };
 
@@ -81,19 +81,19 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let kind = match token.kind {
                 TokenKind::ListOpen => {
-                    expression::Kind::List(self.parse_list()?)
+                    expr::Kind::List(self.parse_list()?)
                 }
                 TokenKind::ListClose => {
                     return Ok(list);
                 }
                 TokenKind::Number(number) => {
-                    expression::Kind::Number(Number(number))
+                    expr::Kind::Number(Number(number))
                 }
                 TokenKind::String(string) => {
-                    expression::Kind::String(expression::String(string))
+                    expr::Kind::String(expr::String(string))
                 }
                 TokenKind::Word(word) => {
-                    expression::Kind::Word(Word(word))
+                    expr::Kind::Word(Word(word))
                 }
             };
 

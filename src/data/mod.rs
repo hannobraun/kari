@@ -1,5 +1,5 @@
 pub mod character;
-pub mod expression;
+pub mod expr;
 pub mod span;
 pub mod stack;
 pub mod token;
