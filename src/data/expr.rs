@@ -82,7 +82,7 @@ macro_rules! kinds {
             }
 
             impl Into for $ty {
-                fn into_expression(self) -> Expression {
+                fn into_expr(self) -> Expression {
                     Expression {
                         kind: Kind::$ty(self.inner),
                         span: self.span,
@@ -217,7 +217,7 @@ pub trait Name {
 }
 
 pub trait Into {
-    fn into_expression(self) -> Expression;
+    fn into_expr(self) -> Expression;
 }
 
 pub trait From : Sized {
@@ -230,7 +230,7 @@ impl Name for Expression {
 }
 
 impl Into for Expression {
-    fn into_expression(self) -> Expression {
+    fn into_expr(self) -> Expression {
         self
     }
 }

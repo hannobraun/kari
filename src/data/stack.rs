@@ -65,7 +65,7 @@ impl<T> Push for T
         T: expr::Into,
 {
     fn push(self, stack: &mut Stack) {
-        stack.push_raw(self.into_expression())
+        stack.push_raw(self.into_expr())
     }
 }
 
