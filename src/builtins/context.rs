@@ -9,10 +9,7 @@ use crate::{
             self,
             Expression,
         },
-        span::{
-            Span,
-            WithSpan,
-        },
+        span::Span,
         stack::{
             self,
             Stack,
@@ -26,7 +23,7 @@ pub trait Context {
     fn stack(&mut self) -> &mut Stack;
     fn define(&mut self, name: expr::Word, body: expr::List);
     fn load(&mut self, name: expr::String)
-        -> Result<WithSpan<expr::List>, Error>;
+        -> Result<expr::List, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
         expressions: &mut Iterator<Item=Expression>,

@@ -34,9 +34,3 @@ pub struct Position {
     /// The byte index within the stream
     pub index: usize,
 }
-
-
-pub struct WithSpan<T> {
-    pub value: T,
-    pub span:  Span,
-}

@@ -9,10 +9,7 @@ use std::{
     string::String as StdString,
 };
 
-use crate::data::span::{
-    Span,
-    WithSpan,
-};
+use crate::data::span::Span;
 
 
 #[derive(Clone, Debug)]
@@ -22,14 +19,14 @@ pub struct Expression {
 }
 
 impl Expression {
-    pub fn check<T>(self) -> Result<WithSpan<T>, Error>
+    pub fn check<T>(self) -> Result<T, Error>
         where
-            WithSpan<T>: From + Name,
+            T: From + Name,
     {
-        WithSpan::<T>::from_expression(self)
+        T::from_expression(self)
             .map_err(|expression|
                 Error::TypeError {
-                    expected: WithSpan::<T>::NAME,
+                    expected: T::NAME,
                     actual:   expression,
                 }
             )
@@ -40,10 +37,10 @@ impl Expression {
 pub struct E2(pub Expression, pub Expression);
 
 impl E2 {
-    pub fn check<A, B>(self) -> Result<(WithSpan<A>, WithSpan<B>), Error>
+    pub fn check<A, B>(self) -> Result<(A, B), Error>
         where
-            WithSpan<A>: From + Name,
-            WithSpan<B>: From + Name,
+            A: From + Name,
+            B: From + Name,
     {
         Ok((self.0.check()?, self.1.check()?))
     }
@@ -68,41 +65,38 @@ macro_rules! kinds {
             #[derive(Clone, Debug)]
             pub struct $ty {
                 pub inner: $inner,
+                pub span:  Span,
             }
 
             impl $ty {
-                pub fn new(inner: $inner) -> Self {
+                pub fn new(inner: $inner, span: Span) -> Self {
                     Self {
                         inner,
+                        span,
                     }
                 }
             }
 
-            impl Name for WithSpan<$ty> {
+            impl Name for $ty {
                 const NAME: &'static str = $name;
             }
 
-            impl Into for WithSpan<$ty> {
+            impl Into for $ty {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        kind: Kind::$ty(self.value.inner),
+                        kind: Kind::$ty(self.inner),
                         span: self.span,
                     }
                 }
             }
 
-            impl From for WithSpan<$ty> {
+            impl From for $ty {
                 fn from_expression(expression: Expression)
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
                         Kind::$ty(value) => {
-                            Ok(
-                                WithSpan {
-                                    value: $ty::new(value),
-                                    span:  expression.span,
-                                }
-                            )
+                            Ok($ty::new(value, expression.span))
                         }
                         _ => {
                             Err(expression)
@@ -140,7 +134,10 @@ impl Not for Bool {
     type Output = Self;
 
     fn not(self) -> Self::Output {
-        Bool::new(self.inner.not())
+        Bool::new(
+            self.inner.not(),
+            self.span,
+        )
     }
 }
 
@@ -149,7 +146,10 @@ impl Add for Number {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Number::new(self.inner + rhs.inner)
+        Number::new(
+            self.inner + rhs.inner,
+            self.span.merge(rhs.span),
+        )
     }
 }
 
@@ -157,7 +157,10 @@ impl Mul for Number {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Number::new(self.inner * rhs.inner)
+        Number::new(
+            self.inner * rhs.inner,
+            self.span.merge(rhs.span),
+        )
     }
 }
 

@@ -18,10 +18,7 @@ use crate::{
             self,
             Expression,
         },
-        span::{
-            Span,
-            WithSpan,
-        },
+        span::Span,
         stack::Stack,
     },
     interpreter::{
@@ -125,7 +122,7 @@ impl Context for Evaluator
     }
 
     fn load(&mut self, name: expr::String)
-        -> Result<WithSpan<expr::List>, context::Error>
+        -> Result<expr::List, context::Error>
     {
         let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;
@@ -151,12 +148,7 @@ impl Context for Evaluator
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
 
-        Ok(
-            WithSpan {
-                value: expr::List::new(expressions),
-                span:  start.merge(end),
-            }
-        )
+        Ok(expr::List::new(expressions, start.merge(end)))
     }
 
     fn evaluate(&mut self,
