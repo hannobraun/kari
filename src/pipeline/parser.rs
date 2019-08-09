@@ -40,29 +40,29 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let token = self.tokenizer.next()?;
 
-        let kind = match token.kind {
+        let (kind, span) = match token.kind {
             TokenKind::ListOpen => {
                 let list = self.parse_list()?;
-                expr::Kind::List(list)
+                (expr::Kind::List(list), token.span)
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                expr::Kind::Number(expr::Number(number))
+                (expr::Kind::Number(expr::Number(number)), token.span)
             }
             TokenKind::String(string) => {
-                expr::Kind::String(expr::String(string))
+                (expr::Kind::String(expr::String(string)), token.span)
             }
             TokenKind::Word(word) => {
-                expr::Kind::Word(expr::Word(word))
+                (expr::Kind::Word(expr::Word(word)), token.span)
             }
         };
 
         Ok(
             Expression {
                 kind,
-                span: token.span,
+                span,
             }
         )
     }
