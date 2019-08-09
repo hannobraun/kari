@@ -49,13 +49,13 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                (expr::Kind::Number(expr::Number(number)), token.span)
+                (expr::Kind::Number(expr::Number::new(number)), token.span)
             }
             TokenKind::String(string) => {
-                (expr::Kind::String(expr::String(string)), token.span)
+                (expr::Kind::String(expr::String::new(string)), token.span)
             }
             TokenKind::Word(word) => {
-                (expr::Kind::Word(expr::Word(word)), token.span)
+                (expr::Kind::Word(expr::Word::new(word)), token.span)
             }
         };
 
@@ -87,16 +87,16 @@ impl<Tokenizer> Parser<Tokenizer>
                     (expr::Kind::List(list), span)
                 }
                 TokenKind::ListClose => {
-                    return Ok((expr::List(expressions), list_span));
+                    return Ok((expr::List::new(expressions), list_span));
                 }
                 TokenKind::Number(number) => {
-                    (expr::Kind::Number(expr::Number(number)), token.span)
+                    (expr::Kind::Number(expr::Number::new(number)), token.span)
                 }
                 TokenKind::String(string) => {
-                    (expr::Kind::String(expr::String(string)), token.span)
+                    (expr::Kind::String(expr::String::new(string)), token.span)
                 }
                 TokenKind::Word(word) => {
-                    (expr::Kind::Word(expr::Word(word)), token.span)
+                    (expr::Kind::Word(expr::Word::new(word)), token.span)
                 }
             };
 

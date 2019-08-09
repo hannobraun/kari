@@ -121,13 +121,13 @@ impl Context for Evaluator
     }
 
     fn define(&mut self, name: expr::Word, body: expr::List) {
-        self.functions.insert(name.0, body);
+        self.functions.insert(name.inner, body);
     }
 
     fn load(&mut self, name: expr::String)
         -> Result<WithSpan<expr::List>, context::Error>
     {
-        let     path   = format!("kr/src/{}.kr", name.0);
+        let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;
 
         let mut parser      = pipeline::new(path.clone(), &mut stream);
@@ -153,7 +153,7 @@ impl Context for Evaluator
 
         Ok(
             WithSpan {
-                value: expr::List(expressions),
+                value: expr::List::new(expressions),
                 span:  start.merge(end),
             }
         )
@@ -173,22 +173,22 @@ impl Context for Evaluator
 
         for expression in expressions {
             if let expr::Kind::Word(word) = expression.kind {
-                if let Some(list) = self.functions.get(&word.0) {
+                if let Some(list) = self.functions.get(&word.inner) {
                     let list = list.clone();
                     self.evaluate(
                         Some(expression.span),
-                        &mut list.0.into_iter(),
+                        &mut list.inner.into_iter(),
                     )?;
                     continue;
                 }
-                if let Some(builtin) = self.builtins.builtin(&word.0) {
+                if let Some(builtin) = self.builtins.builtin(&word.inner) {
                     builtin(expression.span, self)?;
                     continue;
                 }
 
                 return Err(
                     context::Error::UnknownFunction {
-                        name: word.0,
+                        name: word.inner,
                         span: expression.span,
                     }
                 );

@@ -111,8 +111,8 @@ fn define(operator: Span, context: &mut Context) -> Result {
 
     let (body, name) = expr::E2(body, name).check::<expr::List, expr::List>()?;
 
-    assert_eq!(name.value.0.len(), 1);
-    let name = name.value.clone().0.pop().unwrap();
+    assert_eq!(name.value.inner.len(), 1);
+    let name = name.value.clone().inner.pop().unwrap();
 
     let name = match name.kind {
         expr::Kind::Word(word) => {
@@ -190,7 +190,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     let result = context.stack().destroy_substack();
 
     let data = WithSpan {
-        value: expr::List(result),
+        value: expr::List::new(result),
         span:  operator.merge(list.span).merge(function.span),
     };
     context.stack().push(data);
@@ -212,7 +212,7 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
         .pop_raw(&operator)?
         .check::<expr::Bool>()?;
 
-    if evaluated_condition.value.0 {
+    if evaluated_condition.value.inner {
         context.evaluate(
             Some(operator),
             &mut function.value.into_iter(),
@@ -253,7 +253,7 @@ fn eq(operator: Span, context: &mut Context) -> Result {
 
     let result = expr::E2(a, b)
         .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| expr::Bool(a == b));
+        .compute(operator, |(a, b)| expr::Bool::new(a == b));
 
     context.stack().push(result);
     Ok(())
@@ -265,7 +265,7 @@ fn gt(operator: Span, context: &mut Context) -> Result {
 
     let result = expr::E2(a, b)
         .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| expr::Bool(a > b));
+        .compute(operator, |(a, b)| expr::Bool::new(a > b));
 
     context.stack().push(result);
     Ok(())

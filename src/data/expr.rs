@@ -68,7 +68,17 @@ macro_rules! kinds {
 
         $(
             #[derive($($trait,)* Clone, Debug)]
-            pub struct $ty(pub $inner);
+            pub struct $ty {
+                pub inner: $inner,
+            }
+
+            impl $ty {
+                pub fn new(inner: $inner) -> Self {
+                    Self {
+                        inner,
+                    }
+                }
+            }
 
             impl Name for WithSpan<$ty> {
                 const NAME: &'static str = $name;
@@ -118,11 +128,11 @@ kinds!(
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::Bool(b)        => b.0.fmt(f),
-            Kind::Number(number) => number.0.fmt(f),
+            Kind::Bool(b)        => b.inner.fmt(f),
+            Kind::Number(number) => number.inner.fmt(f),
             Kind::List(list)     => list.fmt(f),
-            Kind::String(string) => string.0.fmt(f),
-            Kind::Word(word)     => word.0.fmt(f),
+            Kind::String(string) => string.inner.fmt(f),
+            Kind::Word(word)     => word.inner.fmt(f),
         }
     }
 }
@@ -132,7 +142,7 @@ impl Not for Bool {
     type Output = Self;
 
     fn not(self) -> Self::Output {
-        Bool(self.0.not())
+        Bool::new(self.inner.not())
     }
 }
 
@@ -141,7 +151,7 @@ impl Add for Number {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Number(self.0 + rhs.0)
+        Number::new(self.inner + rhs.inner)
     }
 }
 
@@ -149,7 +159,7 @@ impl Mul for Number {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Number(self.0 * rhs.0)
+        Number::new(self.inner * rhs.inner)
     }
 }
 
@@ -159,14 +169,14 @@ impl IntoIterator for List {
     type IntoIter = <Vec<Expression> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
+        self.inner.into_iter()
     }
 }
 
 impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[ ")?;
-        for item in &self.0 {
+        for item in &self.inner {
             write!(f, "{} ", item.kind)?;
         }
         write!(f, "]")?;
