@@ -11,7 +11,7 @@ use crate::{
     data::{
         expr::{
             self,
-            Expr,
+            Expr as _,
         },
         span::Span,
     },
