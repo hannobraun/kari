@@ -3,14 +3,10 @@ use std::fmt;
 use crate::data::{
     expression::{
         self,
-        Check as _,
         Expression,
         Name as _,
     },
-    span::{
-        Span,
-        WithSpan,
-    },
+    span::Span,
 };
 
 
@@ -30,7 +26,7 @@ impl Stack {
         T::push(value, self)
     }
 
-    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T::Data, Error> {
+    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T, Error> {
         T::pop(self, operator)
     }
 
@@ -90,46 +86,21 @@ impl<A, B> Push for (A, B)
 
 
 pub trait Pop : Sized {
-    type Data;
-
-    fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Data, Error>;
+    fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
 }
 
 impl Pop for Expression {
-    type Data = Expression;
-
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
         stack.pop_raw(operator)
-    }
-}
-
-impl<T> Pop for T
-    where WithSpan<T>: expression::From + expression::Name
-{
-    type Data = WithSpan<T>;
-
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
-        match stack.pop_raw(operator) {
-            Ok(expression) => {
-                Ok(expression.check()?)
-            }
-            Err(error) => {
-                Err(error)
-            }
-        }
     }
 }
 
 impl<A, B> Pop for (A, B)
     where
-        A:           Pop<Data=WithSpan<A>>,
-        B:           Pop<Data=WithSpan<B>>,
-        WithSpan<A>: expression::From + expression::Name,
-        WithSpan<B>: expression::From + expression::Name,
+        A: Pop,
+        B: Pop,
 {
-    type Data = (WithSpan<A>, WithSpan<B>);
-
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
         let b = stack.pop::<B>(operator)?;
         let a = stack.pop::<A>(operator)?;
         Ok((a, b))
