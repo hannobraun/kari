@@ -5,9 +5,6 @@ use crate::{
         expr::{
             self,
             Expression,
-            List,
-            Number,
-            Word,
         },
         span::Span,
         token::{
@@ -51,13 +48,13 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                expr::Kind::Number(Number(number))
+                expr::Kind::Number(expr::Number(number))
             }
             TokenKind::String(string) => {
                 expr::Kind::String(expr::String(string))
             }
             TokenKind::Word(word) => {
-                expr::Kind::Word(Word(word))
+                expr::Kind::Word(expr::Word(word))
             }
         };
 
@@ -73,8 +70,8 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self) -> Result<List, Error> {
-        let mut list = List::new();
+    fn parse_list(&mut self) -> Result<expr::List, Error> {
+        let mut list = expr::List::new();
 
         loop {
             let token = self.tokenizer.next()?;
@@ -87,13 +84,13 @@ impl<Tokenizer> Parser<Tokenizer>
                     return Ok(list);
                 }
                 TokenKind::Number(number) => {
-                    expr::Kind::Number(Number(number))
+                    expr::Kind::Number(expr::Number(number))
                 }
                 TokenKind::String(string) => {
                     expr::Kind::String(expr::String(string))
                 }
                 TokenKind::Word(word) => {
-                    expr::Kind::Word(Word(word))
+                    expr::Kind::Word(expr::Word(word))
                 }
             };
 
