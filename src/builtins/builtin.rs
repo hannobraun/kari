@@ -209,7 +209,10 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
         (function, condition).check()?;
 
     context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
-    if context.stack().pop::<Bool>(&operator)?.value.0 {
+
+    let evaluated_condition = context.stack().pop::<Bool>(&operator)?.value.0;
+
+    if evaluated_condition {
         context.evaluate(
             Some(operator),
             &mut function.value.into_iter(),
