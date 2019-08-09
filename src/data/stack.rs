@@ -4,7 +4,6 @@ use crate::data::{
     expression::{
         self,
         Expression,
-        E2,
         Name as _,
     },
     span::Span,
@@ -25,10 +24,6 @@ impl Stack {
 
     pub fn push<T: Push>(&mut self, value: T) {
         T::push(value, self)
-    }
-
-    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T, Error> {
-        T::pop(self, operator)
     }
 
     pub fn push_raw(&mut self, value: Expression) {
@@ -82,25 +77,6 @@ impl<A, B> Push for (A, B)
     fn push(self, stack: &mut Stack) {
         stack.push(self.0);
         stack.push(self.1);
-    }
-}
-
-
-pub trait Pop : Sized {
-    fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
-}
-
-impl Pop for Expression {
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
-        stack.pop_raw(operator)
-    }
-}
-
-impl Pop for E2 {
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
-        let b = stack.pop(operator)?;
-        let a = stack.pop(operator)?;
-        Ok(E2(a, b))
     }
 }
 
