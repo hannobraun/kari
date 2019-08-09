@@ -11,6 +11,7 @@ use crate::{
     data::{
         expr::{
             self,
+            Compute as _,
             Expr as _,
         },
         span::Span,
@@ -200,7 +201,9 @@ fn gt(operator: Span, context: &mut Context) -> Result {
 }
 
 fn not(operator: Span, context: &mut Context) -> Result {
-    let b = context.stack().pop::<expr::Bool>(&operator)?;
-    context.stack().push(!b);
+    let inverted = context.stack()
+        .pop::<expr::Bool>(&operator)?
+        .compute::<expr::Bool, _, _>(|b| !b);
+    context.stack().push(inverted);
     Ok(())
 }

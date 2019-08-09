@@ -4,7 +4,6 @@ use std::{
     ops::{
         Add,
         Mul,
-        Not,
     },
     string::String as StdString,
 };
@@ -155,18 +154,6 @@ impl fmt::Display for Kind {
 }
 
 
-impl Not for Bool {
-    type Output = Self;
-
-    fn not(self) -> Self::Output {
-        Bool::new(
-            self.inner.not(),
-            self.span,
-        )
-    }
-}
-
-
 impl Add for Number {
     type Output = Self;
 
@@ -234,6 +221,32 @@ fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "]")?;
 
     Ok(())
+}
+
+
+pub trait Compute {
+    type In;
+
+    fn compute<Out, F, R>(self, f: F) -> Out
+        where
+            Out: Expr<Inner=R>,
+            F:   Fn(Self::In) -> R;
+}
+
+impl<T> Compute for T where T: Expr {
+    type In = T::Inner;
+
+    fn compute<Out, F, R>(self, f: F) -> Out
+        where
+            Out: Expr<Inner=R>,
+            F:   Fn(Self::In) -> R,
+    {
+        let (inner, span) = self.open();
+        Out::new(
+            f(inner),
+            span,
+        )
+    }
 }
 
 
