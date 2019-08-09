@@ -23,7 +23,7 @@ impl Expression {
         where
             T: From + Name,
     {
-        T::from_expression(self)
+        T::from_expr(self)
             .map_err(|expression|
                 Error::TypeError {
                     expected: T::NAME,
@@ -91,7 +91,7 @@ macro_rules! kinds {
             }
 
             impl From for $ty {
-                fn from_expression(expression: Expression)
+                fn from_expr(expression: Expression)
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
@@ -221,7 +221,7 @@ pub trait Into {
 }
 
 pub trait From : Sized {
-    fn from_expression(expression: Expression) -> Result<Self, Expression>;
+    fn from_expr(expression: Expression) -> Result<Self, Expression>;
 }
 
 
@@ -236,7 +236,7 @@ impl Into for Expression {
 }
 
 impl From for Expression {
-    fn from_expression(expression: Expression) -> Result<Self, Expression> {
+    fn from_expr(expression: Expression) -> Result<Self, Expression> {
         Ok(expression)
     }
 }
