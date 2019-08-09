@@ -12,8 +12,8 @@ use crate::{
         expression::{
             self,
             Bool,
-            Check as _,
             Expression,
+            E2,
             Into as _,
             List,
             Number,
@@ -113,7 +113,7 @@ fn define(operator: Span, context: &mut Context) -> Result {
     let name = context.stack().pop_raw(&operator)?;
     let body = context.stack().pop_raw(&operator)?;
 
-    let (body, name): (WithSpan<List>, WithSpan<List>) = (body, name).check()?;
+    let (body, name) = E2(body, name).check::<List, List>()?;
 
     assert_eq!(name.value.0.len(), 1);
     let name = name.value.clone().0.pop().unwrap();
@@ -176,8 +176,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     let function = context.stack().pop_raw(&operator)?;
     let list     = context.stack().pop_raw(&operator)?;
 
-    let (list, function): (WithSpan<List>, WithSpan<List>) =
-        (list, function).check()?;
+    let (list, function) = E2(list, function).check::<List, List>()?;
 
     context.stack().create_substack();
 
@@ -205,8 +204,8 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
     let condition = context.stack().pop_raw(&operator)?;
     let function  = context.stack().pop_raw(&operator)?;
 
-    let (function, condition): (WithSpan<List>, WithSpan<List>) =
-        (function, condition).check()?;
+    let (function, condition) = E2(function, condition)
+        .check::<List, List>()?;
 
     context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
 
@@ -229,8 +228,8 @@ fn add(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = (a, b)
-        .check()?
+    let result = E2(a, b)
+        .check::<Number, Number>()?
         .compute(operator, |(a, b): (Number, Number)| a + b);
 
     context.stack().push(result);
@@ -241,9 +240,9 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = (a, b)
-        .check()?
-        .compute(operator, |(a, b): (Number, Number)| a * b);
+    let result = E2(a, b)
+        .check::<Number, Number>()?
+        .compute(operator, |(a, b)| a * b);
 
     context.stack().push(result);
     Ok(())
@@ -253,9 +252,9 @@ fn eq(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = (a, b)
-        .check()?
-        .compute(operator, |(a, b): (Number, Number)| Bool(a == b));
+    let result = E2(a, b)
+        .check::<Number, Number>()?
+        .compute(operator, |(a, b)| Bool(a == b));
 
     context.stack().push(result);
     Ok(())
@@ -265,9 +264,9 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = (a, b)
-        .check()?
-        .compute(operator, |(a, b): (Number, Number)| Bool(a > b));
+    let result = E2(a, b)
+        .check::<Number, Number>()?
+        .compute(operator, |(a, b)| Bool(a > b));
 
     context.stack().push(result);
     Ok(())

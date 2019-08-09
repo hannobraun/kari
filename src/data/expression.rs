@@ -19,6 +19,34 @@ pub struct Expression {
     pub span: Span,
 }
 
+impl Expression {
+    pub fn check<T>(self) -> Result<WithSpan<T>, Error>
+        where
+            WithSpan<T>: From + Name,
+    {
+        WithSpan::<T>::from_expression(self)
+            .map_err(|expression|
+                Error::TypeError {
+                    expected: WithSpan::<T>::NAME,
+                    actual:   expression,
+                }
+            )
+    }
+}
+
+
+pub struct E2(pub Expression, pub Expression);
+
+impl E2 {
+    pub fn check<A, B>(self) -> Result<(WithSpan<A>, WithSpan<B>), Error>
+        where
+            WithSpan<A>: From + Name,
+            WithSpan<B>: From + Name,
+    {
+        Ok((self.0.check()?, self.1.check()?))
+    }
+}
+
 
 #[derive(Clone, Debug)]
 pub enum Kind {
@@ -180,36 +208,6 @@ impl_expression!(
     Number, "number";
     String, "string";
 );
-
-
-pub trait Check<T> {
-    fn check(self) -> Result<T, Error>;
-}
-
-impl<T> Check<T> for Expression
-    where
-        T: From + Name
-{
-    fn check(self) -> Result<T, Error> {
-        T::from_expression(self)
-            .map_err(|expression|
-                Error::TypeError {
-                    expected: T::NAME,
-                    actual:   expression,
-                }
-            )
-    }
-}
-
-impl<A, B> Check<(A, B)> for (Expression, Expression)
-    where
-        A: From + Name,
-        B: From + Name,
-{
-    fn check(self) -> Result<(A, B), Error> {
-        Ok((self.0.check()?, self.1.check()?))
-    }
-}
 
 
 #[derive(Debug)]
