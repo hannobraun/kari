@@ -75,6 +75,7 @@ macro_rules! kinds {
     (
         $(
             $ty:ident,
+            $name:expr,
             $inner:ty,
             derive($(
                 $trait:ident,
@@ -84,16 +85,49 @@ macro_rules! kinds {
         $(
             #[derive($($trait,)* Clone, Debug)]
             pub struct $ty(pub $inner);
+
+            impl Name for WithSpan<$ty> {
+                const NAME: &'static str = $name;
+            }
+
+            impl Into for WithSpan<$ty> {
+                fn into_expression(self) -> Expression {
+                    Expression {
+                        kind: Kind::$ty(self.value),
+                        span: self.span,
+                    }
+                }
+            }
+
+            impl From for WithSpan<$ty> {
+                fn from_expression(expression: Expression)
+                    -> Result<Self, Expression>
+                {
+                    match expression.kind {
+                        Kind::$ty(value) => {
+                            Ok(
+                                WithSpan {
+                                    value,
+                                    span: expression.span,
+                                }
+                            )
+                        }
+                        _ => {
+                            Err(expression)
+                        }
+                    }
+                }
+            }
         )*
     }
 }
 
 kinds!(
-    Bool,   bool,            derive();
-    Number, u32,             derive(Eq, Ord, PartialEq, PartialOrd,);
-    List,   Vec<Expression>, derive();
-    String, StdString,       derive();
-    Word,   StdString,       derive();
+    Bool,   "bool",   bool,            derive();
+    Number, "number", u32,             derive(Eq, Ord, PartialEq, PartialOrd,);
+    List,   "list",   Vec<Expression>, derive();
+    String, "string", StdString,       derive();
+    Word,   "word",   StdString,       derive();
 );
 
 
@@ -179,53 +213,6 @@ impl From for Expression {
         Ok(expression)
     }
 }
-
-
-macro_rules! impl_expression {
-    ($($ty:ident, $name:expr;)*) => {
-        $(
-            impl Name for WithSpan<$ty> {
-                const NAME: &'static str = $name;
-            }
-
-            impl Into for WithSpan<$ty> {
-                fn into_expression(self) -> Expression {
-                    Expression {
-                        kind: Kind::$ty(self.value),
-                        span: self.span,
-                    }
-                }
-            }
-
-            impl From for WithSpan<$ty> {
-                fn from_expression(expression: Expression)
-                    -> Result<Self, Expression>
-                {
-                    match expression.kind {
-                        Kind::$ty(value) => {
-                            Ok(
-                                WithSpan {
-                                    value,
-                                    span: expression.span,
-                                }
-                            )
-                        }
-                        _ => {
-                            Err(expression)
-                        }
-                    }
-                }
-            }
-        )*
-    }
-}
-
-impl_expression!(
-    Bool,   "bool";
-    List,   "list";
-    Number, "number";
-    String, "string";
-);
 
 
 #[derive(Debug)]
