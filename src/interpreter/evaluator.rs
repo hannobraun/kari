@@ -14,7 +14,10 @@ use crate::{
         },
     },
     data::{
-        expr,
+        expr::{
+            self,
+            Expr as _,
+        },
         span::Span,
         stack::Stack,
     },

@@ -15,6 +15,11 @@ use crate::data::span::Span;
 pub trait Expr : Sized {
     const NAME: &'static str;
 
+    type Inner;
+
+    fn new(_: Self::Inner, _: Span) -> Self;
+    fn open(self) -> (Self::Inner, Span);
+
     fn into_any(self) -> Any;
     fn from_any(_: Any) -> Result<Self, Any>;
 }
@@ -43,6 +48,19 @@ impl Any {
 
 impl Expr for Any {
     const NAME: &'static str = "expression";
+
+    type Inner = Kind;
+
+    fn new(kind: Self::Inner, span: Span) -> Self {
+        Self {
+            kind,
+            span,
+        }
+    }
+
+    fn open(self) -> (Self::Inner, Span) {
+        (self.kind, self.span)
+    }
 
     fn into_any(self) -> Any {
         self
@@ -75,17 +93,21 @@ macro_rules! kinds {
                 pub span:  Span,
             }
 
-            impl $ty {
-                pub fn new(inner: $inner, span: Span) -> Self {
+            impl Expr for $ty {
+                const NAME: &'static str = $name;
+
+                type Inner = $inner;
+
+                fn new(inner: $inner, span: Span) -> Self {
                     Self {
                         inner,
                         span,
                     }
                 }
-            }
 
-            impl Expr for $ty {
-                const NAME: &'static str = $name;
+                fn open(self) -> (Self::Inner, Span) {
+                    (self.inner, self.span)
+                }
 
                 fn into_any(self) -> Any {
                     Any {
