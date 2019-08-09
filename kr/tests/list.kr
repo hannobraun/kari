@@ -4,7 +4,5 @@
 [ 1 2 3 ] [ dup * ] each
 [ 1 4 9 ] = assert
 
-# fold
-1 [ 2 3 7 ] [ * ] each
-    eval # the result is a list of one element
+1 [ 2 3 7 ] [ * ] fold
 42 = assert
