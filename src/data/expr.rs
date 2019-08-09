@@ -15,7 +15,7 @@ use crate::data::span::Span;
 pub trait Expr {
     const NAME: &'static str;
 
-    fn into_expr(self) -> Any;
+    fn into_any(self) -> Any;
 }
 
 
@@ -43,7 +43,7 @@ impl Any {
 impl Expr for Any {
     const NAME: &'static str = "expression";
 
-    fn into_expr(self) -> Any {
+    fn into_any(self) -> Any {
         self
     }
 }
@@ -88,7 +88,7 @@ macro_rules! kinds {
             impl Expr for $ty {
                 const NAME: &'static str = $name;
 
-                fn into_expr(self) -> Any {
+                fn into_any(self) -> Any {
                     Any {
                         kind: Kind::$ty(self.inner),
                         span: self.span,
