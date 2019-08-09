@@ -9,11 +9,7 @@ use crate::{
         Context,
     },
     data::{
-        expr::{
-            self,
-            Expression,
-            Into as _,
-        },
+        expr,
         span::{
             Span,
             WithSpan,
@@ -55,47 +51,6 @@ builtins!(
     ">",   gt;
     "not", not;
 );
-
-
-pub trait Compute : Sized {
-    type Input;
-
-    fn compute<F, R>(self, operator: Span, f: F) -> Expression
-        where
-            F: Fn(Self::Input) -> R,
-            WithSpan<R>: expr::Into;
-
-}
-
-impl<T> Compute for WithSpan<T> {
-    type Input = T;
-
-    fn compute<F, R>(self, operator: Span, f: F) -> Expression
-        where
-            F:           Fn(Self::Input) -> R,
-            WithSpan<R>: expr::Into
-    {
-        let value = f(self.value);
-        let span  = operator.merge(self.span);
-
-        WithSpan { value, span }.into_expression()
-    }
-}
-
-impl<A, B> Compute for (WithSpan<A>, WithSpan<B>) {
-    type Input = (A, B);
-
-    fn compute<F, R>(self, operator: Span, f: F) -> Expression
-        where
-            F:           Fn(Self::Input) -> R,
-            WithSpan<R>: expr::Into,
-    {
-        let value = f((self.0.value, self.1.value));
-        let span  = operator.merge(self.0.span).merge(self.1.span);
-
-        WithSpan { value, span }.into_expression()
-    }
-}
 
 
 fn print(operator: Span, context: &mut Context) -> Result {
@@ -216,9 +171,12 @@ fn add(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = expr::E2(a, b)
-        .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| a + b);
+    let e = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?;
+    let result = WithSpan {
+        value: e.0.value + e.1.value,
+        span:  e.0.span.merge(e.1.span),
+    };
 
     context.stack().push(result);
     Ok(())
@@ -228,9 +186,12 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = expr::E2(a, b)
-        .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| a * b);
+    let e = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?;
+    let result = WithSpan {
+        value: e.0.value * e.1.value,
+        span:  e.0.span.merge(e.1.span),
+    };
 
     context.stack().push(result);
     Ok(())
@@ -240,9 +201,12 @@ fn eq(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = expr::E2(a, b)
-        .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| expr::Bool::new(a == b));
+    let e = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?;
+    let result = WithSpan {
+        value: expr::Bool::new(e.0.value == e.1.value),
+        span:  e.0.span.merge(e.1.span),
+    };
 
     context.stack().push(result);
     Ok(())
@@ -252,9 +216,13 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = expr::E2(a, b)
-        .check::<expr::Number, expr::Number>()?
-        .compute(operator, |(a, b)| expr::Bool::new(a > b));
+    let e = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?;
+
+    let result = WithSpan {
+        value: expr::Bool::new(e.0.value > e.1.value),
+        span:  e.0.span.merge(e.1.span),
+    };
 
     context.stack().push(result);
     Ok(())
@@ -263,7 +231,10 @@ fn gt(operator: Span, context: &mut Context) -> Result {
 fn not(operator: Span, context: &mut Context) -> Result {
     let b: WithSpan<expr::Bool> = context.stack().pop_raw(&operator)?.check()?;
 
-    let result = b.compute(operator, |b| !b);
+    let result = WithSpan {
+        value: !b.value,
+        span:  b.span,
+    };
 
     context.stack().push(result);
     Ok(())
