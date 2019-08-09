@@ -42,7 +42,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 
         let kind = match token.kind {
             TokenKind::ListOpen => {
-                expr::Kind::List(self.parse_list()?)
+                expr::Kind::List(expr::List(self.parse_list()?))
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
@@ -70,7 +70,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self) -> Result<expr::List, Error> {
+    fn parse_list(&mut self) -> Result<Vec<Expression>, Error> {
         let mut expressions = Vec::new();
 
         loop {
@@ -78,10 +78,10 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let kind = match token.kind {
                 TokenKind::ListOpen => {
-                    expr::Kind::List(self.parse_list()?)
+                    expr::Kind::List(expr::List(self.parse_list()?))
                 }
                 TokenKind::ListClose => {
-                    return Ok(expr::List(expressions));
+                    return Ok(expressions);
                 }
                 TokenKind::Number(number) => {
                     expr::Kind::Number(expr::Number(number))
