@@ -63,7 +63,10 @@ pub trait Push {
     fn push(self, _: &mut Stack);
 }
 
-impl<T> Push for T where T: expression::Into {
+impl<T> Push for T
+    where
+        T: expression::Into,
+{
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.into_expression())
     }
