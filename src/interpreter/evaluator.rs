@@ -14,10 +14,7 @@ use crate::{
         },
     },
     data::{
-        expr::{
-            self,
-            Expression,
-        },
+        expr,
         span::Span,
         stack::Stack,
     },
@@ -74,7 +71,7 @@ impl Evaluator {
 
     fn evaluate_expressions<Parser>(&mut self, mut parser: Parser)
         -> Result<(), Error>
-        where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
+        where Parser: pipeline::Stage<Item=expr::Any, Error=parser::Error>
     {
         loop {
             let expression = match parser.next() {
@@ -153,7 +150,7 @@ impl Context for Evaluator
 
     fn evaluate(&mut self,
         operator:    Option<Span>,
-        expressions: &mut Iterator<Item=Expression>,
+        expressions: &mut Iterator<Item=expr::Any>,
     )
         -> Result<(), context::Error>
     {
@@ -186,7 +183,7 @@ impl Context for Evaluator
                 );
             }
             else {
-                self.stack.push::<Expression>(expression);
+                self.stack.push::<expr::Any>(expression);
             }
         }
 

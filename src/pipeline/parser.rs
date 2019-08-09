@@ -2,10 +2,7 @@ use std::fmt;
 
 use crate::{
     data::{
-        expr::{
-            self,
-            Expression,
-        },
+        expr,
         span::Span,
         token::{
             Token,
@@ -34,7 +31,7 @@ impl<Tokenizer> Parser<Tokenizer> {
 impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    type Item  = Expression;
+    type Item  = expr::Any;
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
@@ -60,7 +57,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
         };
 
         Ok(
-            Expression {
+            expr::Any {
                 kind,
                 span,
             }
@@ -72,7 +69,7 @@ impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
     fn parse_list(&mut self, mut list_span: Span)
-        -> Result<(Vec<Expression>, Span), Error>
+        -> Result<(Vec<expr::Any>, Span), Error>
     {
         let mut expressions = Vec::new();
 
@@ -101,7 +98,7 @@ impl<Tokenizer> Parser<Tokenizer>
             };
 
             expressions.push(
-                Expression {
+                expr::Any {
                     kind,
                     span,
                 }

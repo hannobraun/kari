@@ -9,10 +9,7 @@ use crate::{
         Context,
     },
     data::{
-        expr::{
-            self,
-            Expression,
-        },
+        expr,
         span::Span,
     },
 };
@@ -54,7 +51,7 @@ builtins!(
 
 
 fn print(operator: Span, context: &mut Context) -> Result {
-    let expression = context.stack().pop::<Expression>(&operator)?;
+    let expression = context.stack().pop::<expr::Any>(&operator)?;
     print!("{}", expression.kind);
 
     Ok(())
@@ -97,12 +94,12 @@ fn load(operator: Span, context: &mut Context) -> Result {
 
 
 fn drop(operator: Span, context: &mut Context) -> Result {
-    context.stack().pop::<Expression>(&operator)?;
+    context.stack().pop::<expr::Any>(&operator)?;
     Ok(())
 }
 
 fn dup(operator: Span, context: &mut Context) -> Result {
-    let mut expression = context.stack().pop::<Expression>(&operator)?;
+    let mut expression = context.stack().pop::<expr::Any>(&operator)?;
 
     expression.span = operator.merge(expression.span);
 

@@ -13,12 +13,12 @@ use crate::data::span::Span;
 
 
 #[derive(Clone, Debug)]
-pub struct Expression {
+pub struct Any {
     pub kind: Kind,
     pub span: Span,
 }
 
-impl Expression {
+impl Any {
     pub fn check<T>(self) -> Result<T, Error>
         where
             T: From + Name,
@@ -69,8 +69,8 @@ macro_rules! kinds {
             }
 
             impl Into for $ty {
-                fn into_expr(self) -> Expression {
-                    Expression {
+                fn into_expr(self) -> Any {
+                    Any {
                         kind: Kind::$ty(self.inner),
                         span: self.span,
                     }
@@ -78,8 +78,8 @@ macro_rules! kinds {
             }
 
             impl From for $ty {
-                fn from_expr(expression: Expression)
-                    -> Result<Self, Expression>
+                fn from_expr(expression: Any)
+                    -> Result<Self, Any>
                 {
                     match expression.kind {
                         Kind::$ty(value) => {
@@ -98,7 +98,7 @@ macro_rules! kinds {
 kinds!(
     Bool,   "bool",   bool;
     Number, "number", u32;
-    List,   "list",   Vec<Expression>;
+    List,   "list",   Vec<Any>;
     String, "string", StdString;
     Word,   "word",   StdString;
 );
@@ -173,8 +173,8 @@ impl Ord for Number {
 
 
 impl IntoIterator for List {
-    type Item     = <Vec<Expression> as IntoIterator>::Item;
-    type IntoIter = <Vec<Expression> as IntoIterator>::IntoIter;
+    type Item     = <Vec<Any> as IntoIterator>::Item;
+    type IntoIter = <Vec<Any> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
         self.inner.into_iter()
@@ -188,7 +188,7 @@ impl fmt::Display for List {
 }
 
 
-fn fmt_list(list: &Vec<Expression>, f: &mut fmt::Formatter) -> fmt::Result {
+fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "[ ")?;
     for item in list {
         write!(f, "{} ", item.kind)?;
@@ -204,26 +204,26 @@ pub trait Name {
 }
 
 pub trait Into {
-    fn into_expr(self) -> Expression;
+    fn into_expr(self) -> Any;
 }
 
 pub trait From : Sized {
-    fn from_expr(expression: Expression) -> Result<Self, Expression>;
+    fn from_expr(expression: Any) -> Result<Self, Any>;
 }
 
 
-impl Name for Expression {
+impl Name for Any {
     const NAME: &'static str = "expression";
 }
 
-impl Into for Expression {
-    fn into_expr(self) -> Expression {
+impl Into for Any {
+    fn into_expr(self) -> Any {
         self
     }
 }
 
-impl From for Expression {
-    fn from_expr(expression: Expression) -> Result<Self, Expression> {
+impl From for Any {
+    fn from_expr(expression: Any) -> Result<Self, Any> {
         Ok(expression)
     }
 }
@@ -233,7 +233,7 @@ impl From for Expression {
 pub enum Error {
     TypeError {
         expected: &'static str,
-        actual:   Expression,
+        actual:   Any,
     },
 }
 

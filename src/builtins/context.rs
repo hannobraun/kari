@@ -5,10 +5,7 @@ use std::{
 
 use crate::{
     data::{
-        expr::{
-            self,
-            Expression,
-        },
+        expr,
         span::Span,
         stack::{
             self,
@@ -26,7 +23,7 @@ pub trait Context {
         -> Result<expr::List, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
-        expressions: &mut Iterator<Item=Expression>,
+        expressions: &mut Iterator<Item=expr::Any>,
     )
         -> Result<(), Error>;
 }

@@ -3,7 +3,6 @@ use std::fmt;
 use crate::data::{
     expr::{
         self,
-        Expression,
         Name as _,
     },
     span::Span,
@@ -12,7 +11,7 @@ use crate::data::{
 
 #[derive(Debug)]
 pub struct Stack {
-    substacks: Vec<Vec<Expression>>
+    substacks: Vec<Vec<expr::Any>>
 }
 
 impl Stack {
@@ -30,12 +29,12 @@ impl Stack {
         T::pop(self, operator)
     }
 
-    pub fn push_raw(&mut self, value: Expression) {
+    pub fn push_raw(&mut self, value: expr::Any) {
         let stack = self.substacks.last_mut().unwrap();
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self, operator: &Span) -> Result<Expression, Error> {
+    pub fn pop_raw(&mut self, operator: &Span) -> Result<expr::Any, Error> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
                 return Ok(value)
@@ -44,7 +43,7 @@ impl Stack {
 
         Err(
             Error::StackEmpty {
-                expected: Expression::NAME,
+                expected: expr::Any::NAME,
                 operator: operator.clone(),
             }
         )
@@ -54,7 +53,7 @@ impl Stack {
         self.substacks.push(Vec::new());
     }
 
-    pub fn destroy_substack(&mut self) -> Vec<Expression> {
+    pub fn destroy_substack(&mut self) -> Vec<expr::Any> {
         self.substacks.pop().unwrap()
     }
 }
