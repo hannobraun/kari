@@ -88,25 +88,23 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::Failure { .. } => {
-                write!(f, "Explicit failure")?;
+                write!(f, "Explicit failure")
             }
             Error::UnknownFunction { name, .. } => {
-                write!(f, "Unknown function: `{}`", name)?;
+                write!(f, "Unknown function: `{}`", name)
             }
             Error::Expression(error) => {
-                error.fmt(f)?;
+                error.fmt(f)
             }
             Error::Io(error) => {
-                write!(f, "Error loading stream: {}", error)?;
+                write!(f, "Error loading stream: {}", error)
             }
             Error::Parser(error) => {
-                error.fmt(f)?;
+                error.fmt(f)
             }
             Error::Stack(error) => {
-                write!(f, "{}", error)?;
+                write!(f, "{}", error)
             }
         }
-
-        Ok(())
     }
 }
