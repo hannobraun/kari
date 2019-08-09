@@ -12,6 +12,7 @@ use crate::{
         expression::{
             self,
             Bool,
+            Data,
             Expression,
             Into as _,
             List,
@@ -63,37 +64,37 @@ pub trait Compute : Sized {
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
-            expression::Data<R>: expression::Into;
+            Data<R>: expression::Into;
 
 }
 
-impl<T> Compute for expression::Data<T> {
+impl<T> Compute for Data<T> {
     type Input = T;
 
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
             F: Fn(Self::Input) -> R,
-            expression::Data<R>: expression::Into
+            Data<R>: expression::Into
     {
         let data = f(self.data);
         let span = operator.merge(self.span);
 
-        expression::Data { data, span }.into_expression()
+        Data { data, span }.into_expression()
     }
 }
 
-impl<A, B> Compute for (expression::Data<A>, expression::Data<B>) {
+impl<A, B> Compute for (Data<A>, Data<B>) {
     type Input = (A, B);
 
     fn compute<F, R>(self, operator: Span, f: F) -> Expression
         where
-            F: Fn(Self::Input) -> R,
-            expression::Data<R>: expression::Into,
+            F:       Fn(Self::Input) -> R,
+            Data<R>: expression::Into,
     {
         let data = f((self.0.data, self.1.data));
         let span = operator.merge(self.0.span).merge(self.1.span);
 
-        expression::Data { data, span }.into_expression()
+        Data { data, span }.into_expression()
     }
 }
 
@@ -181,7 +182,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
     let result = context.stack().destroy_substack();
 
-    let data = expression::Data {
+    let data = Data {
         data: List(result),
         span: operator.merge(list.span).merge(function.span),
     };
