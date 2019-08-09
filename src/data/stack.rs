@@ -88,7 +88,7 @@ pub trait Pop : Sized {
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
 }
 
-impl<T> Pop for T where T: Expr +  expr::From {
+impl<T> Pop for T where T: Expr {
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
         Ok(stack.pop_raw(operator)?.check::<T>()?)
     }

@@ -12,10 +12,11 @@ use std::{
 use crate::data::span::Span;
 
 
-pub trait Expr {
+pub trait Expr : Sized {
     const NAME: &'static str;
 
     fn into_any(self) -> Any;
+    fn from_expr(expression: Any) -> Result<Self, Any>;
 }
 
 
@@ -28,7 +29,7 @@ pub struct Any {
 impl Any {
     pub fn check<T>(self) -> Result<T, Error>
         where
-            T: Expr + From,
+            T: Expr,
     {
         T::from_expr(self)
             .map_err(|expression|
@@ -46,9 +47,7 @@ impl Expr for Any {
     fn into_any(self) -> Any {
         self
     }
-}
 
-impl From for Any {
     fn from_expr(expression: Any) -> Result<Self, Any> {
         Ok(expression)
     }
@@ -94,9 +93,7 @@ macro_rules! kinds {
                         span: self.span,
                     }
                 }
-            }
 
-            impl From for $ty {
                 fn from_expr(expression: Any)
                     -> Result<Self, Any>
                 {
@@ -215,11 +212,6 @@ fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "]")?;
 
     Ok(())
-}
-
-
-pub trait From : Sized {
-    fn from_expr(expression: Any) -> Result<Self, Any>;
 }
 
 
