@@ -117,7 +117,7 @@ impl Context for Evaluator
         &mut self.stack
     }
 
-    fn define(&mut self, name: expr::Word, body: expr::List) {
+    fn define(&mut self, name: expr::Symbol, body: expr::List) {
         self.functions.insert(name.inner, body);
     }
 

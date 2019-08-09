@@ -18,7 +18,7 @@ use crate::{
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
-    fn define(&mut self, name: expr::Word, body: expr::List);
+    fn define(&mut self, name: expr::Symbol, body: expr::List);
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
     fn evaluate(&mut self,

@@ -63,11 +63,7 @@ fn print(operator: Span, context: &mut Context) -> Result {
 
 fn define(operator: Span, context: &mut Context) -> Result {
     let (body, name) = context.stack()
-        .pop::<(expr::List, expr::List)>(&operator)?;
-
-    assert_eq!(name.inner.len(), 1);
-    let name = name.clone().inner.pop().unwrap()
-        .check::<expr::Word>()?;
+        .pop::<(expr::List, expr::Symbol)>(&operator)?;
 
     context.define(name, body.clone());
 
