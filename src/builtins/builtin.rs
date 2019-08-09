@@ -11,12 +11,8 @@ use crate::{
     data::{
         expr::{
             self,
-            Bool,
             Expression,
-            E2,
             Into as _,
-            List,
-            Number,
         },
         span::{
             Span,
@@ -113,7 +109,7 @@ fn define(operator: Span, context: &mut Context) -> Result {
     let name = context.stack().pop_raw(&operator)?;
     let body = context.stack().pop_raw(&operator)?;
 
-    let (body, name) = E2(body, name).check::<List, List>()?;
+    let (body, name) = expr::E2(body, name).check::<expr::List, expr::List>()?;
 
     assert_eq!(name.value.0.len(), 1);
     let name = name.value.clone().0.pop().unwrap();
@@ -140,7 +136,7 @@ fn fail(operator: Span, _: &mut Context) -> Result {
 }
 
 fn eval(operator: Span, context: &mut Context) -> Result {
-    let list: WithSpan<List> = context.stack().pop_raw(&operator)?.check()?;
+    let list = context.stack().pop_raw(&operator)?.check::<expr::List>()?;
     context.evaluate(
         Some(operator),
         &mut list.value.into_iter(),
@@ -178,7 +174,8 @@ fn each(operator: Span, context: &mut Context) -> Result {
     let function = context.stack().pop_raw(&operator)?;
     let list     = context.stack().pop_raw(&operator)?;
 
-    let (list, function) = E2(list, function).check::<List, List>()?;
+    let (list, function) = expr::E2(list, function)
+        .check::<expr::List, expr::List>()?;
 
     context.stack().create_substack();
 
@@ -193,7 +190,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     let result = context.stack().destroy_substack();
 
     let data = WithSpan {
-        value: List(result),
+        value: expr::List(result),
         span:  operator.merge(list.span).merge(function.span),
     };
     context.stack().push(data);
@@ -206,14 +203,14 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
     let condition = context.stack().pop_raw(&operator)?;
     let function  = context.stack().pop_raw(&operator)?;
 
-    let (function, condition) = E2(function, condition)
-        .check::<List, List>()?;
+    let (function, condition) = expr::E2(function, condition)
+        .check::<expr::List, expr::List>()?;
 
     context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
 
-    let evaluated_condition: WithSpan<Bool> = context.stack()
+    let evaluated_condition = context.stack()
         .pop_raw(&operator)?
-        .check()?;
+        .check::<expr::Bool>()?;
 
     if evaluated_condition.value.0 {
         context.evaluate(
@@ -230,9 +227,9 @@ fn add(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = E2(a, b)
-        .check::<Number, Number>()?
-        .compute(operator, |(a, b): (Number, Number)| a + b);
+    let result = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?
+        .compute(operator, |(a, b)| a + b);
 
     context.stack().push(result);
     Ok(())
@@ -242,8 +239,8 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = E2(a, b)
-        .check::<Number, Number>()?
+    let result = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?
         .compute(operator, |(a, b)| a * b);
 
     context.stack().push(result);
@@ -254,9 +251,9 @@ fn eq(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = E2(a, b)
-        .check::<Number, Number>()?
-        .compute(operator, |(a, b)| Bool(a == b));
+    let result = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?
+        .compute(operator, |(a, b)| expr::Bool(a == b));
 
     context.stack().push(result);
     Ok(())
@@ -266,18 +263,18 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     let b = context.stack().pop_raw(&operator)?;
     let a = context.stack().pop_raw(&operator)?;
 
-    let result = E2(a, b)
-        .check::<Number, Number>()?
-        .compute(operator, |(a, b)| Bool(a > b));
+    let result = expr::E2(a, b)
+        .check::<expr::Number, expr::Number>()?
+        .compute(operator, |(a, b)| expr::Bool(a > b));
 
     context.stack().push(result);
     Ok(())
 }
 
 fn not(operator: Span, context: &mut Context) -> Result {
-    let b: WithSpan<Bool> = context.stack().pop_raw(&operator)?.check()?;
+    let b: WithSpan<expr::Bool> = context.stack().pop_raw(&operator)?.check()?;
 
-    let result = b.compute(operator, |b: Bool| !b);
+    let result = b.compute(operator, |b| !b);
 
     context.stack().push(result);
     Ok(())
