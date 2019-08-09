@@ -74,8 +74,8 @@ impl<T> Push for T
 
 impl<A, B> Push for (A, B)
     where
-        A: Push + expr::Into,
-        B: Push + expr::Into,
+        A: Push,
+        B: Push,
 {
     fn push(self, stack: &mut Stack) {
         stack.push(self.0);
