@@ -180,7 +180,7 @@ fn mul(operator: Span, context: &mut Context) -> Result {
 
 fn eq(operator: Span, context: &mut Context) -> Result {
     let is_equal = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .pop::<(expr::Any, expr::Any)>(&operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
