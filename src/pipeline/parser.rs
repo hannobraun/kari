@@ -77,29 +77,29 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            let kind = match token.kind {
+            let (kind, span) = match token.kind {
                 TokenKind::ListOpen => {
                     let list = self.parse_list()?;
-                    expr::Kind::List(list)
+                    (expr::Kind::List(list), token.span)
                 }
                 TokenKind::ListClose => {
                     return Ok(expr::List(expressions));
                 }
                 TokenKind::Number(number) => {
-                    expr::Kind::Number(expr::Number(number))
+                    (expr::Kind::Number(expr::Number(number)), token.span)
                 }
                 TokenKind::String(string) => {
-                    expr::Kind::String(expr::String(string))
+                    (expr::Kind::String(expr::String(string)), token.span)
                 }
                 TokenKind::Word(word) => {
-                    expr::Kind::Word(expr::Word(word))
+                    (expr::Kind::Word(expr::Word(word)), token.span)
                 }
             };
 
             expressions.push(
                 Expression {
                     kind,
-                    span: token.span,
+                    span,
                 }
             );
         }
