@@ -6,7 +6,7 @@ use std::{
 use crate::{
     data::{
         expression::{
-            self,
+            self as e,
             Expression,
             List,
             Word,
@@ -27,7 +27,7 @@ use crate::{
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
     fn define(&mut self, name: Word, body: List);
-    fn load(&mut self, name: expression::String)
+    fn load(&mut self, name: e::String)
         -> Result<WithSpan<List>, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
@@ -41,7 +41,7 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
-    Expression(expression::Error),
+    Expression(e::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
@@ -60,8 +60,8 @@ impl Error {
     }
 }
 
-impl From<expression::Error> for Error {
-    fn from(from: expression::Error) -> Self {
+impl From<e::Error> for Error {
+    fn from(from: e::Error) -> Self {
         Error::Expression(from)
     }
 }
