@@ -8,8 +8,6 @@ use crate::{
         expr::{
             self,
             Expression,
-            List,
-            Word,
         },
         span::{
             Span,
@@ -26,9 +24,9 @@ use crate::{
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
-    fn define(&mut self, name: Word, body: List);
+    fn define(&mut self, name: expr::Word, body: expr::List);
     fn load(&mut self, name: expr::String)
-        -> Result<WithSpan<List>, Error>;
+        -> Result<WithSpan<expr::List>, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
         expressions: &mut Iterator<Item=Expression>,
