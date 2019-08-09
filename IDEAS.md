@@ -2,14 +2,8 @@
 
 ## Design
 
-### Symbol Expression
+...
 
-Currently I'm using lists of one word whenever I need a symbol. This works well, but the syntax looks a bit heavyweight. Maybe add a dedicated symbol expression.
-
-```
-[ symbol ] # replace this
-:symbol    # with something like this
-```
 
 ## Implementation
 
