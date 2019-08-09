@@ -24,6 +24,10 @@ If I ever end up modelling side effects somehow, then `Evaluator` could be turne
 - Give spans a type, so operands and operators can be colored differently in error messages.
 - Extend the spans of expressions that are the result of an evaluation, so they also point to the operator that did the evaluation (like `eval`, `each`). This requires support for discontinuous spans, or maybe expressions can just have different spans.
 
-### Debugger
+### REPL
 
-Add a debugger that allows stepping through a program word for word.
+Add a REPL. As far as debugging tools go, this is probably the most bang for the buck.
+
+Could it even be possible to emulate some debugging features by implementing a `step` builtin, which evaluates the first word of a list, but leaves the rest of the list?
+
+Over time, it might be possible to make the language so powerful, that a debugger can just be implemented as a library that is used with the REPL.
