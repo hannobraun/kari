@@ -17,8 +17,6 @@ use crate::{
         expr::{
             self,
             Expression,
-            List,
-            Word,
         },
         span::{
             Span,
@@ -42,7 +40,7 @@ pub struct Evaluator {
     streams:     HashMap<String, Box<Stream>>,
     builtins:    Builtins,
     stack:       Stack,
-    functions:   HashMap<String, List>,
+    functions:   HashMap<String, expr::List>,
     stack_trace: Vec<Span>,
 }
 
@@ -122,12 +120,12 @@ impl Context for Evaluator
         &mut self.stack
     }
 
-    fn define(&mut self, name: Word, body: List) {
+    fn define(&mut self, name: expr::Word, body: expr::List) {
         self.functions.insert(name.0, body);
     }
 
     fn load(&mut self, name: expr::String)
-        -> Result<WithSpan<List>, context::Error>
+        -> Result<WithSpan<expr::List>, context::Error>
     {
         let     path   = format!("kr/src/{}.kr", name.0);
         let mut stream = File::open(&path)?;
@@ -155,7 +153,7 @@ impl Context for Evaluator
 
         Ok(
             WithSpan {
-                value: List(expressions),
+                value: expr::List(expressions),
                 span:  start.merge(end),
             }
         )
