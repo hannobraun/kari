@@ -147,7 +147,7 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 fn load(operator: Span, context: &mut Context) -> Result {
     let path = context.stack().pop::<String>(&operator)?;
     let list = context.load(path.value)?;
-    context.stack().push::<List>(list);
+    context.stack().push_raw(list.into_expression());
     Ok(())
 }
 
@@ -162,8 +162,8 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 
     expression.span = operator.merge(expression.span);
 
-    context.stack().push::<Expression>(expression.clone());
-    context.stack().push::<Expression>(expression);
+    context.stack().push_raw(expression.clone());
+    context.stack().push_raw(expression);
 
     Ok(())
 }
@@ -175,7 +175,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     context.stack().create_substack();
 
     for item in list.value {
-        context.stack().push::<Expression>(item);
+        context.stack().push_raw(item);
         context.evaluate(
             Some(operator.clone()),
             &mut function.value.clone().into_iter(),
@@ -188,7 +188,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
         value: List(result),
         span:  operator.merge(list.span).merge(function.span),
     };
-    context.stack().push::<List>(data);
+    context.stack().push_raw(data.into_expression());
 
     Ok(())
 }
