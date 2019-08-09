@@ -16,6 +16,7 @@ pub enum TokenKind {
     ListOpen,
     ListClose,
     String(String),
+    Symbol(String),
     Word(String),
 }
 
@@ -26,6 +27,7 @@ impl fmt::Display for TokenKind {
             TokenKind::ListOpen       => write!(f, "["),
             TokenKind::ListClose      => write!(f, "]"),
             TokenKind::String(string) => string.fmt(f),
+            TokenKind::Symbol(symbol) => write!(f, ":{}", symbol),
             TokenKind::Word(word)     => word.fmt(f),
         }
     }

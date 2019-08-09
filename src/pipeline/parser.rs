@@ -51,6 +51,9 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
             TokenKind::String(string) => {
                 (expr::Kind::String(string), token.span)
             }
+            TokenKind::Symbol(symbol) => {
+                (expr::Kind::Symbol(symbol), token.span)
+            }
             TokenKind::Word(word) => {
                 (expr::Kind::Word(word), token.span)
             }
@@ -91,6 +94,9 @@ impl<Tokenizer> Parser<Tokenizer>
                 }
                 TokenKind::String(string) => {
                     (expr::Kind::String(string), token.span)
+                }
+                TokenKind::Symbol(symbol) => {
+                    (expr::Kind::Symbol(symbol), token.span)
                 }
                 TokenKind::Word(word) => {
                     (expr::Kind::Word(word), token.span)

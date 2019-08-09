@@ -51,6 +51,10 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
                             state = State::String;
                             builder.process(c);
                         }
+                        ':' => {
+                            state = State::Symbol;
+                            builder.process(c);
+                        }
                         _ => {
                             if !c.is_whitespace() {
                                 state = State::Word;
@@ -89,6 +93,13 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
                             return Err(Error::UnexpectedEscape(c));
                         }
                     }
+                }
+                State::Symbol => {
+                    if c.is_whitespace() {
+                        return Ok(builder.into_symbol());
+                    }
+
+                    builder.store(c);
                 }
                 State::Word => {
                     if c.is_whitespace() {
@@ -147,6 +158,13 @@ impl TokenBuilder {
         }
     }
 
+    fn into_symbol(self) -> Token {
+        Token {
+            kind: TokenKind::Symbol(self.buffer),
+            span: self.span.unwrap(),
+        }
+    }
+
     fn into_word(self) -> Token {
         let kind = match self.buffer.as_str() {
             "[" => TokenKind::ListOpen,
@@ -175,6 +193,7 @@ enum State {
     Comment,
     String,
     StringEscape,
+    Symbol,
     Word,
 }
 
