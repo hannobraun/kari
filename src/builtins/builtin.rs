@@ -16,9 +16,11 @@ use crate::{
             Into as _,
             List,
             Number,
+        },
+        span::{
+            Span,
             WithSpan,
         },
-        span::Span,
     },
 };
 

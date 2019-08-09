@@ -7,7 +7,10 @@ use std::{
     },
 };
 
-use crate::data::span::Span;
+use crate::data::span::{
+    Span,
+    WithSpan,
+};
 
 
 #[derive(Clone, Debug)]
@@ -36,12 +39,6 @@ impl fmt::Display for Kind {
             Kind::Word(word)     => word.fmt(f),
         }
     }
-}
-
-
-pub struct WithSpan<T> {
-    pub value: T,
-    pub span:  Span,
 }
 
 

@@ -18,9 +18,11 @@ use crate::{
             self,
             Expression,
             List,
+        },
+        span::{
+            Span,
             WithSpan,
         },
-        span::Span,
         stack::Stack,
     },
     interpreter::{

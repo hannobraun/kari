@@ -7,9 +7,11 @@ use crate::data::{
         From as _,
         Into as _,
         Name as _,
+    },
+    span::{
+        Span,
         WithSpan,
     },
-    span::Span,
 };
 
 

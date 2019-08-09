@@ -8,9 +8,11 @@ use crate::{
         expression::{
             Expression,
             List,
+        },
+        span::{
+            Span,
             WithSpan,
         },
-        span::Span,
         stack::{
             self,
             Stack,
