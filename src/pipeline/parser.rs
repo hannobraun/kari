@@ -43,19 +43,19 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
         let (kind, span) = match token.kind {
             TokenKind::ListOpen => {
                 let (list, span) = self.parse_list(token.span)?;
-                (expr::Kind::List(expr::List::new(list)), span)
+                (expr::Kind::List(list), span)
             }
             TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             TokenKind::Number(number) => {
-                (expr::Kind::Number(expr::Number::new(number)), token.span)
+                (expr::Kind::Number(number), token.span)
             }
             TokenKind::String(string) => {
-                (expr::Kind::String(expr::String::new(string)), token.span)
+                (expr::Kind::String(string), token.span)
             }
             TokenKind::Word(word) => {
-                (expr::Kind::Word(expr::Word::new(word)), token.span)
+                (expr::Kind::Word(word), token.span)
             }
         };
 
@@ -84,19 +84,19 @@ impl<Tokenizer> Parser<Tokenizer>
             let (kind, span) = match token.kind {
                 TokenKind::ListOpen => {
                     let (list, span) = self.parse_list(token.span)?;
-                    (expr::Kind::List(expr::List::new(list)), span)
+                    (expr::Kind::List(list), span)
                 }
                 TokenKind::ListClose => {
                     return Ok((expressions, list_span));
                 }
                 TokenKind::Number(number) => {
-                    (expr::Kind::Number(expr::Number::new(number)), token.span)
+                    (expr::Kind::Number(number), token.span)
                 }
                 TokenKind::String(string) => {
-                    (expr::Kind::String(expr::String::new(string)), token.span)
+                    (expr::Kind::String(string), token.span)
                 }
                 TokenKind::Word(word) => {
-                    (expr::Kind::Word(expr::Word::new(word)), token.span)
+                    (expr::Kind::Word(word), token.span)
                 }
             };
 

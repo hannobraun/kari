@@ -173,7 +173,7 @@ impl Context for Evaluator
 
         for expression in expressions {
             if let expr::Kind::Word(word) = expression.kind {
-                if let Some(list) = self.functions.get(&word.inner) {
+                if let Some(list) = self.functions.get(&word) {
                     let list = list.clone();
                     self.evaluate(
                         Some(expression.span),
@@ -181,14 +181,14 @@ impl Context for Evaluator
                     )?;
                     continue;
                 }
-                if let Some(builtin) = self.builtins.builtin(&word.inner) {
+                if let Some(builtin) = self.builtins.builtin(&word) {
                     builtin(expression.span, self)?;
                     continue;
                 }
 
                 return Err(
                     context::Error::UnknownFunction {
-                        name: word.inner,
+                        name: word,
                         span: expression.span,
                     }
                 );

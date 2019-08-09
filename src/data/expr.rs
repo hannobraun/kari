@@ -62,7 +62,7 @@ macro_rules! kinds {
     ) => {
         #[derive(Clone, Debug)]
         pub enum Kind {
-            $($ty($ty),)*
+            $($ty($inner),)*
         }
 
 
@@ -87,7 +87,7 @@ macro_rules! kinds {
             impl Into for WithSpan<$ty> {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        kind: Kind::$ty(self.value),
+                        kind: Kind::$ty(self.value.inner),
                         span: self.span,
                     }
                 }
@@ -101,8 +101,8 @@ macro_rules! kinds {
                         Kind::$ty(value) => {
                             Ok(
                                 WithSpan {
-                                    value,
-                                    span: expression.span,
+                                    value: $ty::new(value),
+                                    span:  expression.span,
                                 }
                             )
                         }
@@ -128,11 +128,11 @@ kinds!(
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::Bool(b)        => b.inner.fmt(f),
-            Kind::Number(number) => number.inner.fmt(f),
-            Kind::List(list)     => list.fmt(f),
-            Kind::String(string) => string.inner.fmt(f),
-            Kind::Word(word)     => word.inner.fmt(f),
+            Kind::Bool(b)        => b.fmt(f),
+            Kind::Number(number) => number.fmt(f),
+            Kind::List(list)     => List::new(list.clone()).fmt(f),
+            Kind::String(string) => string.fmt(f),
+            Kind::Word(word)     => word.fmt(f),
         }
     }
 }
