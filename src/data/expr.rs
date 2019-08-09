@@ -34,19 +34,6 @@ impl Expression {
 }
 
 
-pub struct E2(pub Expression, pub Expression);
-
-impl E2 {
-    pub fn check<A, B>(self) -> Result<(A, B), Error>
-        where
-            A: From + Name,
-            B: From + Name,
-    {
-        Ok((self.0.check()?, self.1.check()?))
-    }
-}
-
-
 macro_rules! kinds {
     (
         $(

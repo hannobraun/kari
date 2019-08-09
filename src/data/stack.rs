@@ -26,6 +26,10 @@ impl Stack {
         T::push(value, self)
     }
 
+    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T, Error> {
+        T::pop(self, operator)
+    }
+
     pub fn push_raw(&mut self, value: Expression) {
         let stack = self.substacks.last_mut().unwrap();
         stack.push(value)
@@ -77,6 +81,29 @@ impl<A, B> Push for (A, B)
     fn push(self, stack: &mut Stack) {
         stack.push(self.0);
         stack.push(self.1);
+    }
+}
+
+
+pub trait Pop : Sized {
+    fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
+}
+
+impl<T> Pop for T where T: expr::From + expr::Name {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
+        Ok(stack.pop_raw(operator)?.check::<T>()?)
+    }
+}
+
+impl<A, B> Pop for (A, B)
+    where
+        A: Pop,
+        B: Pop,
+{
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
+        let b = stack.pop::<B>(operator)?;
+        let a = stack.pop::<A>(operator)?;
+        Ok((a, b))
     }
 }
 
