@@ -78,7 +78,8 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let kind = match token.kind {
                 TokenKind::ListOpen => {
-                    expr::Kind::List(self.parse_list()?)
+                    let list = self.parse_list()?;
+                    expr::Kind::List(list)
                 }
                 TokenKind::ListClose => {
                     return Ok(expr::List(expressions));
