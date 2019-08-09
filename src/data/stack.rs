@@ -5,7 +5,6 @@ use crate::data::{
         self,
         Expression,
         From as _,
-        Into as _,
         Name as _,
     },
     span::{
@@ -27,7 +26,7 @@ impl Stack {
         }
     }
 
-    pub fn push<T: Push>(&mut self, value: T::Data) {
+    pub fn push<T: Push>(&mut self, value: T) {
         T::push(value, self)
     }
 
@@ -61,9 +60,7 @@ impl Stack {
 
 
 pub trait Push {
-    type Data;
-
-    fn push(_: Self::Data, _: &mut Stack);
+    fn push(self, _: &mut Stack);
 }
 
 pub trait Pop : Sized {
@@ -72,14 +69,6 @@ pub trait Pop : Sized {
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Data, Error>;
 }
 
-
-impl Push for Expression {
-    type Data = Expression;
-
-    fn push(data: Self::Data, stack: &mut Stack) {
-        stack.push_raw(data)
-    }
-}
 
 impl Pop for Expression {
     type Data = Expression;
@@ -96,13 +85,9 @@ impl Pop for Expression {
 }
 
 
-impl<T> Push for T
-    where WithSpan<T>: expression::Into
-{
-    type Data = WithSpan<T>;
-
-    fn push(data: Self::Data, stack: &mut Stack) {
-        stack.push_raw(data.into_expression())
+impl<T> Push for T where T: expression::Into {
+    fn push(self, stack: &mut Stack) {
+        stack.push_raw(self.into_expression())
     }
 }
 
@@ -135,14 +120,12 @@ impl<T> Pop for T
 
 impl<A, B> Push for (A, B)
     where
-        WithSpan<A>: Push<Data=WithSpan<A>> + expression::Into,
-        WithSpan<B>: Push<Data=WithSpan<B>> + expression::Into,
+        A: Push + expression::Into,
+        B: Push + expression::Into,
 {
-    type Data = (WithSpan<A>, WithSpan<B>);
-
-    fn push(data: Self::Data, stack: &mut Stack) {
-        stack.push::<A>(data.0);
-        stack.push::<B>(data.1);
+    fn push(self, stack: &mut Stack) {
+        stack.push(self.0);
+        stack.push(self.1);
     }
 }
 
