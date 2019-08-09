@@ -147,7 +147,7 @@ fn eval(operator: Span, context: &mut Context) -> Result {
 fn load(operator: Span, context: &mut Context) -> Result {
     let path = context.stack().pop::<String>(&operator)?;
     let list = context.load(path.value)?;
-    context.stack().push_raw(list.into_expression());
+    context.stack().push(list);
     Ok(())
 }
 
@@ -162,8 +162,7 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 
     expression.span = operator.merge(expression.span);
 
-    context.stack().push_raw(expression.clone());
-    context.stack().push_raw(expression);
+    context.stack().push((expression.clone(), expression));
 
     Ok(())
 }
@@ -175,7 +174,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
     context.stack().create_substack();
 
     for item in list.value {
-        context.stack().push_raw(item);
+        context.stack().push(item);
         context.evaluate(
             Some(operator.clone()),
             &mut function.value.clone().into_iter(),
@@ -188,7 +187,7 @@ fn each(operator: Span, context: &mut Context) -> Result {
         value: List(result),
         span:  operator.merge(list.span).merge(function.span),
     };
-    context.stack().push_raw(data.into_expression());
+    context.stack().push(data);
 
     Ok(())
 }
@@ -213,7 +212,7 @@ fn add(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| a + b);
-    context.stack().push_raw(result);
+    context.stack().push(result);
     Ok(())
 }
 
@@ -221,7 +220,7 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| a * b);
-    context.stack().push_raw(result);
+    context.stack().push(result);
     Ok(())
 }
 
@@ -229,7 +228,7 @@ fn eq(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| Bool(a == b));
-    context.stack().push_raw(result);
+    context.stack().push(result);
     Ok(())
 }
 
@@ -237,7 +236,7 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<(Number, Number)>(&operator)?
         .compute(operator, |(a, b)| Bool(a > b));
-    context.stack().push_raw(result);
+    context.stack().push(result);
     Ok(())
 }
 
@@ -245,6 +244,6 @@ fn not(operator: Span, context: &mut Context) -> Result {
     let result = context
         .stack().pop::<Bool>(&operator)?
         .compute(operator, |b| !b);
-    context.stack().push_raw(result);
+    context.stack().push(result);
     Ok(())
 }
