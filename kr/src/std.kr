@@ -2,4 +2,4 @@
 [ assert ]
     define
 
-[ each eval ] [ fold ] define
+[ map eval ] [ fold ] define

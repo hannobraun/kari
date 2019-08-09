@@ -43,8 +43,8 @@ builtins!(
     "drop", drop;
     "dup",  dup;
 
-    "if",   r#if;
-    "each", each;
+    "if",  r#if;
+    "map", map;
 
     "+",   add;
     "*",   mul;
@@ -113,7 +113,7 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 }
 
 
-fn each(operator: Span, context: &mut Context) -> Result {
+fn map(operator: Span, context: &mut Context) -> Result {
     let (list, function) = context.stack()
         .pop::<(expr::List, expr::List)>(&operator)?;
 

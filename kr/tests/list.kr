@@ -1,7 +1,6 @@
 "std" load eval
 
-# map
-[ 1 2 3 ] [ dup * ] each
+[ 1 2 3 ] [ dup * ] map
 [ 1 4 9 ] = assert
 
 1 [ 2 3 7 ] [ * ] fold
