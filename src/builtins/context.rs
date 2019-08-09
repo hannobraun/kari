@@ -103,7 +103,7 @@ impl fmt::Display for Error {
                 error.fmt(f)
             }
             Error::Stack(error) => {
-                write!(f, "{}", error)
+                error.fmt(f)
             }
         }
     }
