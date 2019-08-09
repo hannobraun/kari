@@ -16,7 +16,7 @@ pub trait Expr : Sized {
     const NAME: &'static str;
 
     fn into_any(self) -> Any;
-    fn from_expr(expression: Any) -> Result<Self, Any>;
+    fn from_any(expression: Any) -> Result<Self, Any>;
 }
 
 
@@ -31,7 +31,7 @@ impl Any {
         where
             T: Expr,
     {
-        T::from_expr(self)
+        T::from_any(self)
             .map_err(|expression|
                 Error::TypeError {
                     expected: T::NAME,
@@ -48,7 +48,7 @@ impl Expr for Any {
         self
     }
 
-    fn from_expr(expression: Any) -> Result<Self, Any> {
+    fn from_any(expression: Any) -> Result<Self, Any> {
         Ok(expression)
     }
 }
@@ -94,7 +94,7 @@ macro_rules! kinds {
                     }
                 }
 
-                fn from_expr(expression: Any)
+                fn from_any(expression: Any)
                     -> Result<Self, Any>
                 {
                     match expression.kind {
