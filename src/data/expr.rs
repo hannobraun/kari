@@ -16,7 +16,7 @@ pub trait Expr : Sized {
     const NAME: &'static str;
 
     fn into_any(self) -> Any;
-    fn from_any(expression: Any) -> Result<Self, Any>;
+    fn from_any(_: Any) -> Result<Self, Any>;
 }
 
 
