@@ -70,14 +70,28 @@ impl fmt::Display for Kind {
 }
 
 
-#[derive(Clone, Debug)]
-pub struct Bool(pub bool);
+macro_rules! kinds {
+    (
+        $(
+            $ty:ident,
+            $inner:ty,
+            derive($(
+                $trait:ident,
+            )*);
+        )*
+    ) => {
+        $(
+            #[derive($($trait,)* Clone, Debug)]
+            pub struct $ty(pub $inner);
+        )*
+    }
+}
 
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Number(pub u32);
-
-#[derive(Clone, Debug)]
-pub struct List(pub Vec<Expression>);
+kinds!(
+    Bool,   bool,            derive();
+    Number, u32,             derive(Eq, Ord, PartialEq, PartialOrd,);
+    List,   Vec<Expression>, derive();
+);
 
 
 impl Not for Bool {
