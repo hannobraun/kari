@@ -210,9 +210,11 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
 
     context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
 
-    let evaluated_condition = context.stack().pop::<Bool>(&operator)?.value.0;
+    let evaluated_condition: WithSpan<Bool> = context.stack()
+        .pop_raw(&operator)?
+        .check()?;
 
-    if evaluated_condition {
+    if evaluated_condition.value.0 {
         context.evaluate(
             Some(operator),
             &mut function.value.into_iter(),
