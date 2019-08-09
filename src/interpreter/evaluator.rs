@@ -150,8 +150,8 @@ impl Context for Evaluator
 
         Ok(
             WithSpan {
-                data: List(expressions),
-                span: start.merge(end),
+                value: List(expressions),
+                span:  start.merge(end),
             }
         )
     }

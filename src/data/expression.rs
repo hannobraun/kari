@@ -40,8 +40,8 @@ impl fmt::Display for Kind {
 
 
 pub struct WithSpan<T> {
-    pub data: T,
-    pub span: Span,
+    pub value: T,
+    pub span:  Span,
 }
 
 
@@ -148,7 +148,7 @@ macro_rules! impl_expression {
             impl Into for WithSpan<$ty> {
                 fn into_expression(self) -> Expression {
                     Expression {
-                        kind: Kind::$ty(self.data),
+                        kind: Kind::$ty(self.value),
                         span: self.span,
                     }
                 }
@@ -159,10 +159,10 @@ macro_rules! impl_expression {
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
-                        Kind::$ty(data) => {
+                        Kind::$ty(value) => {
                             Ok(
                                 WithSpan {
-                                    data,
+                                    value,
                                     span: expression.span,
                                 }
                             )

@@ -76,10 +76,10 @@ impl<T> Compute for WithSpan<T> {
             F:           Fn(Self::Input) -> R,
             WithSpan<R>: expression::Into
     {
-        let data = f(self.data);
-        let span = operator.merge(self.span);
+        let value = f(self.value);
+        let span  = operator.merge(self.span);
 
-        WithSpan { data, span }.into_expression()
+        WithSpan { value, span }.into_expression()
     }
 }
 
@@ -91,10 +91,10 @@ impl<A, B> Compute for (WithSpan<A>, WithSpan<B>) {
             F:           Fn(Self::Input) -> R,
             WithSpan<R>: expression::Into,
     {
-        let data = f((self.0.data, self.1.data));
-        let span = operator.merge(self.0.span).merge(self.1.span);
+        let value = f((self.0.value, self.1.value));
+        let span  = operator.merge(self.0.span).merge(self.1.span);
 
-        WithSpan { data, span }.into_expression()
+        WithSpan { value, span }.into_expression()
     }
 }
 
@@ -109,8 +109,8 @@ fn print(operator: Span, context: &mut Context) -> Result {
 fn define(operator: Span, context: &mut Context) -> Result {
     let (body, name) = context.stack().pop::<(List, List)>(&operator)?;
 
-    assert_eq!(name.data.0.len(), 1);
-    let name = name.data.clone().0.pop().unwrap();
+    assert_eq!(name.value.0.len(), 1);
+    let name = name.value.clone().0.pop().unwrap();
 
     let name = match name.kind {
         expression::Kind::Word(word) => {
@@ -124,7 +124,7 @@ fn define(operator: Span, context: &mut Context) -> Result {
         }
     };
 
-    context.define(name, body.data.clone());
+    context.define(name, body.value.clone());
 
     Ok(())
 }
@@ -137,14 +137,14 @@ fn eval(operator: Span, context: &mut Context) -> Result {
     let list = context.stack().pop::<List>(&operator)?;
     context.evaluate(
         Some(operator),
-        &mut list.data.into_iter(),
+        &mut list.value.into_iter(),
     )?;
     Ok(())
 }
 
 fn load(operator: Span, context: &mut Context) -> Result {
     let path = context.stack().pop::<String>(&operator)?;
-    let list = context.load(path.data)?;
+    let list = context.load(path.value)?;
     context.stack().push::<List>(list);
     Ok(())
 }
@@ -172,19 +172,19 @@ fn each(operator: Span, context: &mut Context) -> Result {
 
     context.stack().create_substack();
 
-    for item in list.data {
+    for item in list.value {
         context.stack().push::<Expression>(item);
         context.evaluate(
             Some(operator.clone()),
-            &mut function.data.clone().into_iter(),
+            &mut function.value.clone().into_iter(),
         )?;
     }
 
     let result = context.stack().destroy_substack();
 
     let data = WithSpan {
-        data: List(result),
-        span: operator.merge(list.span).merge(function.span),
+        value: List(result),
+        span:  operator.merge(list.span).merge(function.span),
     };
     context.stack().push::<List>(data);
 
@@ -195,11 +195,11 @@ fn each(operator: Span, context: &mut Context) -> Result {
 fn r#if(operator: Span, context: &mut Context) -> Result {
     let (function, condition) = context.stack().pop::<(List, List)>(&operator)?;
 
-    context.evaluate(Some(operator.clone()), &mut condition.data.into_iter())?;
-    if context.stack().pop::<Bool>(&operator)?.data.0 {
+    context.evaluate(Some(operator.clone()), &mut condition.value.into_iter())?;
+    if context.stack().pop::<Bool>(&operator)?.value.0 {
         context.evaluate(
             Some(operator),
-            &mut function.data.into_iter(),
+            &mut function.value.into_iter(),
         )?;
     }
 
