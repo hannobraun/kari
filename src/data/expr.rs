@@ -38,6 +38,22 @@ impl Any {
     }
 }
 
+impl Expr for Any {
+    const NAME: &'static str = "expression";
+}
+
+impl Into for Any {
+    fn into_expr(self) -> Any {
+        self
+    }
+}
+
+impl From for Any {
+    fn from_expr(expression: Any) -> Result<Self, Any> {
+        Ok(expression)
+    }
+}
+
 
 macro_rules! kinds {
     (
@@ -210,23 +226,6 @@ pub trait Into {
 
 pub trait From : Sized {
     fn from_expr(expression: Any) -> Result<Self, Any>;
-}
-
-
-impl Expr for Any {
-    const NAME: &'static str = "expression";
-}
-
-impl Into for Any {
-    fn into_expr(self) -> Any {
-        self
-    }
-}
-
-impl From for Any {
-    fn from_expr(expression: Any) -> Result<Self, Any> {
-        Ok(expression)
-    }
 }
 
 
