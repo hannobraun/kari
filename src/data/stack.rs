@@ -4,6 +4,7 @@ use crate::data::{
     expression::{
         self,
         Expression,
+        E2,
         Name as _,
     },
     span::Span,
@@ -95,15 +96,11 @@ impl Pop for Expression {
     }
 }
 
-impl<A, B> Pop for (A, B)
-    where
-        A: Pop,
-        B: Pop,
-{
+impl Pop for E2 {
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
-        let b = stack.pop::<B>(operator)?;
-        let a = stack.pop::<A>(operator)?;
-        Ok((a, b))
+        let b = stack.pop(operator)?;
+        let a = stack.pop(operator)?;
+        Ok(E2(a, b))
     }
 }
 
