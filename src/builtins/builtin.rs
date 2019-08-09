@@ -159,44 +159,42 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
 
 
 fn add(operator: Span, context: &mut Context) -> Result {
-    let (a, b) = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?;
+    let sum = context.stack()
+        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .compute::<expr::Number, _, _>(|(a, b)| a + b);
 
-    context.stack().push(a + b);
+    context.stack().push(sum);
+
     Ok(())
 }
 
 fn mul(operator: Span, context: &mut Context) -> Result {
-    let (a, b) = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?;
+    let product = context.stack()
+        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .compute::<expr::Number, _, _>(|(a, b)| a * b);
 
-    context.stack().push(a * b);
+    context.stack().push(product);
+
     Ok(())
 }
 
 fn eq(operator: Span, context: &mut Context) -> Result {
-    let (a, b) = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?;
+    let is_equal = context.stack()
+        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .compute::<expr::Bool, _, _>(|(a, b)| a == b);
 
-    let result = expr::Bool::new(
-        a == b,
-        a.span.merge(b.span),
-    );
+    context.stack().push(is_equal);
 
-    context.stack().push(result);
     Ok(())
 }
 
 fn gt(operator: Span, context: &mut Context) -> Result {
-    let (a, b) = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?;
+    let is_greater = context.stack()
+        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .compute::<expr::Bool, _, _>(|(a, b)| a > b);
 
-    let result = expr::Bool::new(
-        a > b,
-        a.span.merge(b.span),
-    );
+    context.stack().push(is_greater);
 
-    context.stack().push(result);
     Ok(())
 }
 

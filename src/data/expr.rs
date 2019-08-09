@@ -1,10 +1,5 @@
 use std::{
-    cmp::Ordering,
     fmt,
-    ops::{
-        Add,
-        Mul,
-    },
     string::String as StdString,
 };
 
@@ -154,49 +149,6 @@ impl fmt::Display for Kind {
 }
 
 
-impl Add for Number {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Number::new(
-            self.inner + rhs.inner,
-            self.span.merge(rhs.span),
-        )
-    }
-}
-
-impl Mul for Number {
-    type Output = Self;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        Number::new(
-            self.inner * rhs.inner,
-            self.span.merge(rhs.span),
-        )
-    }
-}
-
-impl PartialEq for Number {
-    fn eq(&self, other: &Self) -> bool {
-        self.inner.eq(&other.inner)
-    }
-}
-
-impl Eq for Number {}
-
-impl PartialOrd for Number {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.inner.partial_cmp(&other.inner)
-    }
-}
-
-impl Ord for Number {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.inner.cmp(&other.inner)
-    }
-}
-
-
 impl IntoIterator for List {
     type Item     = <Vec<Any> as IntoIterator>::Item;
     type IntoIter = <Vec<Any> as IntoIterator>::IntoIter;
@@ -245,6 +197,27 @@ impl<T> Compute for T where T: Expr {
         Out::new(
             f(inner),
             span,
+        )
+    }
+}
+
+impl<A, B> Compute for (A, B)
+    where
+        A: Expr,
+        B: Expr,
+{
+    type In = (A::Inner, B::Inner);
+
+    fn compute<Out, F, R>(self, f: F) -> Out
+        where
+            Out: Expr<Inner=R>,
+            F:   Fn(Self::In) -> R,
+    {
+        let (a_inner, a_span) = self.0.open();
+        let (b_inner, b_span) = self.1.open();
+        Out::new(
+            f((a_inner, b_inner)),
+            a_span.merge(b_span),
         )
     }
 }
