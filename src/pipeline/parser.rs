@@ -71,7 +71,7 @@ impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
     fn parse_list(&mut self) -> Result<expr::List, Error> {
-        let mut list = Vec::new();
+        let mut expressions = Vec::new();
 
         loop {
             let token = self.tokenizer.next()?;
@@ -81,7 +81,7 @@ impl<Tokenizer> Parser<Tokenizer>
                     expr::Kind::List(self.parse_list()?)
                 }
                 TokenKind::ListClose => {
-                    return Ok(expr::List(list));
+                    return Ok(expr::List(expressions));
                 }
                 TokenKind::Number(number) => {
                     expr::Kind::Number(expr::Number(number))
@@ -94,7 +94,7 @@ impl<Tokenizer> Parser<Tokenizer>
                 }
             };
 
-            list.push(
+            expressions.push(
                 Expression {
                     kind,
                     span: token.span,
