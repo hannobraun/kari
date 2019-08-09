@@ -130,7 +130,7 @@ impl fmt::Display for Kind {
         match self {
             Kind::Bool(b)        => b.fmt(f),
             Kind::Number(number) => number.fmt(f),
-            Kind::List(list)     => List::new(list.clone()).fmt(f),
+            Kind::List(list)     => fmt_list(list, f),
             Kind::String(string) => string.fmt(f),
             Kind::Word(word)     => word.fmt(f),
         }
@@ -175,14 +175,19 @@ impl IntoIterator for List {
 
 impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[ ")?;
-        for item in &self.inner {
-            write!(f, "{} ", item.kind)?;
-        }
-        write!(f, "]")?;
-
-        Ok(())
+        fmt_list(&self.inner, f)
     }
+}
+
+
+fn fmt_list(list: &Vec<Expression>, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "[ ")?;
+    for item in list {
+        write!(f, "{} ", item.kind)?;
+    }
+    write!(f, "]")?;
+
+    Ok(())
 }
 
 
