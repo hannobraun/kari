@@ -63,12 +63,29 @@ pub trait Push {
     fn push(self, _: &mut Stack);
 }
 
+impl<T> Push for T where T: expression::Into {
+    fn push(self, stack: &mut Stack) {
+        stack.push_raw(self.into_expression())
+    }
+}
+
+impl<A, B> Push for (A, B)
+    where
+        A: Push + expression::Into,
+        B: Push + expression::Into,
+{
+    fn push(self, stack: &mut Stack) {
+        stack.push(self.0);
+        stack.push(self.1);
+    }
+}
+
+
 pub trait Pop : Sized {
     type Data;
 
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Data, Error>;
 }
-
 
 impl Pop for Expression {
     type Data = Expression;
@@ -81,13 +98,6 @@ impl Pop for Expression {
                     operator: operator.clone(),
                 }
             })
-    }
-}
-
-
-impl<T> Push for T where T: expression::Into {
-    fn push(self, stack: &mut Stack) {
-        stack.push_raw(self.into_expression())
     }
 }
 
@@ -114,18 +124,6 @@ impl<T> Pop for T
                 })
             }
         }
-    }
-}
-
-
-impl<A, B> Push for (A, B)
-    where
-        A: Push + expression::Into,
-        B: Push + expression::Into,
-{
-    fn push(self, stack: &mut Stack) {
-        stack.push(self.0);
-        stack.push(self.1);
     }
 }
 
