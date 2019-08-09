@@ -6,6 +6,7 @@ use std::{
 use crate::{
     data::{
         expression::{
+            self,
             Expression,
             List,
         },
@@ -38,6 +39,7 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
+    Expression(expression::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
@@ -48,10 +50,17 @@ impl Error {
         match self {
             Error::Failure { operator }         => Some(operator),
             Error::UnknownFunction { span, .. } => Some(span),
+            Error::Expression(error)            => error.span(),
             Error::Io(_)                        => None,
             Error::Parser(error)                => error.span(),
             Error::Stack(error)                 => error.span(),
         }
+    }
+}
+
+impl From<expression::Error> for Error {
+    fn from(from: expression::Error) -> Self {
+        Error::Expression(from)
     }
 }
 
@@ -81,6 +90,9 @@ impl fmt::Display for Error {
             }
             Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)?;
+            }
+            Error::Expression(error) => {
+                error.fmt(f)?;
             }
             Error::Io(error) => {
                 write!(f, "Error loading stream: {}", error)?;
