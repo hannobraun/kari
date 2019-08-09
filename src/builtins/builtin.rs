@@ -202,6 +202,8 @@ fn not(operator: Span, context: &mut Context) -> Result {
     let inverted = context.stack()
         .pop::<expr::Bool>(&operator)?
         .compute::<expr::Bool, _, _>(|b| !b);
+
     context.stack().push(inverted);
+
     Ok(())
 }
