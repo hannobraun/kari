@@ -1,4 +1,5 @@
 use std::{
+    cmp::Ordering,
     fmt,
     ops::{
         Add,
@@ -54,10 +55,7 @@ macro_rules! kinds {
         $(
             $ty:ident,
             $name:expr,
-            $inner:ty,
-            derive($(
-                $trait:ident,
-            )*);
+            $inner:ty;
         )*
     ) => {
         #[derive(Clone, Debug)]
@@ -67,7 +65,7 @@ macro_rules! kinds {
 
 
         $(
-            #[derive($($trait,)* Clone, Debug)]
+            #[derive(Clone, Debug)]
             pub struct $ty {
                 pub inner: $inner,
             }
@@ -117,11 +115,11 @@ macro_rules! kinds {
 }
 
 kinds!(
-    Bool,   "bool",   bool,            derive();
-    Number, "number", u32,             derive(Eq, Ord, PartialEq, PartialOrd,);
-    List,   "list",   Vec<Expression>, derive();
-    String, "string", StdString,       derive();
-    Word,   "word",   StdString,       derive();
+    Bool,   "bool",   bool;
+    Number, "number", u32;
+    List,   "list",   Vec<Expression>;
+    String, "string", StdString;
+    Word,   "word",   StdString;
 );
 
 
@@ -160,6 +158,26 @@ impl Mul for Number {
 
     fn mul(self, rhs: Self) -> Self::Output {
         Number::new(self.inner * rhs.inner)
+    }
+}
+
+impl PartialEq for Number {
+    fn eq(&self, other: &Self) -> bool {
+        self.inner.eq(&other.inner)
+    }
+}
+
+impl Eq for Number {}
+
+impl PartialOrd for Number {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.inner.partial_cmp(&other.inner)
+    }
+}
+
+impl Ord for Number {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.inner.cmp(&other.inner)
     }
 }
 
