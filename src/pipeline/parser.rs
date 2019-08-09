@@ -71,7 +71,7 @@ impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
     fn parse_list(&mut self) -> Result<expr::List, Error> {
-        let mut list = expr::List::new();
+        let mut list = expr::List(Vec::new());
 
         loop {
             let token = self.tokenizer.next()?;

@@ -154,12 +154,6 @@ impl Mul for Number {
 }
 
 
-impl List {
-    pub fn new() -> Self {
-        Self(Vec::new())
-    }
-}
-
 impl IntoIterator for List {
     type Item     = <Vec<Expression> as IntoIterator>::Item;
     type IntoIter = <Vec<Expression> as IntoIterator>::IntoIter;
