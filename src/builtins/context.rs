@@ -6,9 +6,9 @@ use std::{
 use crate::{
     data::{
         expression::{
-            Data,
             Expression,
             List,
+            WithSpan,
         },
         span::Span,
         stack::{
@@ -23,7 +23,7 @@ use crate::{
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
     fn define(&mut self, name: String, body: List);
-    fn load(&mut self, path: String) -> Result<Data<List>, Error>;
+    fn load(&mut self, path: String) -> Result<WithSpan<List>, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
         expressions: &mut Iterator<Item=Expression>,

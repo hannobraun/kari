@@ -39,7 +39,7 @@ impl fmt::Display for Kind {
 }
 
 
-pub struct Data<T> {
+pub struct WithSpan<T> {
     pub data: T,
     pub span: Span,
 }
@@ -141,11 +141,11 @@ impl From for Expression {
 macro_rules! impl_expression {
     ($($ty:ident, $name:expr;)*) => {
         $(
-            impl Name for Data<$ty> {
+            impl Name for WithSpan<$ty> {
                 const NAME: &'static str = $name;
             }
 
-            impl Into for Data<$ty> {
+            impl Into for WithSpan<$ty> {
                 fn into_expression(self) -> Expression {
                     Expression {
                         kind: Kind::$ty(self.data),
@@ -154,14 +154,14 @@ macro_rules! impl_expression {
                 }
             }
 
-            impl From for Data<$ty> {
+            impl From for WithSpan<$ty> {
                 fn from_expression(expression: Expression)
                     -> Result<Self, Expression>
                 {
                     match expression.kind {
                         Kind::$ty(data) => {
                             Ok(
-                                Data {
+                                WithSpan {
                                     data,
                                     span: expression.span,
                                 }

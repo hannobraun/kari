@@ -16,9 +16,9 @@ use crate::{
     data::{
         expression::{
             self,
-            Data,
             Expression,
             List,
+            WithSpan,
         },
         span::Span,
         stack::Stack,
@@ -123,7 +123,7 @@ impl Context for Evaluator
         self.functions.insert(name, body);
     }
 
-    fn load(&mut self, name: String) -> Result<Data<List>, context::Error> {
+    fn load(&mut self, name: String) -> Result<WithSpan<List>, context::Error> {
         let     path   = format!("kr/src/{}.kr", name);
         let mut stream = File::open(&path)?;
 
@@ -149,7 +149,7 @@ impl Context for Evaluator
             .unwrap_or(Span::default());
 
         Ok(
-            Data {
+            WithSpan {
                 data: List(expressions),
                 span: start.merge(end),
             }

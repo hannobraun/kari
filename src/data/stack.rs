@@ -3,11 +3,11 @@ use std::fmt;
 use crate::data::{
     expression::{
         self,
-        Data,
         Expression,
         From as _,
         Into as _,
         Name as _,
+        WithSpan,
     },
     span::Span,
 };
@@ -95,9 +95,9 @@ impl Pop for Expression {
 
 
 impl<T> Push for T
-    where Data<T>: expression::Into
+    where WithSpan<T>: expression::Into
 {
-    type Data = Data<T>;
+    type Data = WithSpan<T>;
 
     fn push(data: Self::Data, stack: &mut Stack) {
         stack.push_raw(data.into_expression())
@@ -105,24 +105,24 @@ impl<T> Push for T
 }
 
 impl<T> Pop for T
-    where Data<T>: expression::From + expression::Name
+    where WithSpan<T>: expression::From + expression::Name
 {
-    type Data = Data<T>;
+    type Data = WithSpan<T>;
 
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         match stack.pop_raw() {
             Some(expression) => {
-                Data::<T>::from_expression(expression)
+                WithSpan::<T>::from_expression(expression)
                     .map_err(|expression|
                         Error::TypeError {
-                            expected: Data::<T>::NAME,
+                            expected: WithSpan::<T>::NAME,
                             actual:   expression,
                         }
                     )
             }
             None => {
                 Err(Error::StackEmpty {
-                    expected: Data::<T>::NAME,
+                    expected: WithSpan::<T>::NAME,
                     operator: operator.clone(),
                 })
             }
@@ -133,10 +133,10 @@ impl<T> Pop for T
 
 impl<A, B> Push for (A, B)
     where
-        Data<A>: Push<Data=Data<A>> + expression::Into,
-        Data<B>: Push<Data=Data<B>> + expression::Into,
+        WithSpan<A>: Push<Data=WithSpan<A>> + expression::Into,
+        WithSpan<B>: Push<Data=WithSpan<B>> + expression::Into,
 {
-    type Data = (Data<A>, Data<B>);
+    type Data = (WithSpan<A>, WithSpan<B>);
 
     fn push(data: Self::Data, stack: &mut Stack) {
         stack.push::<A>(data.0);
@@ -146,12 +146,12 @@ impl<A, B> Push for (A, B)
 
 impl<A, B> Pop for (A, B)
     where
-        A:       Pop<Data=Data<A>>,
-        B:       Pop<Data=Data<B>>,
-        Data<A>: expression::From + expression::Name,
-        Data<B>: expression::From + expression::Name,
+        A:           Pop<Data=WithSpan<A>>,
+        B:           Pop<Data=WithSpan<B>>,
+        WithSpan<A>: expression::From + expression::Name,
+        WithSpan<B>: expression::From + expression::Name,
 {
-    type Data = (Data<A>, Data<B>);
+    type Data = (WithSpan<A>, WithSpan<B>);
 
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Data, Error> {
         let b = stack.pop::<B>(operator)?;
