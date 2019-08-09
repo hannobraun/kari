@@ -16,7 +16,3 @@ If I ever end up modelling side effects somehow, then `Evaluator` could be turne
 ### Debugger
 
 Add a debugger that allows stepping through a program word for word.
-
-### Testing
-
-A test framework that runs multiple programs, knows what to expect from each program, and reports success/failure would be very useful for testing.
