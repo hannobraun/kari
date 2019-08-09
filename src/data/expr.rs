@@ -49,28 +49,6 @@ impl E2 {
 }
 
 
-#[derive(Clone, Debug)]
-pub enum Kind {
-    Bool(Bool),
-    Number(Number),
-    List(List),
-    String(String),
-    Word(Word),
-}
-
-impl fmt::Display for Kind {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Kind::Bool(b)        => b.0.fmt(f),
-            Kind::Number(number) => number.0.fmt(f),
-            Kind::List(list)     => list.fmt(f),
-            Kind::String(string) => string.0.fmt(f),
-            Kind::Word(word)     => word.0.fmt(f),
-        }
-    }
-}
-
-
 macro_rules! kinds {
     (
         $(
@@ -82,6 +60,12 @@ macro_rules! kinds {
             )*);
         )*
     ) => {
+        #[derive(Clone, Debug)]
+        pub enum Kind {
+            $($ty($ty),)*
+        }
+
+
         $(
             #[derive($($trait,)* Clone, Debug)]
             pub struct $ty(pub $inner);
@@ -129,6 +113,19 @@ kinds!(
     String, "string", StdString,       derive();
     Word,   "word",   StdString,       derive();
 );
+
+
+impl fmt::Display for Kind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Kind::Bool(b)        => b.0.fmt(f),
+            Kind::Number(number) => number.0.fmt(f),
+            Kind::List(list)     => list.fmt(f),
+            Kind::String(string) => string.0.fmt(f),
+            Kind::Word(word)     => word.0.fmt(f),
+        }
+    }
+}
 
 
 impl Not for Bool {
