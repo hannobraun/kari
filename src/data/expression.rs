@@ -73,6 +73,13 @@ impl fmt::Display for Kind {
 #[derive(Clone, Debug)]
 pub struct Bool(pub bool);
 
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Number(pub u32);
+
+#[derive(Clone, Debug)]
+pub struct List(pub Vec<Expression>);
+
+
 impl Not for Bool {
     type Output = Self;
 
@@ -81,9 +88,6 @@ impl Not for Bool {
     }
 }
 
-
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Number(pub u32);
 
 impl Add for Number {
     type Output = Self;
@@ -101,9 +105,6 @@ impl Mul for Number {
     }
 }
 
-
-#[derive(Clone, Debug)]
-pub struct List(pub Vec<Expression>);
 
 impl List {
     pub fn new() -> Self {
