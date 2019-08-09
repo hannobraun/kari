@@ -1,6 +1,6 @@
 use crate::{
     data::{
-        character::Char,
+        ch::Char,
         span::Span,
         token::{
             Token,

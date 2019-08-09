@@ -8,7 +8,7 @@ use std::{
 
 use crate::{
     data::{
-        character::Char,
+        ch::Char,
         span::Position,
     },
     pipeline,
