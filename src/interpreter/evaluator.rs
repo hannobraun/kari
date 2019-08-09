@@ -18,6 +18,7 @@ use crate::{
             self,
             Expression,
             List,
+            Word,
         },
         span::{
             Span,
@@ -121,8 +122,8 @@ impl Context for Evaluator
         &mut self.stack
     }
 
-    fn define(&mut self, name: String, body: List) {
-        self.functions.insert(name, body);
+    fn define(&mut self, name: Word, body: List) {
+        self.functions.insert(name.0, body);
     }
 
     fn load(&mut self, name: String) -> Result<WithSpan<List>, context::Error> {
@@ -172,7 +173,7 @@ impl Context for Evaluator
 
         for expression in expressions {
             if let expression::Kind::Word(word) = expression.kind {
-                if let Some(list) = self.functions.get(&word) {
+                if let Some(list) = self.functions.get(&word.0) {
                     let list = list.clone();
                     self.evaluate(
                         Some(expression.span),
@@ -180,14 +181,14 @@ impl Context for Evaluator
                     )?;
                     continue;
                 }
-                if let Some(builtin) = self.builtins.builtin(&word) {
+                if let Some(builtin) = self.builtins.builtin(&word.0) {
                     builtin(expression.span, self)?;
                     continue;
                 }
 
                 return Err(
                     context::Error::UnknownFunction {
-                        name: word.to_string(),
+                        name: word.0,
                         span: expression.span,
                     }
                 );

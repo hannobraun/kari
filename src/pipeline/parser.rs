@@ -7,6 +7,7 @@ use crate::{
             Expression,
             List,
             Number,
+            Word,
         },
         span::Span,
         token::{
@@ -56,7 +57,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
                 expression::Kind::String(string)
             }
             TokenKind::Word(word) => {
-                expression::Kind::Word(word)
+                expression::Kind::Word(Word(word))
             }
         };
 
@@ -92,7 +93,7 @@ impl<Tokenizer> Parser<Tokenizer>
                     expression::Kind::String(string)
                 }
                 TokenKind::Word(word) => {
-                    expression::Kind::Word(word)
+                    expression::Kind::Word(Word(word))
                 }
             };
 

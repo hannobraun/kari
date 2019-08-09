@@ -54,7 +54,7 @@ pub enum Kind {
     Number(Number),
     List(List),
     String(String),
-    Word(String),
+    Word(Word),
 }
 
 impl fmt::Display for Kind {
@@ -64,7 +64,7 @@ impl fmt::Display for Kind {
             Kind::Number(number) => number.0.fmt(f),
             Kind::List(list)     => list.fmt(f),
             Kind::String(string) => string.fmt(f),
-            Kind::Word(word)     => word.fmt(f),
+            Kind::Word(word)     => word.0.fmt(f),
         }
     }
 }
@@ -91,6 +91,7 @@ kinds!(
     Bool,   bool,            derive();
     Number, u32,             derive(Eq, Ord, PartialEq, PartialOrd,);
     List,   Vec<Expression>, derive();
+    Word,   String,          derive();
 );
 
 
