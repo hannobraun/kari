@@ -1,9 +1,3 @@
-mod builtins;
-mod data;
-mod interpreter;
-mod pipeline;
-
-
 use std::{
     borrow::Cow,
     fs::File,
@@ -18,7 +12,7 @@ use clap::{
 };
 use walkdir::WalkDir;
 
-use interpreter::evaluator::Evaluator;
+use kari::interpreter::evaluator::Evaluator;
 
 
 fn main() {
