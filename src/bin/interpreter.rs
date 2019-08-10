@@ -30,19 +30,15 @@ fn main() {
         Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
 
-            let file = match File::open(&path) {
-                Ok(file) => {
-                    file
-                }
-                Err(error) => {
+            let file = File::open(&path)
+                .unwrap_or_else(|error| {
                     print!(
                         "\nERROR: Failed to open file {} ({})\n\n",
                         path,
                         error,
                     );
                     exit(1);
-                }
-            };
+                });
 
             Evaluator::run(path.into(), Box::new(file));
         }
