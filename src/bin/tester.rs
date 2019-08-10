@@ -1,5 +1,4 @@
 use std::{
-    borrow::Cow,
     fs::File,
     process::exit,
 };
@@ -57,7 +56,7 @@ fn main() {
                 exit(1);
             });
 
-        let success = Evaluator::run(Cow::Borrowed(path), Box::new(file));
+        let success = Evaluator::run(path.into(), Box::new(file));
         if success {
             print!("    OK {}\n", path);
         }
