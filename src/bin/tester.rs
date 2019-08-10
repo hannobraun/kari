@@ -12,21 +12,16 @@ fn main() {
     print!("\n");
 
     for result in WalkDir::new("kr/tests") {
-        let entry = match result {
-            Ok(entry) => {
-                entry
+        let entry = result.unwrap_or_else(|error| {
+            print!(
+                "ERROR: Error walking tests directory: {}",
+                error,
+            );
+            if let Some(path) = error.path() {
+                print!(" ({})\n", path.display());
             }
-            Err(error) => {
-                print!(
-                    "ERROR: Error walking tests directory: {}",
-                    error,
-                );
-                if let Some(path) = error.path() {
-                    print!(" ({})\n", path.display());
-                }
-                exit(1);
-            }
-        };
+            exit(1);
+        });
 
         let path = entry.path();
         let path = path.to_str()
