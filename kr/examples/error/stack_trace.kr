@@ -1,0 +1,3 @@
+"std" load eval
+
+1 2 = assert
