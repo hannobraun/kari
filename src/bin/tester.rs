@@ -29,18 +29,14 @@ fn main() {
         };
 
         let path = entry.path();
-        let path = match path.to_str() {
-            Some(path) => {
-                path
-            }
-            None => {
+        let path = path.to_str()
+            .unwrap_or_else(|| {
                 print!(
                     "ERROR: Cannot conver path to UTF-8: {}\n",
                     path.to_string_lossy(),
                 );
                 exit(1);
-            }
-        };
+            });
 
         if !path.ends_with(".kr") {
             continue;
