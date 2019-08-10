@@ -9,6 +9,11 @@ use std::{
     str::from_utf8,
 };
 
+use termion::{
+    color,
+    style,
+};
+
 use crate::{
     builtins::context,
     data::span::Span,
@@ -28,7 +33,17 @@ impl Error {
     )
         -> io::Result<()>
     {
-        print!("\nERROR: {}\n", self);
+        let red  = color::Fg(color::Red);
+        let bold = style::Bold;
+
+        let color_reset = color::Fg(color::Reset);
+        let style_reset = style::Reset;
+
+        print!("\n{}{}ERROR:{}{} {}\n",
+            red, bold,
+            color_reset, style_reset,
+            self,
+        );
 
         if let Some(span) = self.kind.span() {
             print_span(
