@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 acc_reader = "*"
 clap       = "*"
+termion    = "*"
 walkdir    = "*"
