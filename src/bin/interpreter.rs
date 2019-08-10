@@ -1,5 +1,4 @@
 use std::{
-    borrow::Cow,
     fs::File,
     io::stdin,
     process::exit,
@@ -30,7 +29,22 @@ fn main() {
     match args.value_of("path") {
         Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
-            run_program(path.into());
+
+            let file = match File::open(&path) {
+                Ok(file) => {
+                    file
+                }
+                Err(error) => {
+                    print!(
+                        "\nERROR: Failed to open file {} ({})\n\n",
+                        path,
+                        error,
+                    );
+                    exit(1);
+                }
+            };
+
+            Evaluator::run(path.into(), Box::new(file));
         }
         None => {
             Evaluator::run(
@@ -39,23 +53,4 @@ fn main() {
             );
         }
     }
-}
-
-
-fn run_program(path: Cow<str>) -> bool {
-    let file = match File::open(path.as_ref()) {
-        Ok(file) => {
-            file
-        }
-        Err(error) => {
-            print!(
-                "\nERROR: Failed to open file {} ({})\n\n",
-                path,
-                error,
-            );
-            exit(1);
-        }
-    };
-
-    Evaluator::run(path, Box::new(file))
 }
