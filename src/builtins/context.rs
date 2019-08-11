@@ -44,9 +44,10 @@ impl Error {
         match self {
             Error::Failure { operator }         => spans.push(operator),
             Error::UnknownFunction { span, .. } => spans.push(span),
-            Error::Expr(error)                  => error.spans(spans),
-            Error::Parser(error)                => error.spans(spans),
-            Error::Stack(error)                 => error.spans(spans),
+
+            Error::Expr(error)   => error.spans(spans),
+            Error::Parser(error) => error.spans(spans),
+            Error::Stack(error)  => error.spans(spans),
 
             Error::Io(_) => (),
         }
