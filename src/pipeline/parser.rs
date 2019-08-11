@@ -5,8 +5,8 @@ use crate::{
         expr,
         span::Span,
         token::{
+            self,
             Token,
-            TokenKind,
         },
     },
     pipeline::{
@@ -38,23 +38,23 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
         let token = self.tokenizer.next()?;
 
         let (kind, span) = match token.kind {
-            TokenKind::ListOpen => {
+            token::Kind::ListOpen => {
                 let (list, span) = self.parse_list(token.span)?;
                 (expr::Kind::List(list), span)
             }
-            TokenKind::ListClose => {
+            token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
-            TokenKind::Number(number) => {
+            token::Kind::Number(number) => {
                 (expr::Kind::Number(number), token.span)
             }
-            TokenKind::String(string) => {
+            token::Kind::String(string) => {
                 (expr::Kind::String(string), token.span)
             }
-            TokenKind::Symbol(symbol) => {
+            token::Kind::Symbol(symbol) => {
                 (expr::Kind::Symbol(symbol), token.span)
             }
-            TokenKind::Word(word) => {
+            token::Kind::Word(word) => {
                 (expr::Kind::Word(word), token.span)
             }
         };
@@ -82,23 +82,23 @@ impl<Tokenizer> Parser<Tokenizer>
             list_span = list_span.merge(token.span.clone());
 
             let (kind, span) = match token.kind {
-                TokenKind::ListOpen => {
+                token::Kind::ListOpen => {
                     let (list, span) = self.parse_list(token.span)?;
                     (expr::Kind::List(list), span)
                 }
-                TokenKind::ListClose => {
+                token::Kind::ListClose => {
                     return Ok((expressions, list_span));
                 }
-                TokenKind::Number(number) => {
+                token::Kind::Number(number) => {
                     (expr::Kind::Number(number), token.span)
                 }
-                TokenKind::String(string) => {
+                token::Kind::String(string) => {
                     (expr::Kind::String(string), token.span)
                 }
-                TokenKind::Symbol(symbol) => {
+                token::Kind::Symbol(symbol) => {
                     (expr::Kind::Symbol(symbol), token.span)
                 }
-                TokenKind::Word(word) => {
+                token::Kind::Word(word) => {
                     (expr::Kind::Word(word), token.span)
                 }
             };

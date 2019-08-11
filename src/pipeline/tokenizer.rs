@@ -3,8 +3,8 @@ use crate::{
         ch::Char,
         span::Span,
         token::{
+            self,
             Token,
-            TokenKind,
         },
     },
     pipeline::{
@@ -153,29 +153,29 @@ impl TokenBuilder {
 
     fn into_string(self) -> Token {
         Token {
-            kind: TokenKind::String(self.buffer),
+            kind: token::Kind::String(self.buffer),
             span: self.span.unwrap(),
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
-            kind: TokenKind::Symbol(self.buffer),
+            kind: token::Kind::Symbol(self.buffer),
             span: self.span.unwrap(),
         }
     }
 
     fn into_word(self) -> Token {
         let kind = match self.buffer.as_str() {
-            "[" => TokenKind::ListOpen,
-            "]" => TokenKind::ListClose,
+            "[" => token::Kind::ListOpen,
+            "]" => token::Kind::ListClose,
 
             _ => {
                 if let Ok(number) = self.buffer.parse::<u32>() {
-                    TokenKind::Number(number)
+                    token::Kind::Number(number)
                 }
                 else {
-                    TokenKind::Word(self.buffer)
+                    token::Kind::Word(self.buffer)
                 }
             }
         };

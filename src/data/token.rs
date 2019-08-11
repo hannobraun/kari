@@ -5,13 +5,13 @@ use crate::data::span::Span;
 
 #[derive(Debug)]
 pub struct Token {
-    pub kind: TokenKind,
+    pub kind: Kind,
     pub span: Span,
 }
 
 
 #[derive(Clone, Debug)]
-pub enum TokenKind {
+pub enum Kind {
     Number(u32),
     ListOpen,
     ListClose,
@@ -20,15 +20,15 @@ pub enum TokenKind {
     Word(String),
 }
 
-impl fmt::Display for TokenKind {
+impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TokenKind::Number(number) => number.fmt(f),
-            TokenKind::ListOpen       => write!(f, "["),
-            TokenKind::ListClose      => write!(f, "]"),
-            TokenKind::String(string) => string.fmt(f),
-            TokenKind::Symbol(symbol) => write!(f, ":{}", symbol),
-            TokenKind::Word(word)     => word.fmt(f),
+            Kind::Number(number) => number.fmt(f),
+            Kind::ListOpen       => write!(f, "["),
+            Kind::ListClose      => write!(f, "]"),
+            Kind::String(string) => string.fmt(f),
+            Kind::Symbol(symbol) => write!(f, ":{}", symbol),
+            Kind::Word(word)     => word.fmt(f),
         }
     }
 }
