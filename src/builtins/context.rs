@@ -33,7 +33,7 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
-    Expression(expr::Error),
+    Expr(expr::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
@@ -44,7 +44,7 @@ impl Error {
         match self {
             Error::Failure { operator }         => spans.push(operator),
             Error::UnknownFunction { span, .. } => spans.push(span),
-            Error::Expression(error)            => error.spans(spans),
+            Error::Expr(error)                  => error.spans(spans),
             Error::Parser(error)                => error.spans(spans),
             Error::Stack(error)                 => error.spans(spans),
 
@@ -55,7 +55,7 @@ impl Error {
 
 impl From<expr::Error> for Error {
     fn from(from: expr::Error) -> Self {
-        Error::Expression(from)
+        Error::Expr(from)
     }
 }
 
@@ -86,7 +86,7 @@ impl fmt::Display for Error {
             Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)
             }
-            Error::Expression(error) => {
+            Error::Expr(error) => {
                 error.fmt(f)
             }
             Error::Io(error) => {
