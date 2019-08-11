@@ -1,5 +1,6 @@
 use std::{
     fs::File,
+    io::stdout,
     process::exit,
 };
 
@@ -51,7 +52,12 @@ fn main() {
                 exit(1);
             });
 
-        let success = Evaluator::run(path.into(), Box::new(file));
+        let success = Evaluator::run(
+            path.into(),
+            Box::new(file),
+            Box::new(stdout()),
+        );
+
         if success {
             print!("    {}{}OK{}{} {}\n",
                 style::Bold, color::Fg(color::LightGreen),

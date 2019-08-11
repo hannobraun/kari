@@ -34,7 +34,9 @@ use crate::{
 
 
 pub struct Evaluator {
-    streams:     HashMap<String, Box<Stream>>,
+    streams: HashMap<String, Box<Stream>>,
+    stdout:  Box<io::Write>,
+
     builtins:    Builtins,
     stack:       Stack,
     functions:   HashMap<String, expr::List>,
@@ -42,9 +44,15 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
-    pub fn run(name: Cow<str>, mut stream: Box<Stream>) -> bool {
+    pub fn run(
+            name:   Cow<str>,
+        mut stream: Box<Stream>,
+            stdout: Box<io::Write>,
+    ) -> bool {
         let mut evaluator = Self {
-            streams:     HashMap::new(),
+            streams: HashMap::new(),
+            stdout,
+
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
@@ -115,6 +123,10 @@ impl Context for Evaluator
 {
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
+    }
+
+    fn output(&mut self) -> &mut io::Write {
+        &mut self.stdout
     }
 
     fn define(&mut self, name: expr::Symbol, body: expr::List) {

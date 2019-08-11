@@ -18,6 +18,7 @@ use crate::{
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
+    fn output(&mut self) -> &mut io::Write;
     fn define(&mut self, name: expr::Symbol, body: expr::List);
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;

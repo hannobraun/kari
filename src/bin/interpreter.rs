@@ -1,6 +1,9 @@
 use std::{
     fs::File,
-    io::stdin,
+    io::{
+        stdin,
+        stdout,
+    },
     process::exit,
 };
 
@@ -40,12 +43,17 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::run(path.into(), Box::new(file));
+            Evaluator::run(
+                path.into(),
+                Box::new(file),
+                Box::new(stdout()),
+            );
         }
         None => {
             Evaluator::run(
                 "<stdin>".into(),
                 Box::new(AccReader::new(stdin())),
+                Box::new(stdout())
             );
         }
     }

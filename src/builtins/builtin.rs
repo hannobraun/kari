@@ -56,7 +56,7 @@ builtins!(
 
 fn print(operator: Span, context: &mut Context) -> Result {
     let expression = context.stack().pop::<expr::Any>(&operator)?;
-    print!("{}", expression.kind);
+    write!(context.output(), "{}", expression.kind)?;
 
     Ok(())
 }
