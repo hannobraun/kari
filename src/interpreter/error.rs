@@ -31,15 +31,9 @@ impl Error {
     pub fn print(self, streams: &mut HashMap<String, Box<Stream>>)
         -> io::Result<()>
     {
-        let red  = color::Fg(color::Red);
-        let bold = style::Bold;
-
-        let color_reset = color::Fg(color::Reset);
-        let style_reset = style::Reset;
-
         print!("\n{}{}ERROR:{}{} {}\n",
-            red, bold,
-            color_reset, style_reset,
+            color::Fg(color::Red), style::Bold,
+            color::Fg(color::Reset), style::Reset,
             self,
         );
 
