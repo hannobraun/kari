@@ -31,10 +31,11 @@ impl Error {
     pub fn print(self, streams: &mut HashMap<String, Box<Stream>>)
         -> io::Result<()>
     {
-        print!("\n{}{}ERROR:{}{} {}\n",
+        print!("\n{}{}ERROR:{} {}{}\n",
             color::Fg(color::Red), style::Bold,
-            color::Fg(color::Reset), style::Reset,
+            color::Fg(color::Reset),
             self,
+            style::Reset,
         );
 
         if let Some(span) = self.kind.span() {
@@ -45,7 +46,10 @@ impl Error {
         }
 
         for span in self.stack_trace.into_iter().rev() {
-            print!("\nCalled by:\n");
+            print!("\n{}Called by:{}\n",
+                color::Fg(color::Cyan),
+                color::Fg(color::Reset),
+            );
             print_span(
                 span,
                 streams,
@@ -118,10 +122,14 @@ fn print_span<Stream>(
     let buffer = from_utf8(&buffer).unwrap();
 
     print!(
-        "  => {}:{}:{}\n",
+        "  {}=> {}{}:{}:{}{}\n",
+        color::Fg(color::Magenta),
+
+        color::Fg(color::LightBlue),
         span.stream,
         span.start.line + 1,
         span.start.column + 1,
+        color::Fg(color::Reset),
     );
     print!("\n");
 
@@ -129,7 +137,16 @@ fn print_span<Stream>(
         let line_number = span.start.line + i;
         let line_len    = line.chars().count();
 
-        print!("{:5} | {}\n", line_number + 1, line);
+        print!("{}{:5} {}| {}{}{}{}{}\n",
+            color::Fg(color::LightBlue),
+            line_number + 1,
+
+            color::Fg(color::Magenta),
+
+            style::Bold, color::Fg(color::LightWhite),
+            line,
+            color::Fg(color::Reset), style::Reset,
+        );
 
         let start_column = if line_number == span.start.line {
             span.start.column
@@ -148,7 +165,10 @@ fn print_span<Stream>(
             continue;
         }
 
-        print!("        ");
+        print!("        {}{}",
+            color::Fg(color::LightRed),
+            style::Bold,
+        );
         for column in 0 .. line_len {
             if column >= start_column && column <  end_column {
                 print!("^");
@@ -157,8 +177,10 @@ fn print_span<Stream>(
                 print!(" ");
             }
         }
-
-        print!("\n");
+        print!("{}{}\n",
+            style::Reset,
+            color::Fg(color::Reset),
+        );
     }
 
     Ok(())
