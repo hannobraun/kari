@@ -128,11 +128,12 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(self) -> Option<Span> {
+    pub fn spans(self, spans: &mut Vec<Span>) {
         match self {
-            Error::Tokenizer(_)           => None,
-            Error::UnexpectedToken(token) => Some(token.span),
-            Error::EndOfStream            => None,
+            Error::UnexpectedToken(token) => spans.push(token.span),
+
+            Error::Tokenizer(_) => (),
+            Error::EndOfStream  => (),
         }
     }
 }

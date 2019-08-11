@@ -117,10 +117,10 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(self) -> Option<Span> {
+    pub fn spans(self, spans: &mut Vec<Span>) {
         match self {
-            Error::StackEmpty { operator, .. } => Some(operator),
-            Error::Expression(error)           => error.span(),
+            Error::StackEmpty { operator, .. } => spans.push(operator),
+            Error::Expression(error)           => error.spans(spans),
         }
     }
 }

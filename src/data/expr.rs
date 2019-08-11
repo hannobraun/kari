@@ -278,9 +278,9 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(self) -> Option<Span> {
+    pub fn spans(self, spans: &mut Vec<Span>) {
         match self {
-            Error::TypeError { actual, .. } => Some(actual.span),
+            Error::TypeError { actual, .. } => spans.push(actual.span),
         }
     }
 }

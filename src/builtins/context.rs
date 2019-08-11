@@ -40,14 +40,15 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn span(self) -> Option<Span> {
+    pub fn spans(self, spans: &mut Vec<Span>) {
         match self {
-            Error::Failure { operator }         => Some(operator),
-            Error::UnknownFunction { span, .. } => Some(span),
-            Error::Expression(error)            => error.span(),
-            Error::Io(_)                        => None,
-            Error::Parser(error)                => error.span(),
-            Error::Stack(error)                 => error.span(),
+            Error::Failure { operator }         => spans.push(operator),
+            Error::UnknownFunction { span, .. } => spans.push(span),
+            Error::Expression(error)            => error.spans(spans),
+            Error::Parser(error)                => error.spans(spans),
+            Error::Stack(error)                 => error.spans(spans),
+
+            Error::Io(_) => (),
         }
     }
 }
