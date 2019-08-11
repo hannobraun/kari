@@ -12,9 +12,9 @@ pub struct Token {
 
 #[derive(Clone, Debug)]
 pub enum Kind {
-    Number(u32),
     ListOpen,
     ListClose,
+    Number(u32),
     String(String),
     Symbol(String),
     Word(String),
