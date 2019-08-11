@@ -28,15 +28,20 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn print(self, streams: &mut HashMap<String, Box<Stream>>)
+    pub fn print(self,
+        streams: &mut HashMap<String, Box<Stream>>,
+        stderr:  &mut io::Write,
+    )
         -> io::Result<()>
     {
-        print!("\n{}{}ERROR:{} {}{}\n",
+        write!(
+            stderr,
+            "\n{}{}ERROR:{} {}{}\n",
             color::Fg(color::Red), style::Bold,
             color::Fg(color::Reset),
             self,
             style::Reset,
-        );
+        )?;
 
         let mut spans = Vec::new();
         self.kind.spans(&mut spans);
@@ -45,21 +50,25 @@ impl Error {
             print_span(
                 span,
                 streams,
+                stderr,
             )?;
         }
 
         for span in self.stack_trace.into_iter().rev() {
-            print!("\n{}Called by:{}\n",
+            write!(
+                stderr,
+                "\n{}Called by:{}\n",
                 color::Fg(color::Cyan),
                 color::Fg(color::Reset),
-            );
+            )?;
             print_span(
                 span,
                 streams,
+                stderr,
             )?;
         }
 
-        print!("\n");
+        write!(stderr, "\n")?;
 
         Ok(())
     }
@@ -105,6 +114,7 @@ impl From<parser::Error> for ErrorKind {
 fn print_span<Stream>(
     span:    Span,
     streams: &mut HashMap<String, Stream>,
+    stderr:  &mut io::Write,
 )
     -> io::Result<()>
     where Stream: io::Read + io::Seek
@@ -124,7 +134,8 @@ fn print_span<Stream>(
     // where we need to render a span.
     let buffer = from_utf8(&buffer).unwrap();
 
-    print!(
+    write!(
+        stderr,
         "  {}=> {}{}:{}:{}{}\n",
         color::Fg(color::Magenta),
 
@@ -133,14 +144,16 @@ fn print_span<Stream>(
         span.start.line + 1,
         span.start.column + 1,
         color::Fg(color::Reset),
-    );
-    print!("\n");
+    )?;
+    write!(stderr, "\n")?;
 
     for (i, line) in buffer.lines().enumerate() {
         let line_number = span.start.line + i;
         let line_len    = line.chars().count();
 
-        print!("{}{:5} {}| {}{}{}{}{}\n",
+        write!(
+            stderr,
+            "{}{:5} {}| {}{}{}{}{}\n",
             color::Fg(color::LightBlue),
             line_number + 1,
 
@@ -149,7 +162,7 @@ fn print_span<Stream>(
             style::Bold, color::Fg(color::LightWhite),
             line,
             color::Fg(color::Reset), style::Reset,
-        );
+        )?;
 
         let start_column = if line_number == span.start.line {
             span.start.column
@@ -168,22 +181,26 @@ fn print_span<Stream>(
             continue;
         }
 
-        print!("        {}{}",
+        write!(
+            stderr,
+            "        {}{}",
             color::Fg(color::LightRed),
             style::Bold,
-        );
+        )?;
         for column in 0 .. line_len {
             if column >= start_column && column <  end_column {
-                print!("^");
+                write!(stderr, "^")?;
             }
             else {
-                print!(" ");
+                write!(stderr, " ")?;
             }
         }
-        print!("{}{}\n",
+        write!(
+            stderr,
+            "{}{}\n",
             style::Reset,
             color::Fg(color::Reset),
-        );
+        )?;
     }
 
     Ok(())

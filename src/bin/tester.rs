@@ -1,6 +1,9 @@
 use std::{
     fs::File,
-    io::stdout,
+    io::{
+        stderr,
+        stdout,
+    },
     process::exit,
 };
 
@@ -56,6 +59,7 @@ fn main() {
             path.into(),
             Box::new(file),
             Box::new(stdout()),
+            &mut stderr(),
         );
 
         if success {

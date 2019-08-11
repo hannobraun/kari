@@ -1,6 +1,7 @@
 use std::{
     fs::File,
     io::{
+        stderr,
         stdin,
         stdout,
     },
@@ -47,13 +48,15 @@ fn main() {
                 path.into(),
                 Box::new(file),
                 Box::new(stdout()),
+                &mut stderr(),
             );
         }
         None => {
             Evaluator::run(
                 "<stdin>".into(),
                 Box::new(AccReader::new(stdin())),
-                Box::new(stdout())
+                Box::new(stdout()),
+                &mut stderr(),
             );
         }
     }
