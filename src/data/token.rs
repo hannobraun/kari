@@ -23,11 +23,10 @@ pub enum Kind {
 impl Kind {
     pub fn parse_word(word: String) -> Self {
         if let Ok(number) = word.parse::<u32>() {
-            Kind::Number(number)
+            return Kind::Number(number);
         }
-        else {
-            Kind::Word(word)
-        }
+
+        Kind::Word(word)
     }
 }
 
