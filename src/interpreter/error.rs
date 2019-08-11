@@ -28,9 +28,7 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn print(self,
-        streams: &mut HashMap<String, Box<Stream>>,
-    )
+    pub fn print(self, streams: &mut HashMap<String, Box<Stream>>)
         -> io::Result<()>
     {
         let red  = color::Fg(color::Red);
