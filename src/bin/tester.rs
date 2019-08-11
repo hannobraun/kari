@@ -3,6 +3,10 @@ use std::{
     process::exit,
 };
 
+use termion::{
+    color,
+    style,
+};
 use walkdir::WalkDir;
 
 use kari::interpreter::evaluator::Evaluator;
@@ -49,7 +53,11 @@ fn main() {
 
         let success = Evaluator::run(path.into(), Box::new(file));
         if success {
-            print!("    OK {}\n", path);
+            print!("    {}{}OK{}{} {}\n",
+                style::Bold, color::Fg(color::LightGreen),
+                color::Fg(color::Reset), style::Reset,
+                path,
+            );
         }
     }
 
