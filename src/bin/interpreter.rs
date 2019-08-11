@@ -21,7 +21,7 @@ fn main() {
     let args = App::new("Kari")
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
-        .about("Interpreter for the Kari prorgamming language")
+        .about("Interpreter for the Kari programming language")
         .arg(
             Arg::with_name("path")
                 .value_name("PATH")
