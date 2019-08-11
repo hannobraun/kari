@@ -38,7 +38,7 @@ impl Error {
             style::Reset,
         );
 
-        if let Some(span) = self.kind.span() {
+        for span in self.kind.span() {
             print_span(
                 span,
                 streams,
