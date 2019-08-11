@@ -14,6 +14,7 @@ pub struct Token {
 pub enum Kind {
     ListOpen,
     ListClose,
+    Bool(bool),
     Number(u32),
     String(String),
     Symbol(String),
@@ -22,6 +23,9 @@ pub enum Kind {
 
 impl Kind {
     pub fn parse_word(word: String) -> Self {
+        if let Ok(value) = word.parse::<bool>() {
+            return Kind::Bool(value);
+        }
         if let Ok(number) = word.parse::<u32>() {
             return Kind::Number(number);
         }
@@ -35,6 +39,7 @@ impl fmt::Display for Kind {
         match self {
             Kind::ListOpen       => write!(f, "["),
             Kind::ListClose      => write!(f, "]"),
+            Kind::Bool(value)    => value.fmt(f),
             Kind::Number(number) => number.fmt(f),
             Kind::String(string) => string.fmt(f),
             Kind::Symbol(symbol) => write!(f, ":{}", symbol),

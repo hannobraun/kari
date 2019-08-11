@@ -45,6 +45,9 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
+            token::Kind::Bool(value) => {
+                (expr::Kind::Bool(value), token.span)
+            }
             token::Kind::Number(number) => {
                 (expr::Kind::Number(number), token.span)
             }
@@ -88,6 +91,9 @@ impl<Tokenizer> Parser<Tokenizer>
                 }
                 token::Kind::ListClose => {
                     return Ok((expressions, list_span));
+                }
+                token::Kind::Bool(value) => {
+                    (expr::Kind::Bool(value), token.span)
                 }
                 token::Kind::Number(number) => {
                     (expr::Kind::Number(number), token.span)
