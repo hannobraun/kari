@@ -26,8 +26,8 @@ impl Kind {
         if let Ok(value) = word.parse::<bool>() {
             return Kind::Bool(value);
         }
-        if let Ok(number) = word.parse::<u32>() {
-            return Kind::Number(number);
+        if let Ok(value) = word.parse::<u32>() {
+            return Kind::Number(value);
         }
 
         Kind::Word(word)
