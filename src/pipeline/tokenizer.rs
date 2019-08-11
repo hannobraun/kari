@@ -171,12 +171,7 @@ impl TokenBuilder {
             "]" => token::Kind::ListClose,
 
             _ => {
-                if let Ok(number) = self.buffer.parse::<u32>() {
-                    token::Kind::Number(number)
-                }
-                else {
-                    token::Kind::Word(self.buffer)
-                }
+                token::Kind::parse_word(self.buffer)
             }
         };
 

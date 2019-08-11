@@ -20,6 +20,17 @@ pub enum Kind {
     Word(String),
 }
 
+impl Kind {
+    pub fn parse_word(word: String) -> Self {
+        if let Ok(number) = word.parse::<u32>() {
+            Kind::Number(number)
+        }
+        else {
+            Kind::Word(word)
+        }
+    }
+}
+
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
