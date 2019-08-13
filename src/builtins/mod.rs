@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    result::Result as StdResult,
-};
+use std::collections::HashMap;
 
 use crate::{
     context::{
@@ -41,7 +38,7 @@ impl Builtins {
 
 
 pub type Builtin = fn(&mut Context, Span) -> Result;
-pub type Result  = StdResult<(), context::Error>;
+pub type Result  = std::result::Result<(), context::Error>;
 
 
 macro_rules! builtins {
