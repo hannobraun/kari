@@ -187,7 +187,7 @@ impl Context for Evaluator
                     )?;
                     continue;
                 }
-                if let Some(builtin) = self.builtins.builtin(&word) {
+                if let Some(builtin) = self.builtins.get(&word) {
                     builtin(self, expression.span)?;
                     continue;
                 }
