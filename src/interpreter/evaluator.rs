@@ -21,6 +21,7 @@ use crate::{
         span::Span,
         stack::Stack,
     },
+    extensions::Extensions,
     interpreter::{
         error::Error,
         stream::Stream,
@@ -33,24 +34,32 @@ use crate::{
 };
 
 
-pub struct Evaluator {
+pub struct Evaluator<Host> {
     streams: HashMap<String, Box<Stream>>,
     stdout:  Box<io::Write>,
     stderr:  Box<io::Write>,
 
+    extensions:  Extensions<Host>,
     builtins:    Builtins,
     stack:       Stack,
     functions:   HashMap<String, expr::List>,
     stack_trace: Vec<Span>,
 }
 
-impl Evaluator {
-    pub fn new(stdout: Box<io::Write>, stderr: Box<io::Write>) -> Self {
+impl<Host> Evaluator<Host> {
+    pub fn new(
+        stdout:     Box<io::Write>,
+        stderr:     Box<io::Write>,
+        extensions: Extensions<Host>,
+    )
+        -> Self
+    {
         Self {
             streams: HashMap::new(),
             stdout,
             stderr,
 
+            extensions,
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
@@ -120,7 +129,7 @@ impl Evaluator {
     }
 }
 
-impl Context for Evaluator
+impl<Host> Context for Evaluator<Host>
     where Stream: io::Read + io::Seek
 {
     fn stack(&mut self) -> &mut Stack {
@@ -184,6 +193,15 @@ impl Context for Evaluator
                     self.evaluate(
                         Some(expression.span),
                         &mut list.inner.into_iter(),
+                    )?;
+                    continue;
+                }
+                if let Some(extension) = self.extensions.map.get(&word) {
+                    let extension = *extension;
+                    extension(
+                        self.extensions.host.clone(),
+                        self,
+                        expression.span,
                     )?;
                     continue;
                 }
