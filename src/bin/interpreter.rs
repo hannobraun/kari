@@ -44,20 +44,12 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::run(
-                path.into(),
-                Box::new(file),
-                Box::new(stdout()),
-                Box::new(stderr()),
-            );
+            Evaluator::new(Box::new(stdout()), Box::new(stderr()))
+                .run(path.into(), Box::new(file));
         }
         None => {
-            Evaluator::run(
-                "<stdin>".into(),
-                Box::new(AccReader::new(stdin())),
-                Box::new(stdout()),
-                Box::new(stderr()),
-            );
+            Evaluator::new(Box::new(stdout()), Box::new(stderr()))
+                .run("<stdin>".into(), Box::new(AccReader::new(stdin())));
         }
     }
 }

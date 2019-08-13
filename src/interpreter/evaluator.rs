@@ -36,6 +36,7 @@ use crate::{
 pub struct Evaluator {
     streams: HashMap<String, Box<Stream>>,
     stdout:  Box<io::Write>,
+    stderr:  Box<io::Write>,
 
     builtins:    Builtins,
     stack:       Stack,
@@ -44,36 +45,34 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
-    pub fn run(
-            name:   Cow<str>,
-        mut stream: Box<Stream>,
-            stdout: Box<io::Write>,
-        mut stderr: Box<io::Write>,
-    ) -> bool {
-        let mut evaluator = Self {
+    pub fn new(stdout: Box<io::Write>, stderr: Box<io::Write>) -> Self {
+        Self {
             streams: HashMap::new(),
             stdout,
+            stderr,
 
             builtins:    Builtins::new(),
             stack:       Stack::new(),
             functions:   HashMap::new(),
             stack_trace: Vec::new(),
-        };
+        }
+    }
 
+    pub fn run(&mut self, name: Cow<str>, mut stream: Box<Stream>) -> bool {
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut stream,
         );
 
-        let result = evaluator.evaluate_expressions(pipeline);
+        let result = self.evaluate_expressions(pipeline);
         if let Err(error) = result {
-            evaluator.streams.insert(
+            self.streams.insert(
                 name.into_owned(),
                 stream,
             );
 
             if let Err(error) =
-                error.print(&mut evaluator.streams, &mut stderr)
+                error.print(&mut self.streams, &mut self.stderr)
             {
                 print!("Error printing error: {}\n", error)
             }
