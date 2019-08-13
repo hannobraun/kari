@@ -187,7 +187,7 @@ impl Context for Evaluator
                     continue;
                 }
                 if let Some(builtin) = self.builtins.builtin(&word) {
-                    builtin(expression.span, self)?;
+                    builtin(self, expression.span)?;
                     continue;
                 }
 

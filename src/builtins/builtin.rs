@@ -19,7 +19,7 @@ use crate::{
 };
 
 
-pub type Builtin = fn(Span, &mut Context) -> Result;
+pub type Builtin = fn(&mut Context, Span) -> Result;
 pub type Result  = StdResult<(), context::Error>;
 
 
@@ -54,14 +54,14 @@ builtins!(
 );
 
 
-fn print(operator: Span, context: &mut Context) -> Result {
+fn print(context: &mut Context, operator: Span) -> Result {
     let expression = context.stack().pop::<expr::Any>(&operator)?;
     write!(context.output(), "{}", expression.kind)?;
 
     Ok(())
 }
 
-fn define(operator: Span, context: &mut Context) -> Result {
+fn define(context: &mut Context, operator: Span) -> Result {
     let (body, name) = context.stack()
         .pop::<(expr::List, expr::Symbol)>(&operator)?;
 
@@ -70,11 +70,11 @@ fn define(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn fail(operator: Span, _: &mut Context) -> Result {
+fn fail(_: &mut Context, operator: Span) -> Result {
     Err(context::Error::Failure { operator })
 }
 
-fn eval(operator: Span, context: &mut Context) -> Result {
+fn eval(context: &mut Context, operator: Span) -> Result {
     let list = context.stack().pop::<expr::List>(&operator)?;
 
     context.evaluate(
@@ -84,7 +84,7 @@ fn eval(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn load(operator: Span, context: &mut Context) -> Result {
+fn load(context: &mut Context, operator: Span) -> Result {
     let path = context.stack().pop::<expr::String>(&operator)?;
 
     let list = context.load(path)?;
@@ -93,12 +93,12 @@ fn load(operator: Span, context: &mut Context) -> Result {
 }
 
 
-fn drop(operator: Span, context: &mut Context) -> Result {
+fn drop(context: &mut Context, operator: Span) -> Result {
     context.stack().pop::<expr::Any>(&operator)?;
     Ok(())
 }
 
-fn dup(operator: Span, context: &mut Context) -> Result {
+fn dup(context: &mut Context, operator: Span) -> Result {
     let mut expression = context.stack().pop::<expr::Any>(&operator)?;
 
     expression.span = operator.merge(expression.span);
@@ -109,7 +109,7 @@ fn dup(operator: Span, context: &mut Context) -> Result {
 }
 
 
-fn map(operator: Span, context: &mut Context) -> Result {
+fn map(context: &mut Context, operator: Span) -> Result {
     let (list, function) = context.stack()
         .pop::<(expr::List, expr::List)>(&operator)?;
 
@@ -135,7 +135,7 @@ fn map(operator: Span, context: &mut Context) -> Result {
 }
 
 
-fn r#if(operator: Span, context: &mut Context) -> Result {
+fn r#if(context: &mut Context, operator: Span) -> Result {
     let (function, condition)  =context.stack()
         .pop::<(expr::List, expr::List)>(&operator)?;
 
@@ -154,7 +154,7 @@ fn r#if(operator: Span, context: &mut Context) -> Result {
 }
 
 
-fn add(operator: Span, context: &mut Context) -> Result {
+fn add(context: &mut Context, operator: Span) -> Result {
     let sum = context.stack()
         .pop::<(expr::Number, expr::Number)>(&operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a + b);
@@ -164,7 +164,7 @@ fn add(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn mul(operator: Span, context: &mut Context) -> Result {
+fn mul(context: &mut Context, operator: Span) -> Result {
     let product = context.stack()
         .pop::<(expr::Number, expr::Number)>(&operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a * b);
@@ -174,7 +174,7 @@ fn mul(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn eq(operator: Span, context: &mut Context) -> Result {
+fn eq(context: &mut Context, operator: Span) -> Result {
     let is_equal = context.stack()
         .pop::<(expr::Any, expr::Any)>(&operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a == b);
@@ -184,7 +184,7 @@ fn eq(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn gt(operator: Span, context: &mut Context) -> Result {
+fn gt(context: &mut Context, operator: Span) -> Result {
     let is_greater = context.stack()
         .pop::<(expr::Number, expr::Number)>(&operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a > b);
@@ -194,7 +194,7 @@ fn gt(operator: Span, context: &mut Context) -> Result {
     Ok(())
 }
 
-fn not(operator: Span, context: &mut Context) -> Result {
+fn not(context: &mut Context, operator: Span) -> Result {
     let inverted = context.stack()
         .pop::<expr::Bool>(&operator)?
         .compute::<expr::Bool, _, _>(|b| !b);
