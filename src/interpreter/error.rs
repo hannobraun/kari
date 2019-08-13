@@ -15,7 +15,7 @@ use termion::{
 };
 
 use crate::{
-    builtins::context,
+    context,
     data::span::Span,
     interpreter::stream::Stream,
     pipeline::parser,

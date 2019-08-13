@@ -8,10 +8,10 @@ use std::{
 use crate::{
     builtins::{
         Builtins,
-        context::{
-            self,
-            Context,
-        },
+    },
+    context::{
+        self,
+        Context,
     },
     data::{
         expr::{

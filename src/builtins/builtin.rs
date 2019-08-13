@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    builtins::context::{
+    context::{
         self,
         Context,
     },
