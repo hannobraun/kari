@@ -48,7 +48,7 @@ fn main() {
                 path.into(),
                 Box::new(file),
                 Box::new(stdout()),
-                &mut stderr(),
+                Box::new(stderr()),
             );
         }
         None => {
@@ -56,7 +56,7 @@ fn main() {
                 "<stdin>".into(),
                 Box::new(AccReader::new(stdin())),
                 Box::new(stdout()),
-                &mut stderr(),
+                Box::new(stderr()),
             );
         }
     }

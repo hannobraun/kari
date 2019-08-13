@@ -48,7 +48,7 @@ impl Evaluator {
             name:   Cow<str>,
         mut stream: Box<Stream>,
             stdout: Box<io::Write>,
-            stderr: &mut io::Write,
+        mut stderr: Box<io::Write>,
     ) -> bool {
         let mut evaluator = Self {
             streams: HashMap::new(),
@@ -72,7 +72,9 @@ impl Evaluator {
                 stream,
             );
 
-            if let Err(error) = error.print(&mut evaluator.streams, stderr) {
+            if let Err(error) =
+                error.print(&mut evaluator.streams, &mut stderr)
+            {
                 print!("Error printing error: {}\n", error)
             }
             return false;

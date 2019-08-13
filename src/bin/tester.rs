@@ -59,7 +59,7 @@ fn main() {
             path.into(),
             Box::new(file),
             Box::new(stdout()),
-            &mut stderr(),
+            Box::new(stderr()),
         );
 
         if success {
