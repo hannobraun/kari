@@ -37,13 +37,13 @@ impl Kind {
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::ListOpen       => write!(f, "["),
-            Kind::ListClose      => write!(f, "]"),
-            Kind::Bool(value)    => value.fmt(f),
-            Kind::Number(number) => number.fmt(f),
-            Kind::String(string) => string.fmt(f),
-            Kind::Symbol(symbol) => write!(f, ":{}", symbol),
-            Kind::Word(word)     => word.fmt(f),
+            Kind::ListOpen      => write!(f, "["),
+            Kind::ListClose     => write!(f, "]"),
+            Kind::Bool(value)   => value.fmt(f),
+            Kind::Number(value) => value.fmt(f),
+            Kind::String(value) => value.fmt(f),
+            Kind::Symbol(value) => write!(f, ":{}", value),
+            Kind::Word(value)   => value.fmt(f),
         }
     }
 }
