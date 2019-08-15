@@ -48,17 +48,17 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
             token::Kind::Bool(value) => {
                 (expr::Kind::Bool(value), token.span)
             }
-            token::Kind::Number(number) => {
-                (expr::Kind::Number(number), token.span)
+            token::Kind::Number(value) => {
+                (expr::Kind::Number(value), token.span)
             }
-            token::Kind::String(string) => {
-                (expr::Kind::String(string), token.span)
+            token::Kind::String(value) => {
+                (expr::Kind::String(value), token.span)
             }
-            token::Kind::Symbol(symbol) => {
-                (expr::Kind::Symbol(symbol), token.span)
+            token::Kind::Symbol(value) => {
+                (expr::Kind::Symbol(value), token.span)
             }
-            token::Kind::Word(word) => {
-                (expr::Kind::Word(word), token.span)
+            token::Kind::Word(value) => {
+                (expr::Kind::Word(value), token.span)
             }
         };
 
@@ -95,17 +95,17 @@ impl<Tokenizer> Parser<Tokenizer>
                 token::Kind::Bool(value) => {
                     (expr::Kind::Bool(value), token.span)
                 }
-                token::Kind::Number(number) => {
-                    (expr::Kind::Number(number), token.span)
+                token::Kind::Number(value) => {
+                    (expr::Kind::Number(value), token.span)
                 }
-                token::Kind::String(string) => {
-                    (expr::Kind::String(string), token.span)
+                token::Kind::String(value) => {
+                    (expr::Kind::String(value), token.span)
                 }
-                token::Kind::Symbol(symbol) => {
-                    (expr::Kind::Symbol(symbol), token.span)
+                token::Kind::Symbol(value) => {
+                    (expr::Kind::Symbol(value), token.span)
                 }
-                token::Kind::Word(word) => {
-                    (expr::Kind::Word(word), token.span)
+                token::Kind::Word(value) => {
+                    (expr::Kind::Word(value), token.span)
                 }
             };
 
