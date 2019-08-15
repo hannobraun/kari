@@ -207,12 +207,12 @@ impl Eq for Kind {}
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::Bool(b)        => b.fmt(f),
-            Kind::Number(number) => number.fmt(f),
-            Kind::List(list)     => fmt_list(list, f),
-            Kind::String(string) => string.fmt(f),
-            Kind::Symbol(symbol) => write!(f, ":{}", symbol),
-            Kind::Word(word)     => word.fmt(f),
+            Kind::Bool(value)   => value.fmt(f),
+            Kind::Number(value) => value.fmt(f),
+            Kind::List(value)   => fmt_list(value, f),
+            Kind::String(value) => value.fmt(f),
+            Kind::Symbol(value) => write!(f, ":{}", value),
+            Kind::Word(value)   => value.fmt(f),
         }
     }
 }
