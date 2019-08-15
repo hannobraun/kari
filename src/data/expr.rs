@@ -36,6 +36,7 @@ impl Any {
     pub fn from_token(token: Token) -> Self {
         let kind = match token.kind {
             token::Kind::Bool(value)   => Kind::Bool(value),
+            token::Kind::Float(value)  => Kind::Float(value),
             token::Kind::Number(value) => Kind::Number(value),
             token::Kind::String(value) => Kind::String(value),
             token::Kind::Symbol(value) => Kind::Symbol(value),

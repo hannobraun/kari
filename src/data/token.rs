@@ -15,6 +15,7 @@ pub enum Kind {
     ListOpen,
     ListClose,
     Bool(bool),
+    Float(f32),
     Number(u32),
     String(String),
     Symbol(String),
@@ -29,6 +30,9 @@ impl Kind {
         if let Ok(value) = word.parse::<u32>() {
             return Kind::Number(value);
         }
+        if let Ok(value) = word.parse::<f32>() {
+            return Kind::Float(value)
+        }
 
         Kind::Word(word)
     }
@@ -40,6 +44,7 @@ impl fmt::Display for Kind {
             Kind::ListOpen      => write!(f, "["),
             Kind::ListClose     => write!(f, "]"),
             Kind::Bool(value)   => value.fmt(f),
+            Kind::Float(value)  => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
             Kind::String(value) => value.fmt(f),
             Kind::Symbol(value) => write!(f, ":{}", value),
