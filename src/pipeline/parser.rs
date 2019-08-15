@@ -37,37 +37,23 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         let token = self.tokenizer.next()?;
 
-        let (kind, span) = match token.kind {
+        let expr = match token.kind {
             token::Kind::ListOpen => {
                 let (list, span) = self.parse_list(token.span)?;
-                (expr::Kind::List(list), span)
+                expr::Any {
+                    kind: expr::Kind::List(list),
+                    span,
+                }
             }
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
-            token::Kind::Bool(value) => {
-                (expr::Kind::Bool(value), token.span)
-            }
-            token::Kind::Number(value) => {
-                (expr::Kind::Number(value), token.span)
-            }
-            token::Kind::String(value) => {
-                (expr::Kind::String(value), token.span)
-            }
-            token::Kind::Symbol(value) => {
-                (expr::Kind::Symbol(value), token.span)
-            }
-            token::Kind::Word(value) => {
-                (expr::Kind::Word(value), token.span)
+            _ => {
+                expr::Any::from_token(token)
             }
         };
 
-        Ok(
-            expr::Any {
-                kind,
-                span,
-            }
-        )
+        Ok(expr)
     }
 }
 
@@ -84,37 +70,23 @@ impl<Tokenizer> Parser<Tokenizer>
 
             list_span = list_span.merge(token.span.clone());
 
-            let (kind, span) = match token.kind {
+            let expr = match token.kind {
                 token::Kind::ListOpen => {
                     let (list, span) = self.parse_list(token.span)?;
-                    (expr::Kind::List(list), span)
+                    expr::Any {
+                        kind: expr::Kind::List(list),
+                        span,
+                    }
                 }
                 token::Kind::ListClose => {
                     return Ok((expressions, list_span));
                 }
-                token::Kind::Bool(value) => {
-                    (expr::Kind::Bool(value), token.span)
-                }
-                token::Kind::Number(value) => {
-                    (expr::Kind::Number(value), token.span)
-                }
-                token::Kind::String(value) => {
-                    (expr::Kind::String(value), token.span)
-                }
-                token::Kind::Symbol(value) => {
-                    (expr::Kind::Symbol(value), token.span)
-                }
-                token::Kind::Word(value) => {
-                    (expr::Kind::Word(value), token.span)
+                _ => {
+                    expr::Any::from_token(token)
                 }
             };
 
-            expressions.push(
-                expr::Any {
-                    kind,
-                    span,
-                }
-            );
+            expressions.push(expr);
         }
     }
 }

@@ -4,7 +4,13 @@ use std::{
     string::String as StdString,
 };
 
-use crate::data::span::Span;
+use crate::data::{
+    span::Span,
+    token::{
+        self,
+        Token,
+    },
+};
 
 
 pub trait Expr : Sized {
@@ -27,6 +33,23 @@ pub struct Any {
 }
 
 impl Any {
+    pub fn from_token(token: Token) -> Self {
+        let kind = match token.kind {
+            token::Kind::Bool(value)   => Kind::Bool(value),
+            token::Kind::Number(value) => Kind::Number(value),
+            token::Kind::String(value) => Kind::String(value),
+            token::Kind::Symbol(value) => Kind::Symbol(value),
+            token::Kind::Word(value)   => Kind::Word(value),
+
+            kind => panic!("Can convert {} to expression", kind),
+        };
+
+        Self {
+            kind,
+            span: token.span,
+        }
+    }
+
     pub fn check<T>(self) -> Result<T, Error>
         where
             T: Expr,
