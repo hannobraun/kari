@@ -153,6 +153,7 @@ macro_rules! kinds {
 
 kinds!(
     Bool,   "bool",   bool;
+    Float,  "float",  f32;
     Number, "number", u32;
     List,   "list",   Vec<Any>;
     String, "string", StdString;
@@ -208,6 +209,7 @@ impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Kind::Bool(value)   => value.fmt(f),
+            Kind::Float(value)  => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
             Kind::List(value)   => fmt_list(value, f),
             Kind::String(value) => value.fmt(f),
