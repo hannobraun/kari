@@ -39,11 +39,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 
         let expr = match token.kind {
             token::Kind::ListOpen => {
-                let (list, span) = self.parse_list(token.span)?;
-                expr::Any {
-                    kind: expr::Kind::List(list),
-                    span,
-                }
+                self.parse_list(token.span)?
             }
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
@@ -60,9 +56,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self, mut list_span: Span)
-        -> Result<(Vec<expr::Any>, Span), Error>
-    {
+    fn parse_list(&mut self, mut list_span: Span) -> Result<expr::Any, Error> {
         let mut expressions = Vec::new();
 
         loop {
@@ -72,14 +66,15 @@ impl<Tokenizer> Parser<Tokenizer>
 
             let expr = match token.kind {
                 token::Kind::ListOpen => {
-                    let (list, span) = self.parse_list(token.span)?;
-                    expr::Any {
-                        kind: expr::Kind::List(list),
-                        span,
-                    }
+                    self.parse_list(token.span)?
                 }
                 token::Kind::ListClose => {
-                    return Ok((expressions, list_span));
+                    return Ok(
+                        expr::Any {
+                            kind: expr::Kind::List(expressions),
+                            span: list_span,
+                        }
+                    );
                 }
                 _ => {
                     expr::Any::from_token(token)
