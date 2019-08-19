@@ -73,7 +73,6 @@ macro_rules! kinds {
     (
         $(
             $ty:ident,
-            $name:expr,
             $inner:ty;
         )*
     ) => {
@@ -116,13 +115,13 @@ macro_rules! kinds {
 }
 
 kinds!(
-    Bool,   "bool",   bool;
-    Float,  "float",  f32;
-    Number, "number", u32;
-    List,   "list",   Vec<Any>;
-    String, "string", StdString;
-    Symbol, "symbol", StdString;
-    Word,   "word",   StdString;
+    Bool,   bool;
+    Float,  f32;
+    Number, u32;
+    List,   Vec<Any>;
+    String, StdString;
+    Symbol, StdString;
+    Word,   StdString;
 );
 
 
