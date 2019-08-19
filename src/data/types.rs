@@ -24,10 +24,13 @@ pub trait Type {
     }
 }
 
-impl Type for expr::Any {
+
+pub struct Any;
+
+impl Type for Any {
     const NAME: &'static str = "any";
 
-    type Value = Self;
+    type Value = expr::Any;
 
     fn from_any(expression: expr::Any) -> Result<Self::Value, expr::Any> {
         Ok(expression)

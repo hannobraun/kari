@@ -7,6 +7,7 @@ use crate::data::{
     },
     span::Span,
     types::{
+        self,
         Type,
         TypeError,
     },
@@ -47,7 +48,7 @@ impl Stack {
 
         Err(
             Error::StackEmpty {
-                expected: expr::Any::NAME,
+                expected: types::Any::NAME,
                 operator: operator.clone(),
             }
         )

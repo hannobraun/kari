@@ -74,7 +74,7 @@ builtins!(
 
 
 fn print(context: &mut dyn Context, operator: Span) -> Result {
-    let expression = context.stack().pop::<expr::Any>(&operator)?;
+    let expression = context.stack().pop::<types::Any>(&operator)?;
     write!(context.output(), "{}", expression.kind)?;
 
     Ok(())
@@ -113,12 +113,12 @@ fn load(context: &mut dyn Context, operator: Span) -> Result {
 
 
 fn drop(context: &mut dyn Context, operator: Span) -> Result {
-    context.stack().pop::<expr::Any>(&operator)?;
+    context.stack().pop::<types::Any>(&operator)?;
     Ok(())
 }
 
 fn dup(context: &mut dyn Context, operator: Span) -> Result {
-    let mut expression = context.stack().pop::<expr::Any>(&operator)?;
+    let mut expression = context.stack().pop::<types::Any>(&operator)?;
 
     expression.span = operator.merge(expression.span);
 
@@ -195,7 +195,7 @@ fn mul(context: &mut dyn Context, operator: Span) -> Result {
 
 fn eq(context: &mut dyn Context, operator: Span) -> Result {
     let is_equal = context.stack()
-        .pop::<(expr::Any, expr::Any)>(&operator)?
+        .pop::<(types::Any, types::Any)>(&operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
