@@ -38,14 +38,14 @@ impl Type for expr::Any {
 macro_rules! impl_type {
     (
         $(
-            $value:ident,
+            $ty:ident,
             $name:expr;
         )*
     )
         =>
     {
         $(
-            impl Type for expr::$value {
+            impl Type for expr::$ty {
                 const NAME: &'static str = $name;
 
                 type Value = Self;
@@ -54,7 +54,7 @@ macro_rules! impl_type {
                     -> Result<Self::Value, expr::Any>
                 {
                     match expression.kind {
-                        expr::Kind::$value(value) => {
+                        expr::Kind::$ty(value) => {
                             Ok(expr::Expr::new(value, expression.span))
                         }
                         _ => {
