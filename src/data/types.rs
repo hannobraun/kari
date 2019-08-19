@@ -25,7 +25,7 @@ pub trait Type {
 }
 
 impl Type for expr::Any {
-    const NAME: &'static str = "expression";
+    const NAME: &'static str = "any";
 
     type Value = Self;
 
