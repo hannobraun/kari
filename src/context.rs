@@ -34,10 +34,10 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
-    Expr(expr::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
+    Type(expr::Error),
 }
 
 impl Error {
@@ -46,9 +46,9 @@ impl Error {
             Error::Failure { operator }         => spans.push(operator),
             Error::UnknownFunction { span, .. } => spans.push(span),
 
-            Error::Expr(error)   => error.spans(spans),
             Error::Parser(error) => error.spans(spans),
             Error::Stack(error)  => error.spans(spans),
+            Error::Type(error)   => error.spans(spans),
 
             Error::Io(_) => (),
         }
@@ -57,7 +57,7 @@ impl Error {
 
 impl From<expr::Error> for Error {
     fn from(from: expr::Error) -> Self {
-        Error::Expr(from)
+        Error::Type(from)
     }
 }
 
@@ -88,9 +88,6 @@ impl fmt::Display for Error {
             Error::UnknownFunction { name, .. } => {
                 write!(f, "Unknown function: `{}`", name)
             }
-            Error::Expr(error) => {
-                error.fmt(f)
-            }
             Error::Io(error) => {
                 write!(f, "Error loading stream: {}", error)
             }
@@ -98,6 +95,9 @@ impl fmt::Display for Error {
                 error.fmt(f)
             }
             Error::Stack(error) => {
+                error.fmt(f)
+            }
+            Error::Type(error) => {
                 error.fmt(f)
             }
         }
