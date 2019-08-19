@@ -5,15 +5,13 @@ use std::{
 
 use crate::{
     data::{
-        expr::{
-            self,
-            TypeError,
-        },
+        expr,
         span::Span,
         stack::{
             self,
             Stack,
         },
+        types::TypeError,
     },
     pipeline::parser,
 };

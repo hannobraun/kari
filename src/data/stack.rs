@@ -4,10 +4,12 @@ use crate::data::{
     expr::{
         self,
         Expr,
-        TypeError,
     },
     span::Span,
-    types::Type,
+    types::{
+        Type,
+        TypeError,
+    },
 };
 
 

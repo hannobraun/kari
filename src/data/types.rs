@@ -1,6 +1,8 @@
-use crate::data::expr::{
-    Any,
-    TypeError
+use std::fmt;
+
+use crate::data::{
+    expr::Any,
+    span::Span,
 };
 
 
@@ -21,5 +23,29 @@ pub trait Type {
                     actual:   expression,
                 }
             )
+    }
+}
+
+
+#[derive(Debug)]
+pub struct TypeError {
+    pub expected: &'static str,
+    pub actual:   Any,
+}
+
+impl TypeError {
+    pub fn spans(self, spans: &mut Vec<Span>) {
+        spans.push(self.actual.span);
+    }
+}
+
+impl fmt::Display for TypeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Type error: Expected `{}`, found `{}`",
+            self.expected,
+            self.actual.kind,
+        )
     }
 }
