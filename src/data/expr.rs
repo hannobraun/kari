@@ -10,7 +10,6 @@ use crate::data::{
         self,
         Token,
     },
-    types::Type,
 };
 
 
@@ -89,25 +88,6 @@ macro_rules! kinds {
             pub struct $ty {
                 pub inner: $inner,
                 pub span:  Span,
-            }
-
-            impl Type for $ty {
-                const NAME: &'static str = $name;
-
-                type Value = Self;
-
-                fn from_any(expression: Any)
-                    -> Result<Self::Value, Any>
-                {
-                    match expression.kind {
-                        Kind::$ty(value) => {
-                            Ok($ty::new(value, expression.span))
-                        }
-                        _ => {
-                            Err(expression)
-                        }
-                    }
-                }
             }
 
             impl Expr for $ty {

@@ -9,7 +9,7 @@ use crate::data::{
 pub trait Type {
     const NAME: &'static str;
 
-    type Value;
+    type Value: expr::Expr;
 
     fn from_any(_: expr::Any) -> Result<Self::Value, expr::Any>;
 
@@ -33,6 +33,49 @@ impl Type for expr::Any {
         Ok(expression)
     }
 }
+
+
+macro_rules! impl_type {
+    (
+        $(
+            $value:ident,
+            $name:expr;
+        )*
+    )
+        =>
+    {
+        $(
+            impl Type for expr::$value {
+                const NAME: &'static str = $name;
+
+                type Value = Self;
+
+                fn from_any(expression: expr::Any)
+                    -> Result<Self::Value, expr::Any>
+                {
+                    match expression.kind {
+                        expr::Kind::$value(value) => {
+                            Ok(expr::Expr::new(value, expression.span))
+                        }
+                        _ => {
+                            Err(expression)
+                        }
+                    }
+                }
+            }
+        )*
+    }
+}
+
+impl_type!(
+    Bool,   "bool";
+    Float,  "float";
+    Number, "number";
+    List,   "list";
+    String, "string";
+    Symbol, "symbol";
+    Word,   "word";
+);
 
 
 #[derive(Debug)]
