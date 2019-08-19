@@ -15,10 +15,10 @@ pub trait Type {
 
     fn check(&self, any: expr::Any) -> Result<Self::Value, TypeError> {
         self.from_any(any)
-            .map_err(|expression|
+            .map_err(|any|
                 TypeError {
                     expected: Self::NAME,
-                    actual:   expression,
+                    actual:   any,
                 }
             )
     }
