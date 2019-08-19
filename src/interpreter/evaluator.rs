@@ -129,9 +129,7 @@ impl<Host> Evaluator<Host> {
     }
 }
 
-impl<Host> Context for Evaluator<Host>
-    where Stream: io::Read + io::Seek
-{
+impl<Host> Context for Evaluator<Host> {
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
     }
