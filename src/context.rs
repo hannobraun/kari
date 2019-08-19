@@ -91,15 +91,10 @@ impl fmt::Display for Error {
             Error::Io(error) => {
                 write!(f, "Error loading stream: {}", error)
             }
-            Error::Parser(error) => {
-                error.fmt(f)
-            }
-            Error::Stack(error) => {
-                error.fmt(f)
-            }
-            Error::Type(error) => {
-                error.fmt(f)
-            }
+
+            Error::Parser(error) => error.fmt(f),
+            Error::Stack(error)  => error.fmt(f),
+            Error::Type(error)   => error.fmt(f),
         }
     }
 }
