@@ -104,7 +104,7 @@ impl<T> Pop for &T where T: Type {
         -> Result<Self::Value, Error>
     {
         let expr = stack.pop_raw(operator)?;
-        Ok(self.check(expr)?)
+        Ok(self.downcast(expr)?)
     }
 }
 
