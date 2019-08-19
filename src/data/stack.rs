@@ -94,14 +94,12 @@ pub trait Pop : Sized {
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Value, Error>;
 }
 
-impl<T> Pop for T where T: Expr + Type<Value=Self> {
-    type Value = Self;
+impl<T> Pop for T where T: Type {
+    type Value = <Self as Type>::Value;
 
-    fn pop(stack: &mut Stack, operator: &Span)
-        -> Result<<Self as Type>::Value, Error>
-    {
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Value, Error> {
         let expr = stack.pop_raw(operator)?;
-        Ok(Self::check(expr)?)
+        Ok(T::check(expr)?)
     }
 }
 

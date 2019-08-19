@@ -45,10 +45,12 @@ macro_rules! impl_type {
         =>
     {
         $(
-            impl Type for expr::$ty {
+            pub struct $ty;
+
+            impl Type for $ty {
                 const NAME: &'static str = $name;
 
-                type Value = Self;
+                type Value = expr::$ty;
 
                 fn from_any(expression: expr::Any)
                     -> Result<Self::Value, expr::Any>

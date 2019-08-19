@@ -12,6 +12,7 @@ use crate::{
             Expr as _,
         },
         span::Span,
+        types,
     },
 };
 
@@ -81,7 +82,7 @@ fn print(context: &mut dyn Context, operator: Span) -> Result {
 
 fn define(context: &mut dyn Context, operator: Span) -> Result {
     let (body, name) = context.stack()
-        .pop::<(expr::List, expr::Symbol)>(&operator)?;
+        .pop::<(types::List, types::Symbol)>(&operator)?;
 
     context.define(name, body.clone());
 
@@ -93,7 +94,7 @@ fn fail(_: &mut dyn Context, operator: Span) -> Result {
 }
 
 fn eval(context: &mut dyn Context, operator: Span) -> Result {
-    let list = context.stack().pop::<expr::List>(&operator)?;
+    let list = context.stack().pop::<types::List>(&operator)?;
 
     context.evaluate(
         Some(operator),
@@ -103,7 +104,7 @@ fn eval(context: &mut dyn Context, operator: Span) -> Result {
 }
 
 fn load(context: &mut dyn Context, operator: Span) -> Result {
-    let path = context.stack().pop::<expr::String>(&operator)?;
+    let path = context.stack().pop::<types::String>(&operator)?;
 
     let list = context.load(path)?;
     context.stack().push(list);
@@ -129,7 +130,7 @@ fn dup(context: &mut dyn Context, operator: Span) -> Result {
 
 fn map(context: &mut dyn Context, operator: Span) -> Result {
     let (list, function) = context.stack()
-        .pop::<(expr::List, expr::List)>(&operator)?;
+        .pop::<(types::List, types::List)>(&operator)?;
 
     context.stack().create_substack();
 
@@ -155,11 +156,11 @@ fn map(context: &mut dyn Context, operator: Span) -> Result {
 
 fn r#if(context: &mut dyn Context, operator: Span) -> Result {
     let (function, condition)  =context.stack()
-        .pop::<(expr::List, expr::List)>(&operator)?;
+        .pop::<(types::List, types::List)>(&operator)?;
 
     context.evaluate(Some(operator.clone()), &mut condition.into_iter())?;
 
-    let evaluated_condition = context.stack().pop::<expr::Bool>(&operator)?;
+    let evaluated_condition = context.stack().pop::<types::Bool>(&operator)?;
 
     if evaluated_condition.inner {
         context.evaluate(
@@ -174,7 +175,7 @@ fn r#if(context: &mut dyn Context, operator: Span) -> Result {
 
 fn add(context: &mut dyn Context, operator: Span) -> Result {
     let sum = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .pop::<(types::Number, types::Number)>(&operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
@@ -184,7 +185,7 @@ fn add(context: &mut dyn Context, operator: Span) -> Result {
 
 fn mul(context: &mut dyn Context, operator: Span) -> Result {
     let product = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .pop::<(types::Number, types::Number)>(&operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
@@ -204,7 +205,7 @@ fn eq(context: &mut dyn Context, operator: Span) -> Result {
 
 fn gt(context: &mut dyn Context, operator: Span) -> Result {
     let is_greater = context.stack()
-        .pop::<(expr::Number, expr::Number)>(&operator)?
+        .pop::<(types::Number, types::Number)>(&operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
@@ -214,7 +215,7 @@ fn gt(context: &mut dyn Context, operator: Span) -> Result {
 
 fn not(context: &mut dyn Context, operator: Span) -> Result {
     let inverted = context.stack()
-        .pop::<expr::Bool>(&operator)?
+        .pop::<types::Bool>(&operator)?
         .compute::<expr::Bool, _, _>(|b| !b);
 
     context.stack().push(inverted);
