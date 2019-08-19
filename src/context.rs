@@ -18,13 +18,13 @@ use crate::{
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
-    fn output(&mut self) -> &mut io::Write;
+    fn output(&mut self) -> &mut dyn io::Write;
     fn define(&mut self, name: expr::Symbol, body: expr::List);
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
     fn evaluate(&mut self,
         operator:    Option<Span>,
-        expressions: &mut Iterator<Item=expr::Any>,
+        expressions: &mut dyn Iterator<Item=expr::Any>,
     )
         -> Result<(), Error>;
 }

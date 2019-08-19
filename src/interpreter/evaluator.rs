@@ -35,9 +35,9 @@ use crate::{
 
 
 pub struct Evaluator<Host> {
-    streams: HashMap<String, Box<Stream>>,
-    stdout:  Box<io::Write>,
-    stderr:  Box<io::Write>,
+    streams: HashMap<String, Box<dyn Stream>>,
+    stdout:  Box<dyn io::Write>,
+    stderr:  Box<dyn io::Write>,
 
     extensions:  Extensions<Host>,
     builtins:    Builtins,
@@ -48,8 +48,8 @@ pub struct Evaluator<Host> {
 
 impl<Host> Evaluator<Host> {
     pub fn new(
-        stdout:     Box<io::Write>,
-        stderr:     Box<io::Write>,
+        stdout:     Box<dyn io::Write>,
+        stderr:     Box<dyn io::Write>,
         extensions: Extensions<Host>,
     )
         -> Self
@@ -67,7 +67,7 @@ impl<Host> Evaluator<Host> {
         }
     }
 
-    pub fn run(&mut self, name: Cow<str>, mut stream: Box<Stream>) -> bool {
+    pub fn run(&mut self, name: Cow<str>, mut stream: Box<dyn Stream>) -> bool {
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut stream,
@@ -134,7 +134,7 @@ impl<Host> Context for Evaluator<Host> {
         &mut self.stack
     }
 
-    fn output(&mut self) -> &mut io::Write {
+    fn output(&mut self) -> &mut dyn io::Write {
         &mut self.stdout
     }
 
@@ -174,7 +174,7 @@ impl<Host> Context for Evaluator<Host> {
 
     fn evaluate(&mut self,
         operator:    Option<Span>,
-        expressions: &mut Iterator<Item=expr::Any>,
+        expressions: &mut dyn Iterator<Item=expr::Any>,
     )
         -> Result<(), context::Error>
     {

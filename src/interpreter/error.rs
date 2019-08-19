@@ -29,8 +29,8 @@ pub struct Error {
 
 impl Error {
     pub fn print(self,
-        streams: &mut HashMap<String, Box<Stream>>,
-        stderr:  &mut io::Write,
+        streams: &mut HashMap<String, Box<dyn Stream>>,
+        stderr:  &mut dyn io::Write,
     )
         -> io::Result<()>
     {
@@ -114,7 +114,7 @@ impl From<parser::Error> for ErrorKind {
 fn print_span<Stream>(
     span:    Span,
     streams: &mut HashMap<String, Stream>,
-    stderr:  &mut io::Write,
+    stderr:  &mut dyn io::Write,
 )
     -> io::Result<()>
     where Stream: io::Read + io::Seek

@@ -14,7 +14,7 @@ use crate::{
 
 
 pub type Extension<Host> =
-    fn(Rc<RefCell<Host>>, &mut Context, Span) -> Result<(), context::Error>;
+    fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
 
 
 pub struct Extensions<Host> {
