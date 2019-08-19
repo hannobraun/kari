@@ -11,10 +11,10 @@ pub trait Type {
 
     type Value: expr::Expr;
 
-    fn from_any(&self, _: expr::Any) -> Result<Self::Value, expr::Any>;
+    fn downcast_raw(&self, _: expr::Any) -> Result<Self::Value, expr::Any>;
 
     fn downcast(&self, any: expr::Any) -> Result<Self::Value, TypeError> {
-        self.from_any(any)
+        self.downcast_raw(any)
             .map_err(|any|
                 TypeError {
                     expected: Self::NAME,
@@ -32,7 +32,7 @@ impl Type for Any {
 
     type Value = expr::Any;
 
-    fn from_any(&self, any: expr::Any) -> Result<Self::Value, expr::Any> {
+    fn downcast_raw(&self, any: expr::Any) -> Result<Self::Value, expr::Any> {
         Ok(any)
     }
 }
@@ -55,7 +55,7 @@ macro_rules! impl_type {
 
                 type Value = expr::$ty;
 
-                fn from_any(&self, any: expr::Any)
+                fn downcast_raw(&self, any: expr::Any)
                     -> Result<Self::Value, expr::Any>
                 {
                     match any.kind {
