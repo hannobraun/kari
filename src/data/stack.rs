@@ -115,21 +115,21 @@ pub enum Error {
         expected: &'static str,
         operator: Span,
     },
-    Expression(expr::Error),
+    Type(expr::Error),
 }
 
 impl Error {
     pub fn spans(self, spans: &mut Vec<Span>) {
         match self {
             Error::StackEmpty { operator, .. } => spans.push(operator),
-            Error::Expression(error)           => error.spans(spans),
+            Error::Type(error)                 => error.spans(spans),
         }
     }
 }
 
 impl From<expr::Error> for Error {
     fn from(from: expr::Error) -> Self {
-        Error::Expression(from)
+        Error::Type(from)
     }
 }
 
@@ -139,7 +139,7 @@ impl fmt::Display for Error {
             Error::StackEmpty { expected, .. } => {
                 write!(f, "Stack empty: Expected `{}`", expected)?;
             }
-            Error::Expression(error) => {
+            Error::Type(error) => {
                 error.fmt(f)?;
             }
         }
