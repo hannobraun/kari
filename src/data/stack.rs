@@ -4,6 +4,7 @@ use crate::data::{
     expr::{
         self,
         Expr,
+        TypeError,
     },
     span::Span,
     types::Type,
@@ -115,7 +116,7 @@ pub enum Error {
         expected: &'static str,
         operator: Span,
     },
-    Type(expr::Error),
+    Type(TypeError),
 }
 
 impl Error {
@@ -127,8 +128,8 @@ impl Error {
     }
 }
 
-impl From<expr::Error> for Error {
-    fn from(from: expr::Error) -> Self {
+impl From<TypeError> for Error {
+    fn from(from: TypeError) -> Self {
         Error::Type(from)
     }
 }

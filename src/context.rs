@@ -5,7 +5,10 @@ use std::{
 
 use crate::{
     data::{
-        expr,
+        expr::{
+            self,
+            TypeError,
+        },
         span::Span,
         stack::{
             self,
@@ -37,7 +40,7 @@ pub enum Error {
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
-    Type(expr::Error),
+    Type(TypeError),
 }
 
 impl Error {
@@ -55,8 +58,8 @@ impl Error {
     }
 }
 
-impl From<expr::Error> for Error {
-    fn from(from: expr::Error) -> Self {
+impl From<TypeError> for Error {
+    fn from(from: TypeError) -> Self {
         Error::Type(from)
     }
 }

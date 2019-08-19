@@ -1,6 +1,6 @@
 use crate::data::expr::{
-    self,
     Any,
+    TypeError
 };
 
 
@@ -11,12 +11,12 @@ pub trait Type {
 
     fn from_any(_: Any) -> Result<Self::Value, Any>;
 
-    fn check(any: Any) -> Result<Self::Value, expr::Error>
+    fn check(any: Any) -> Result<Self::Value, TypeError>
 
     {
         Self::from_any(any)
             .map_err(|expression|
-                expr::Error::TypeError {
+                TypeError {
                     expected: Self::NAME,
                     actual:   expression,
                 }

@@ -289,32 +289,24 @@ impl<A, B> Compute for (A, B)
 
 
 #[derive(Debug)]
-pub enum Error {
-    TypeError {
-        expected: &'static str,
-        actual:   Any,
-    },
+pub struct TypeError {
+    pub expected: &'static str,
+    pub actual:   Any,
 }
 
-impl Error {
+impl TypeError {
     pub fn spans(self, spans: &mut Vec<Span>) {
-        match self {
-            Error::TypeError { actual, .. } => spans.push(actual.span),
-        }
+        spans.push(self.actual.span);
     }
 }
 
-impl fmt::Display for Error {
+impl fmt::Display for TypeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Error::TypeError { expected, actual } => {
-                write!(
-                    f,
-                    "Type error: Expected `{}`, found `{}`",
-                    expected,
-                    actual.kind,
-                )
-            }
-        }
+        write!(
+            f,
+            "Type error: Expected `{}`, found `{}`",
+            self.expected,
+            self.actual.kind,
+        )
     }
 }
