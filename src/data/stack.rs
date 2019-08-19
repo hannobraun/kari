@@ -29,7 +29,7 @@ impl Stack {
         T::push(value, self)
     }
 
-    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T, Error> {
+    pub fn pop<T: Pop>(&mut self, operator: &Span) -> Result<T::Value, Error> {
         T::pop(self, operator)
     }
 
@@ -89,10 +89,14 @@ impl<A, B> Push for (A, B)
 
 
 pub trait Pop : Sized {
-    fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
+    type Value;
+
+    fn pop(_: &mut Stack, operator: &Span) -> Result<Self::Value, Error>;
 }
 
 impl<T> Pop for T where T: Expr + Type<Value=Self> {
+    type Value = Self;
+
     fn pop(stack: &mut Stack, operator: &Span)
         -> Result<<Self as Type>::Value, Error>
     {
@@ -106,7 +110,9 @@ impl<A, B> Pop for (A, B)
         A: Pop,
         B: Pop,
 {
-    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
+    type Value = (A::Value, B::Value);
+
+    fn pop(stack: &mut Stack, operator: &Span) -> Result<Self::Value, Error> {
         let b = stack.pop::<B>(operator)?;
         let a = stack.pop::<A>(operator)?;
         Ok((a, b))
