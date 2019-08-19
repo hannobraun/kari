@@ -13,9 +13,7 @@ pub trait Type {
 
     fn from_any(_: expr::Any) -> Result<Self::Value, expr::Any>;
 
-    fn check(any: expr::Any) -> Result<Self::Value, TypeError>
-
-    {
+    fn check(any: expr::Any) -> Result<Self::Value, TypeError> {
         Self::from_any(any)
             .map_err(|expression|
                 TypeError {
