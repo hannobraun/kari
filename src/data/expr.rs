@@ -51,7 +51,7 @@ impl Any {
 
     pub fn check<T>(self) -> Result<T::Value, Error>
         where
-            T: Expr + Type,
+            T: Type,
     {
         T::from_any(self)
             .map_err(|expression|
