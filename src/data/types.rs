@@ -55,15 +55,15 @@ macro_rules! impl_type {
 
                 type Value = expr::$ty;
 
-                fn from_any(&self, expression: expr::Any)
+                fn from_any(&self, any: expr::Any)
                     -> Result<Self::Value, expr::Any>
                 {
-                    match expression.kind {
+                    match any.kind {
                         expr::Kind::$ty(value) => {
-                            Ok(expr::Expr::new(value, expression.span))
+                            Ok(expr::Expr::new(value, any.span))
                         }
                         _ => {
-                            Err(expression)
+                            Err(any)
                         }
                     }
                 }
