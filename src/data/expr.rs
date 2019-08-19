@@ -21,7 +21,6 @@ pub trait Expr : Sized {
     fn open(self) -> (Self::Inner, Span);
 
     fn into_any(self) -> Any;
-    fn from_any(_: Any) -> Result<Self, Any>;
 }
 
 
@@ -50,7 +49,7 @@ impl Any {
         }
     }
 
-    pub fn check<T>(self) -> Result<T, Error>
+    pub fn check<T>(self) -> Result<T::Value, Error>
         where
             T: Expr + Type,
     {
@@ -66,6 +65,12 @@ impl Any {
 
 impl Type for Any {
     const NAME: &'static str = "expression";
+
+    type Value = Self;
+
+    fn from_any(expression: Any) -> Result<Self::Value, Any> {
+        Ok(expression)
+    }
 }
 
 impl Expr for Any {
@@ -84,10 +89,6 @@ impl Expr for Any {
 
     fn into_any(self) -> Any {
         self
-    }
-
-    fn from_any(expression: Any) -> Result<Self, Any> {
-        Ok(expression)
     }
 }
 
@@ -115,6 +116,21 @@ macro_rules! kinds {
 
             impl Type for $ty {
                 const NAME: &'static str = $name;
+
+                type Value = Self;
+
+                fn from_any(expression: Any)
+                    -> Result<Self::Value, Any>
+                {
+                    match expression.kind {
+                        Kind::$ty(value) => {
+                            Ok($ty::new(value, expression.span))
+                        }
+                        _ => {
+                            Err(expression)
+                        }
+                    }
+                }
             }
 
             impl Expr for $ty {
@@ -135,19 +151,6 @@ macro_rules! kinds {
                     Any {
                         kind: Kind::$ty(self.inner),
                         span: self.span,
-                    }
-                }
-
-                fn from_any(expression: Any)
-                    -> Result<Self, Any>
-                {
-                    match expression.kind {
-                        Kind::$ty(value) => {
-                            Ok($ty::new(value, expression.span))
-                        }
-                        _ => {
-                            Err(expression)
-                        }
                     }
                 }
             }
