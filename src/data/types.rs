@@ -32,10 +32,10 @@ impl Type for Any {
 
     type Value = expr::Any;
 
-    fn from_any(&self, expression: expr::Any)
+    fn from_any(&self, any: expr::Any)
         -> Result<Self::Value, expr::Any>
     {
-        Ok(expression)
+        Ok(any)
     }
 }
 
