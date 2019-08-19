@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::data::{
-    expr::Any,
+    expr,
     span::Span,
 };
 
@@ -11,9 +11,9 @@ pub trait Type {
 
     type Value;
 
-    fn from_any(_: Any) -> Result<Self::Value, Any>;
+    fn from_any(_: expr::Any) -> Result<Self::Value, expr::Any>;
 
-    fn check(any: Any) -> Result<Self::Value, TypeError>
+    fn check(any: expr::Any) -> Result<Self::Value, TypeError>
 
     {
         Self::from_any(any)
@@ -26,12 +26,12 @@ pub trait Type {
     }
 }
 
-impl Type for Any {
+impl Type for expr::Any {
     const NAME: &'static str = "expression";
 
     type Value = Self;
 
-    fn from_any(expression: Any) -> Result<Self::Value, Any> {
+    fn from_any(expression: expr::Any) -> Result<Self::Value, expr::Any> {
         Ok(expression)
     }
 }
@@ -40,7 +40,7 @@ impl Type for Any {
 #[derive(Debug)]
 pub struct TypeError {
     pub expected: &'static str,
-    pub actual:   Any,
+    pub actual:   expr::Any,
 }
 
 impl TypeError {
