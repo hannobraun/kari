@@ -6,6 +6,7 @@ use crate::data::{
         Expr,
     },
     span::Span,
+    types::Type,
 };
 
 
@@ -88,7 +89,7 @@ pub trait Pop : Sized {
     fn pop(_: &mut Stack, operator: &Span) -> Result<Self, Error>;
 }
 
-impl<T> Pop for T where T: Expr {
+impl<T> Pop for T where T: Expr + Type {
     fn pop(stack: &mut Stack, operator: &Span) -> Result<Self, Error> {
         Ok(stack.pop_raw(operator)?.check::<T>()?)
     }

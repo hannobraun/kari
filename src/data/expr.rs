@@ -10,12 +10,11 @@ use crate::data::{
         self,
         Token,
     },
+    types::Type,
 };
 
 
 pub trait Expr : Sized {
-    const NAME: &'static str;
-
     type Inner;
 
     fn new(_: Self::Inner, _: Span) -> Self;
@@ -53,7 +52,7 @@ impl Any {
 
     pub fn check<T>(self) -> Result<T, Error>
         where
-            T: Expr,
+            T: Expr + Type,
     {
         T::from_any(self)
             .map_err(|expression|
@@ -65,9 +64,11 @@ impl Any {
     }
 }
 
-impl Expr for Any {
+impl Type for Any {
     const NAME: &'static str = "expression";
+}
 
+impl Expr for Any {
     type Inner = Kind;
 
     fn new(kind: Self::Inner, span: Span) -> Self {
@@ -112,9 +113,11 @@ macro_rules! kinds {
                 pub span:  Span,
             }
 
-            impl Expr for $ty {
+            impl Type for $ty {
                 const NAME: &'static str = $name;
+            }
 
+            impl Expr for $ty {
                 type Inner = $inner;
 
                 fn new(inner: $inner, span: Span) -> Self {
