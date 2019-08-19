@@ -50,16 +50,6 @@ impl Any {
     }
 }
 
-impl Type for Any {
-    const NAME: &'static str = "expression";
-
-    type Value = Self;
-
-    fn from_any(expression: Any) -> Result<Self::Value, Any> {
-        Ok(expression)
-    }
-}
-
 impl Expr for Any {
     type Inner = Kind;
 

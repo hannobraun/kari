@@ -26,6 +26,16 @@ pub trait Type {
     }
 }
 
+impl Type for Any {
+    const NAME: &'static str = "expression";
+
+    type Value = Self;
+
+    fn from_any(expression: Any) -> Result<Self::Value, Any> {
+        Ok(expression)
+    }
+}
+
 
 #[derive(Debug)]
 pub struct TypeError {
