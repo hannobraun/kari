@@ -48,19 +48,6 @@ impl Any {
             span: token.span,
         }
     }
-
-    pub fn check<T>(self) -> Result<T::Value, Error>
-        where
-            T: Type,
-    {
-        T::from_any(self)
-            .map_err(|expression|
-                Error::TypeError {
-                    expected: T::NAME,
-                    actual:   expression,
-                }
-            )
-    }
 }
 
 impl Type for Any {
