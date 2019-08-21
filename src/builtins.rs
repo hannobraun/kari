@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::{
     context::{
         self,
@@ -16,7 +14,7 @@ use crate::{
     },
     functions::{
         Builtin,
-        Signature,
+        Functions,
     },
 };
 
@@ -26,17 +24,9 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident;)*) => {
-        pub fn builtins() -> HashMap<Signature, Builtin> {
-            let mut builtins = HashMap::new();
-
-            $(
-                let signature = Signature {
-                    name: String::from($name),
-                };
-                builtins.insert(signature, $fn as Builtin);
-            )*
-
+        pub fn builtins(builtins: &mut Functions<Builtin>) {
             builtins
+                $(.with(String::from($name), $fn as Builtin))*;
         }
     }
 }

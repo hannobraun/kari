@@ -49,7 +49,7 @@ fn main() {
 
             let stdout     = Box::new(stdout());
             let stderr     = Box::new(stderr());
-            let extensions = Functions::none();
+            let extensions = Functions::new();
 
             Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));
@@ -57,7 +57,7 @@ fn main() {
         None => {
             let stdout     = Box::new(stdout());
             let stderr     = Box::new(stderr());
-            let extensions = Functions::none();
+            let extensions = Functions::new();
 
             Evaluator::new(stdout, stderr, (), extensions)
                 .run("<stdin>".into(), Box::new(AccReader::new(stdin())));

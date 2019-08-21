@@ -17,14 +17,15 @@ pub struct Functions<T: Copy> {
 }
 
 impl<T> Functions<T> where T: Copy {
-    pub fn new(functions: HashMap<Signature, T>) -> Self {
+    pub fn new() -> Self {
         Self {
-            functions,
+            functions: HashMap::new(),
         }
     }
 
-    pub fn none() -> Self {
-        Self::new(HashMap::new())
+    pub fn with(&mut self, name: String, function: T) -> &mut Self {
+        self.functions.insert(Signature { name }, function);
+        self
     }
 
     pub fn get(&self, name: &str) -> Option<T> {

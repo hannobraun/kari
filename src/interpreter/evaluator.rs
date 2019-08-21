@@ -60,6 +60,9 @@ impl<Host> Evaluator<Host> {
     )
         -> Self
     {
+        let mut builtins = Functions::new();
+        builtins::builtins(&mut builtins);
+
         Self {
             streams: HashMap::new(),
             stdout,
@@ -67,7 +70,7 @@ impl<Host> Evaluator<Host> {
 
             host:        Rc::new(RefCell::new(host)),
             extensions,
-            builtins:    Functions::new(builtins::builtins()),
+            builtins,
             stack:       Stack::new(),
             functions:   HashMap::new(),
             stack_trace: Vec::new(),
