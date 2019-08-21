@@ -1,6 +1,10 @@
 use std::{
     cell::RefCell,
     collections::HashMap,
+    hash::{
+        Hash,
+        Hasher,
+    },
     rc::Rc,
 };
 
@@ -9,8 +13,14 @@ use crate::{
         self,
         Context,
     },
-    data::span::Span,
-    data::types::Type,
+    data::{
+        span::Span,
+        stack::Stack,
+        types::{
+            Type,
+            Typed,
+        },
+    },
 };
 
 pub struct Functions<T: Copy> {
@@ -34,7 +44,7 @@ impl<T> Functions<T> where T: Copy {
         -> &mut Self
     {
         let args_len = args.len();
-        self.functions.insert(Signature { name: name.clone() }, function);
+        self.functions.insert(Signature { name: name.clone(), args }, function);
 
         self.signatures
             .entry(name)
@@ -44,17 +54,54 @@ impl<T> Functions<T> where T: Copy {
         self
     }
 
-    pub fn get(&self, name: &str) -> Option<T> {
-        self.functions
-            .get(&Signature { name: String::from(name) })
-            .map(|function| *function)
+    pub fn get(&self, name: &str, stack: &Stack) -> Option<T> {
+        for n in 0 ..= self.signatures.get(name).map(|n| *n).unwrap_or(0) {
+            let mut args: Vec<&'static dyn Type> = stack
+                .peek()
+                .take(n)
+                .map(|expr| expr.get_type())
+                .collect();
+            args.reverse();
+
+            let function = self.functions
+                .get(&Signature { name: String::from(name), args })
+                .map(|function| *function);
+
+            if function.is_some() {
+                return function;
+            }
+        }
+
+        None
     }
 }
 
 
-#[derive(Eq, Hash, PartialEq)]
 pub struct Signature {
     pub name: String,
+    pub args: Vec<&'static dyn Type>,
+}
+
+impl PartialEq for Signature {
+    fn eq(&self, other: &Self) -> bool {
+        let args_are_equal = self.args
+            .iter()
+            .zip(other.args.iter())
+            .fold(true, |p, (&a1, &a2)| p && a1.eq(a2));
+
+        self.name == other.name
+            && args_are_equal
+    }
+}
+
+impl Eq for Signature {}
+
+impl Hash for Signature {
+    fn hash<H>(&self, state: &mut H) where H: Hasher {
+        self.name.hash(state);
+        // Arguments can't be part of hash, as types can have different names,
+        // but still be equal (when one of them is "any").
+    }
 }
 
 

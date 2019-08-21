@@ -204,7 +204,7 @@ impl<Host> Context for Evaluator<Host> {
                     )?;
                     continue;
                 }
-                if let Some(extension) = self.extensions.get(&word) {
+                if let Some(extension) = self.extensions.get(&word, &self.stack) {
                     extension(
                         self.host.clone(),
                         self,
@@ -212,7 +212,7 @@ impl<Host> Context for Evaluator<Host> {
                     )?;
                     continue;
                 }
-                if let Some(builtin) = self.builtins.get(&word) {
+                if let Some(builtin) = self.builtins.get(&word, &self.stack) {
                     builtin(self, expression.span)?;
                     continue;
                 }
