@@ -10,21 +10,37 @@ use crate::{
         Context,
     },
     data::span::Span,
+    data::types::Type,
 };
 
 pub struct Functions<T: Copy> {
-    functions: HashMap<Signature, T>,
+    functions:  HashMap<Signature, T>,
+    signatures: HashMap<String, usize>,
 }
 
 impl<T> Functions<T> where T: Copy {
     pub fn new() -> Self {
         Self {
-            functions: HashMap::new(),
+            functions:  HashMap::new(),
+            signatures: HashMap::new(),
         }
     }
 
-    pub fn with(&mut self, name: String, function: T) -> &mut Self {
-        self.functions.insert(Signature { name }, function);
+    pub fn with(&mut self,
+        name:     String,
+        args:     Vec<&'static dyn Type>,
+        function: T,
+    )
+        -> &mut Self
+    {
+        let args_len = args.len();
+        self.functions.insert(Signature { name: name.clone() }, function);
+
+        self.signatures
+            .entry(name)
+            .and_modify(|num| *num = usize::max(*num, args_len))
+            .or_insert(args_len);
+
         self
     }
 

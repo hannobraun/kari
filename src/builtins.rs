@@ -23,32 +23,36 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 
 macro_rules! builtins {
-    ($($name:expr, $fn:ident;)*) => {
+    ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
         pub fn builtins(builtins: &mut Functions<Builtin>) {
             builtins
-                $(.with(String::from($name), $fn as Builtin))*;
+                $(.with(
+                    String::from($name),
+                    vec![$(&$arg,)*],
+                    $fn as Builtin,
+                ))*;
         }
     }
 }
 
 builtins!(
-    "print",  print;
-    "define", define;
-    "fail",   fail;
-    "eval",   eval;
-    "load",   load;
+    "print",  print,  (t::Any,);
+    "define", define, (t::List, t::Symbol,);
+    "fail",   fail,   ();
+    "eval",   eval,   (t::List,);
+    "load",   load,   (t::String,);
 
-    "drop", drop;
-    "dup",  dup;
+    "drop", drop, (t::Any,);
+    "dup",  dup,  (t::Any,);
 
-    "if",  r#if;
-    "map", map;
+    "if",  r#if, (t::List, t::List,);
+    "map", map,  (t::List, t::List,);
 
-    "+",   add;
-    "*",   mul;
-    "=",   eq;
-    ">",   gt;
-    "not", not;
+    "+",   add, (t::Number, t::Number,);
+    "*",   mul, (t::Number, t::Number,);
+    "=",   eq,  (t::Any, t::Any,);
+    ">",   gt,  (t::Number, t::Number,);
+    "not", not, (t::Bool,);
 );
 
 
