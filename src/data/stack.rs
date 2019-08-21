@@ -50,7 +50,7 @@ impl Stack {
 
         Err(
             Error::StackEmpty {
-                expected: types::Any::NAME,
+                expected: types::Any.name(),
                 operator: operator.clone(),
             }
         )

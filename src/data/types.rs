@@ -7,7 +7,7 @@ use crate::data::{
 
 
 pub trait Type {
-    const NAME: &'static str;
+    fn name(&self) -> &'static str;
 }
 
 
@@ -20,7 +20,7 @@ pub trait Downcast : Type {
         self.downcast_raw(any)
             .map_err(|any|
                 TypeError {
-                    expected: Self::NAME,
+                    expected: self.name(),
                     actual:   any,
                 }
             )
@@ -31,7 +31,7 @@ pub trait Downcast : Type {
 pub struct Any;
 
 impl Type for Any {
-    const NAME: &'static str = "any";
+    fn name(&self) -> &'static str { "any" }
 }
 
 impl Downcast for Any {
@@ -56,7 +56,7 @@ macro_rules! impl_type {
             pub struct $ty;
 
             impl Type for $ty {
-                const NAME: &'static str = $name;
+                fn name(&self) -> &'static str { $name }
             }
 
             impl Downcast for $ty {
