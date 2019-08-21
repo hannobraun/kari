@@ -9,6 +9,7 @@ use std::{
 
 use crate::{
     builtins::{
+        self,
         Builtins,
     },
     context::{
@@ -65,7 +66,7 @@ impl<Host> Evaluator<Host> {
 
             host:        Rc::new(RefCell::new(host)),
             extensions,
-            builtins:    Builtins::new(),
+            builtins:    Builtins::new(builtins::builtins()),
             stack:       Stack::new(),
             functions:   HashMap::new(),
             stack_trace: Vec::new(),

@@ -20,14 +20,8 @@ use crate::{
 pub struct Builtins(HashMap<String, Builtin>);
 
 impl Builtins {
-    pub fn new() -> Self {
-        let mut b = HashMap::new();
-
-        for (name, builtin) in builtins() {
-            b.insert(name, builtin);
-        }
-
-        Self(b)
+    pub fn new(functions: HashMap<String, Builtin>) -> Self {
+        Self(functions)
     }
 
     pub fn get(&self, name: &str) -> Option<Builtin> {
@@ -44,10 +38,12 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident;)*) => {
-        pub fn builtins() -> Vec<(String, Builtin)> {
-            vec![
-                $((String::from($name), $fn),)*
-            ]
+        pub fn builtins() -> HashMap<String, Builtin> {
+            let mut builtins = HashMap::new();
+
+            $(builtins.insert(String::from($name), $fn as Builtin);)*
+
+            builtins
         }
     }
 }
