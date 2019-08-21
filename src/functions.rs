@@ -27,5 +27,7 @@ impl<T> Functions<T> where T: Copy {
 }
 
 
+pub type Builtin =
+    fn(&mut dyn Context, Span) -> Result<(), context::Error>;
 pub type Extension<Host> =
     fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;

@@ -8,10 +8,7 @@ use std::{
 };
 
 use crate::{
-    builtins::{
-        self,
-        Builtin,
-    },
+    builtins,
     context::{
         self,
         Context,
@@ -25,6 +22,7 @@ use crate::{
         stack::Stack,
     },
     functions::{
+        Builtin,
         Extension,
         Functions,
     },

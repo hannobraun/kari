@@ -14,10 +14,10 @@ use crate::{
         span::Span,
         types,
     },
+    functions::Builtin,
 };
 
 
-pub type Builtin = fn(&mut dyn Context, Span) -> Result;
 pub type Result  = std::result::Result<(), context::Error>;
 
 
