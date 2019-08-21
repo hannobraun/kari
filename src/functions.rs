@@ -19,6 +19,10 @@ impl<T> Functions<T> where T: Copy {
         Self(functions)
     }
 
+    pub fn none() -> Self {
+        Self::new(HashMap::new())
+    }
+
     pub fn get(&self, name: &str) -> Option<T> {
         self.0
             .get(name)

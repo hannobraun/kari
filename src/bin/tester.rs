@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     fs::File,
     io::{
         stderr,
@@ -61,7 +60,7 @@ fn main() {
 
         let stdout     = Box::new(stdout());
         let stderr     = Box::new(stderr());
-        let extensions = Functions::new(HashMap::new());
+        let extensions = Functions::none();
 
         let success = Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));
