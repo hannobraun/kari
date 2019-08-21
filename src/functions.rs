@@ -36,7 +36,7 @@ impl<T> Functions<T> where T: Clone {
         }
     }
 
-    pub fn with(&mut self,
+    pub fn define(&mut self,
         name:     String,
         args:     Vec<&'static dyn Type>,
         function: T,

@@ -26,7 +26,7 @@ macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
         pub fn builtins(builtins: &mut Functions<Builtin>) {
             builtins
-                $(.with(
+                $(.define(
                     String::from($name),
                     vec![$(&$arg,)*],
                     $fn as Builtin,
