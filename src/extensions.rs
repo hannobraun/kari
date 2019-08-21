@@ -20,8 +20,8 @@ pub type Extension<Host> =
 pub struct Extensions<Host>(HashMap<String, Extension<Host>>);
 
 impl<Host> Extensions<Host> {
-    pub fn new() -> Self {
-        Self(HashMap::new())
+    pub fn new(extensions: HashMap<String, Extension<Host>>) -> Self {
+        Self(extensions)
     }
 
     pub fn get(&self, name: &str) -> Option<Extension<Host>> {
@@ -33,6 +33,6 @@ impl<Host> Extensions<Host> {
 
 impl Extensions<()> {
     pub fn none() -> Self {
-        Extensions::new()
+        Extensions::new(HashMap::new())
     }
 }
