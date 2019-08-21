@@ -6,6 +6,11 @@ use crate::data::{
 };
 
 
+pub trait Typed {
+    fn get_type(&self) -> &'static dyn Type;
+}
+
+
 pub trait Type {
     fn name(&self) -> &'static str;
 }
@@ -52,6 +57,14 @@ macro_rules! impl_type {
     )
         =>
     {
+        impl Typed for expr::Any {
+            fn get_type(&self) -> &'static dyn Type {
+                match self.kind {
+                    $(expr::Kind::$ty(_) => &$ty,)*
+                }
+            }
+        }
+
         $(
             pub struct $ty;
 
