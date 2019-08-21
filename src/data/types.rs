@@ -8,7 +8,10 @@ use crate::data::{
 
 pub trait Type {
     const NAME: &'static str;
+}
 
+
+pub trait Downcast : Type {
     type Value: expr::Expr;
 
     fn downcast_raw(&self, _: expr::Any) -> Result<Self::Value, expr::Any>;
@@ -29,7 +32,9 @@ pub struct Any;
 
 impl Type for Any {
     const NAME: &'static str = "any";
+}
 
+impl Downcast for Any {
     type Value = expr::Any;
 
     fn downcast_raw(&self, any: expr::Any) -> Result<Self::Value, expr::Any> {
@@ -52,7 +57,9 @@ macro_rules! impl_type {
 
             impl Type for $ty {
                 const NAME: &'static str = $name;
+            }
 
+            impl Downcast for $ty {
                 type Value = expr::$ty;
 
                 fn downcast_raw(&self, any: expr::Any)
