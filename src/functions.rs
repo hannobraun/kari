@@ -25,13 +25,16 @@ impl<T> Functions<T> where T: Copy {
 
     pub fn get(&self, name: &str) -> Option<T> {
         self.0
-            .get(name)
+            .get(&Signature { name: String::from(name) })
             .map(|function| *function)
     }
 }
 
 
-pub type Signature = String;
+#[derive(Eq, Hash, PartialEq)]
+pub struct Signature {
+    pub name: String,
+}
 
 
 pub type Builtin =

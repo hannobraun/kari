@@ -14,7 +14,10 @@ use crate::{
         span::Span,
         types,
     },
-    functions::Builtin,
+    functions::{
+        Builtin,
+        Signature,
+    },
 };
 
 
@@ -23,10 +26,15 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident;)*) => {
-        pub fn builtins() -> HashMap<String, Builtin> {
+        pub fn builtins() -> HashMap<Signature, Builtin> {
             let mut builtins = HashMap::new();
 
-            $(builtins.insert(String::from($name), $fn as Builtin);)*
+            $(
+                let signature = Signature {
+                    name: String::from($name),
+                };
+                builtins.insert(signature, $fn as Builtin);
+            )*
 
             builtins
         }
