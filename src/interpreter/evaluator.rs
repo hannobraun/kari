@@ -197,7 +197,6 @@ impl<Host> Context for Evaluator<Host> {
         for expression in expressions {
             if let expr::Kind::Word(word) = expression.kind {
                 if let Some(list) = self.functions.get(&word, &self.stack) {
-                    let list = list.clone();
                     self.evaluate(
                         Some(expression.span),
                         &mut list.inner.into_iter(),
