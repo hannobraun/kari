@@ -16,7 +16,7 @@ use clap::{
 };
 
 use kari::{
-    extensions::Extensions,
+    functions::Functions,
     interpreter::evaluator::Evaluator,
 };
 
@@ -50,7 +50,7 @@ fn main() {
 
             let stdout     = Box::new(stdout());
             let stderr     = Box::new(stderr());
-            let extensions = Extensions::new(HashMap::new());
+            let extensions = Functions::new(HashMap::new());
 
             Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));
@@ -58,7 +58,7 @@ fn main() {
         None => {
             let stdout     = Box::new(stdout());
             let stderr     = Box::new(stderr());
-            let extensions = Extensions::new(HashMap::new());
+            let extensions = Functions::new(HashMap::new());
 
             Evaluator::new(stdout, stderr, (), extensions)
                 .run("<stdin>".into(), Box::new(AccReader::new(stdin())));

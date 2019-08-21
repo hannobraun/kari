@@ -15,7 +15,7 @@ use termion::{
 use walkdir::WalkDir;
 
 use kari::{
-    extensions::Extensions,
+    functions::Functions,
     interpreter::evaluator::Evaluator,
 };
 
@@ -61,7 +61,7 @@ fn main() {
 
         let stdout     = Box::new(stdout());
         let stderr     = Box::new(stderr());
-        let extensions = Extensions::new(HashMap::new());
+        let extensions = Functions::new(HashMap::new());
 
         let success = Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));

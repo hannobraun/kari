@@ -24,7 +24,7 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    extensions::Extensions,
+    extensions::Extension,
     functions::Functions,
     interpreter::{
         error::Error,
@@ -44,7 +44,7 @@ pub struct Evaluator<Host> {
     stderr:  Box<dyn io::Write>,
 
     host:        Rc<RefCell<Host>>,
-    extensions:  Extensions<Host>,
+    extensions:  Functions<Extension<Host>>,
     builtins:    Functions<Builtin>,
     stack:       Stack,
     functions:   HashMap<String, expr::List>,
@@ -56,7 +56,7 @@ impl<Host> Evaluator<Host> {
         stdout:     Box<dyn io::Write>,
         stderr:     Box<dyn io::Write>,
         host:       Host,
-        extensions: Extensions<Host>,
+        extensions: Functions<Extension<Host>>,
     )
         -> Self
     {
