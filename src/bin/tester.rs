@@ -62,7 +62,7 @@ fn main() {
         let stderr     = Box::new(stderr());
         let extensions = Extensions::none();
 
-        let success = Evaluator::new(stdout, stderr, extensions)
+        let success = Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));
 
         if success {

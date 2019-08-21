@@ -18,21 +18,19 @@ pub type Extension<Host> =
 
 
 pub struct Extensions<Host> {
-    pub host: Rc<RefCell<Host>>,
-    pub map:  HashMap<String, Extension<Host>>,
+    pub map: HashMap<String, Extension<Host>>,
 }
 
 impl<Host> Extensions<Host> {
-    pub fn new(host: Host) -> Self {
+    pub fn new() -> Self {
         Self {
-            host: Rc::new(RefCell::new(host)),
-            map:  HashMap::new(),
+            map: HashMap::new(),
         }
     }
 }
 
 impl Extensions<()> {
     pub fn none() -> Self {
-        Extensions::new(())
+        Extensions::new()
     }
 }

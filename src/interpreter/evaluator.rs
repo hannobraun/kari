@@ -1,8 +1,10 @@
 use std::{
     borrow::Cow,
+    cell::RefCell,
     collections::HashMap,
     fs::File,
     io,
+    rc::Rc,
 };
 
 use crate::{
@@ -39,6 +41,7 @@ pub struct Evaluator<Host> {
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
+    host:        Rc<RefCell<Host>>,
     extensions:  Extensions<Host>,
     builtins:    Builtins,
     stack:       Stack,
@@ -50,6 +53,7 @@ impl<Host> Evaluator<Host> {
     pub fn new(
         stdout:     Box<dyn io::Write>,
         stderr:     Box<dyn io::Write>,
+        host:       Host,
         extensions: Extensions<Host>,
     )
         -> Self
@@ -59,6 +63,7 @@ impl<Host> Evaluator<Host> {
             stdout,
             stderr,
 
+            host:        Rc::new(RefCell::new(host)),
             extensions,
             builtins:    Builtins::new(),
             stack:       Stack::new(),
@@ -197,7 +202,7 @@ impl<Host> Context for Evaluator<Host> {
                 if let Some(extension) = self.extensions.map.get(&word) {
                     let extension = *extension;
                     extension(
-                        self.extensions.host.clone(),
+                        self.host.clone(),
                         self,
                         expression.span,
                     )?;
