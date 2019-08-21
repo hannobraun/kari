@@ -12,11 +12,15 @@ use crate::{
     data::span::Span,
 };
 
-pub struct Functions<T: Copy>(HashMap<Signature, T>);
+pub struct Functions<T: Copy> {
+    functions: HashMap<Signature, T>,
+}
 
 impl<T> Functions<T> where T: Copy {
     pub fn new(functions: HashMap<Signature, T>) -> Self {
-        Self(functions)
+        Self {
+            functions,
+        }
     }
 
     pub fn none() -> Self {
@@ -24,7 +28,7 @@ impl<T> Functions<T> where T: Copy {
     }
 
     pub fn get(&self, name: &str) -> Option<T> {
-        self.0
+        self.functions
             .get(&Signature { name: String::from(name) })
             .map(|function| *function)
     }
