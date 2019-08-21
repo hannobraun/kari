@@ -38,18 +38,23 @@ impl<T> Functions<T> where T: Clone {
 
     pub fn define(&mut self,
         name:     String,
-        args:     Vec<&'static dyn Type>,
+        args:     &[&'static dyn Type],
         function: T,
     )
         -> &mut Self
     {
-        let args_len = args.len();
-        self.functions.insert(Signature { name: name.clone(), args }, function);
+        self.functions.insert(
+            Signature {
+                name: name.clone(),
+                args: args.to_vec(),
+            },
+            function,
+        );
 
         self.signatures
             .entry(name)
-            .and_modify(|num| *num = usize::max(*num, args_len))
-            .or_insert(args_len);
+            .and_modify(|num| *num = usize::max(*num, args.len()))
+            .or_insert(args.len());
 
         self
     }

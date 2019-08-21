@@ -28,7 +28,7 @@ macro_rules! builtins {
             builtins
                 $(.define(
                     String::from($name),
-                    vec![$(&$arg,)*],
+                    &[$(&$arg,)*],
                     $fn as Builtin,
                 ))*;
         }
