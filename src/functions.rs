@@ -28,7 +28,7 @@ pub struct Functions<T> {
     signatures: HashMap<String, usize>,
 }
 
-impl<T> Functions<T> where T: Copy {
+impl<T> Functions<T> where T: Clone {
     pub fn new() -> Self {
         Self {
             functions:  HashMap::new(),
@@ -65,7 +65,7 @@ impl<T> Functions<T> where T: Copy {
 
             let function = self.functions
                 .get(&Signature { name: String::from(name), args })
-                .map(|function| *function);
+                .map(|function| function.clone());
 
             if function.is_some() {
                 return function;
