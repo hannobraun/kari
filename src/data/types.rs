@@ -13,6 +13,12 @@ pub trait Typed {
 
 pub trait Type {
     fn name(&self) -> &'static str;
+
+    fn eq(&self, other: &dyn Type) -> bool {
+        self.name() == other.name()
+            || self.name() == Any.name()
+            || other.name() == Any.name()
+    }
 }
 
 
