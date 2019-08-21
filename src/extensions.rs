@@ -30,9 +30,3 @@ impl<Host> Extensions<Host> {
             .map(|extension| *extension)
     }
 }
-
-impl Extensions<()> {
-    pub fn none() -> Self {
-        Extensions::new(HashMap::new())
-    }
-}
