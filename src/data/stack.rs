@@ -36,6 +36,10 @@ impl Stack {
         ty.pop(self, operator)
     }
 
+    pub fn peek(&self) -> impl Iterator<Item=&expr::Any> + '_ {
+        self.substacks.iter().flatten().rev()
+    }
+
     pub fn push_raw(&mut self, value: expr::Any) {
         let stack = self.substacks.last_mut().unwrap();
         stack.push(value)
