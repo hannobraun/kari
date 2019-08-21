@@ -17,21 +17,6 @@ use crate::{
 };
 
 
-pub struct Builtins(HashMap<String, Builtin>);
-
-impl Builtins {
-    pub fn new(functions: HashMap<String, Builtin>) -> Self {
-        Self(functions)
-    }
-
-    pub fn get(&self, name: &str) -> Option<Builtin> {
-        self.0
-            .get(name)
-            .map(|builtin| *builtin)
-    }
-}
-
-
 pub type Builtin = fn(&mut dyn Context, Span) -> Result;
 pub type Result  = std::result::Result<(), context::Error>;
 

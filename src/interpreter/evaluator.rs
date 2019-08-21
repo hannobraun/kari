@@ -10,7 +10,7 @@ use std::{
 use crate::{
     builtins::{
         self,
-        Builtins,
+        Builtin,
     },
     context::{
         self,
@@ -25,6 +25,7 @@ use crate::{
         stack::Stack,
     },
     extensions::Extensions,
+    functions::Functions,
     interpreter::{
         error::Error,
         stream::Stream,
@@ -44,7 +45,7 @@ pub struct Evaluator<Host> {
 
     host:        Rc<RefCell<Host>>,
     extensions:  Extensions<Host>,
-    builtins:    Builtins,
+    builtins:    Functions<Builtin>,
     stack:       Stack,
     functions:   HashMap<String, expr::List>,
     stack_trace: Vec<Span>,
@@ -66,7 +67,7 @@ impl<Host> Evaluator<Host> {
 
             host:        Rc::new(RefCell::new(host)),
             extensions,
-            builtins:    Builtins::new(builtins::builtins()),
+            builtins:    Functions::new(builtins::builtins()),
             stack:       Stack::new(),
             functions:   HashMap::new(),
             stack_trace: Vec::new(),
