@@ -204,8 +204,8 @@ impl<Host> Context for Evaluator<Host> {
                     )?;
                     continue;
                 }
-                if let Some(extension) = self.extensions.get(&word, &self.stack) {
-                    extension(
+                if let Some(ext) = self.extensions.get(&word, &self.stack) {
+                    ext(
                         self.host.clone(),
                         self,
                         expression.span,
