@@ -17,7 +17,7 @@ use crate::{
 };
 
 
-pub struct Builtins(HashMap<&'static str, Builtin>);
+pub struct Builtins(HashMap<String, Builtin>);
 
 impl Builtins {
     pub fn new() -> Self {
@@ -44,9 +44,9 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident;)*) => {
-        pub fn builtins() -> Vec<(&'static str, Builtin)> {
+        pub fn builtins() -> Vec<(String, Builtin)> {
             vec![
-                $(($name, $fn),)*
+                $((String::from($name), $fn),)*
             ]
         }
     }
