@@ -47,7 +47,7 @@ pub struct Evaluator<Host> {
     extensions:  Functions<Extension<Host>>,
     builtins:    Functions<Builtin>,
     stack:       Stack,
-    functions:   HashMap<String, expr::List>,
+    functions:   Functions<expr::List>,
     stack_trace: Vec<Span>,
 }
 
@@ -72,7 +72,7 @@ impl<Host> Evaluator<Host> {
             extensions,
             builtins,
             stack:       Stack::new(),
-            functions:   HashMap::new(),
+            functions:   Functions::new(),
             stack_trace: Vec::new(),
         }
     }
@@ -149,7 +149,7 @@ impl<Host> Context for Evaluator<Host> {
     }
 
     fn define(&mut self, name: expr::Symbol, body: expr::List) {
-        self.functions.insert(name.inner, body);
+        self.functions.define(name.inner, &[], body);
     }
 
     fn load(&mut self, name: expr::String)
@@ -196,7 +196,7 @@ impl<Host> Context for Evaluator<Host> {
 
         for expression in expressions {
             if let expr::Kind::Word(word) = expression.kind {
-                if let Some(list) = self.functions.get(&word) {
+                if let Some(list) = self.functions.get(&word, &self.stack) {
                     let list = list.clone();
                     self.evaluate(
                         Some(expression.span),
