@@ -48,10 +48,11 @@ builtins!(
     "if",  r#if, (t::List, t::List,);
     "map", map,  (t::List, t::List,);
 
-    "+",   add, (t::Number, t::Number,);
-    "*",   mul, (t::Number, t::Number,);
+    "+", add, (t::Number, t::Number,);
+    "*", mul, (t::Number, t::Number,);
+    ">", gt,  (t::Number, t::Number,);
+
     "=",   eq,  (t::Any, t::Any,);
-    ">",   gt,  (t::Number, t::Number,);
     "not", not, (t::Bool,);
 );
 
@@ -176,22 +177,23 @@ fn mul(context: &mut dyn Context, operator: Span) -> Result {
     Ok(())
 }
 
-fn eq(context: &mut dyn Context, operator: Span) -> Result {
-    let is_equal = context.stack()
-        .pop((&t::Any, &t::Any), &operator)?
-        .compute::<expr::Bool, _, _>(|(a, b)| a == b);
-
-    context.stack().push(is_equal);
-
-    Ok(())
-}
-
 fn gt(context: &mut dyn Context, operator: Span) -> Result {
     let is_greater = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
+
+    Ok(())
+}
+
+
+fn eq(context: &mut dyn Context, operator: Span) -> Result {
+    let is_equal = context.stack()
+        .pop((&t::Any, &t::Any), &operator)?
+        .compute::<expr::Bool, _, _>(|(a, b)| a == b);
+
+    context.stack().push(is_equal);
 
     Ok(())
 }
