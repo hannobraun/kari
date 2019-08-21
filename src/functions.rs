@@ -12,10 +12,10 @@ use crate::{
     data::span::Span,
 };
 
-pub struct Functions<T: Copy>(HashMap<String, T>);
+pub struct Functions<T: Copy>(HashMap<Signature, T>);
 
 impl<T> Functions<T> where T: Copy {
-    pub fn new(functions: HashMap<String, T>) -> Self {
+    pub fn new(functions: HashMap<Signature, T>) -> Self {
         Self(functions)
     }
 
@@ -29,6 +29,9 @@ impl<T> Functions<T> where T: Copy {
             .map(|function| *function)
     }
 }
+
+
+pub type Signature = String;
 
 
 pub type Builtin =
