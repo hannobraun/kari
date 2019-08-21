@@ -23,7 +23,7 @@ use crate::{
     },
 };
 
-pub struct Functions<T: Copy> {
+pub struct Functions<T> {
     functions:  HashMap<Signature, T>,
     signatures: HashMap<String, usize>,
 }
