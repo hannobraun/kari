@@ -199,8 +199,7 @@ impl<Host> Context for Evaluator<Host> {
                     )?;
                     continue;
                 }
-                if let Some(extension) = self.extensions.map.get(&word) {
-                    let extension = *extension;
+                if let Some(extension) = self.extensions.get(&word) {
                     extension(
                         self.host.clone(),
                         self,
