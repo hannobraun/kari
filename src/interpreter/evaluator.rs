@@ -24,8 +24,10 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    extensions::Extension,
-    functions::Functions,
+    functions::{
+        Extension,
+        Functions,
+    },
     interpreter::{
         error::Error,
         stream::Stream,

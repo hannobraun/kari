@@ -1,5 +1,16 @@
-use std::collections::HashMap;
+use std::{
+    cell::RefCell,
+    collections::HashMap,
+    rc::Rc,
+};
 
+use crate::{
+    context::{
+        self,
+        Context,
+    },
+    data::span::Span,
+};
 
 pub struct Functions<T: Copy>(HashMap<String, T>);
 
@@ -14,3 +25,7 @@ impl<T> Functions<T> where T: Copy {
             .map(|function| *function)
     }
 }
+
+
+pub type Extension<Host> =
+    fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
