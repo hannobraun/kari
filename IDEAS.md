@@ -2,7 +2,9 @@
 
 ## Design
 
-...
+### Function Shadowing
+
+At the moment, user-defined functions shadow extensions, which shadow builtins. It might be better to disallow shadowing alltogether. Or maybe it's better to defer the decision until scopes are in the language.
 
 
 ## Implementation
