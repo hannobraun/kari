@@ -48,9 +48,9 @@ builtins!(
     "if",  r#if, (t::List, t::List,);
     "map", map,  (t::List, t::List,);
 
-    "+", add, (t::Number, t::Number,);
-    "*", mul, (t::Number, t::Number,);
-    ">", gt,  (t::Number, t::Number,);
+    "+", add_n, (t::Number, t::Number,);
+    "*", mul_n, (t::Number, t::Number,);
+    ">", gt_n,  (t::Number, t::Number,);
 
     "=",   eq,  (t::Any, t::Any,);
     "not", not, (t::Bool,);
@@ -157,7 +157,7 @@ fn r#if(context: &mut dyn Context, operator: Span) -> Result {
 }
 
 
-fn add(context: &mut dyn Context, operator: Span) -> Result {
+fn add_n(context: &mut dyn Context, operator: Span) -> Result {
     let sum = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a + b);
@@ -167,7 +167,7 @@ fn add(context: &mut dyn Context, operator: Span) -> Result {
     Ok(())
 }
 
-fn mul(context: &mut dyn Context, operator: Span) -> Result {
+fn mul_n(context: &mut dyn Context, operator: Span) -> Result {
     let product = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
         .compute::<expr::Number, _, _>(|(a, b)| a * b);
@@ -177,7 +177,7 @@ fn mul(context: &mut dyn Context, operator: Span) -> Result {
     Ok(())
 }
 
-fn gt(context: &mut dyn Context, operator: Span) -> Result {
+fn gt_n(context: &mut dyn Context, operator: Span) -> Result {
     let is_greater = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a > b);
