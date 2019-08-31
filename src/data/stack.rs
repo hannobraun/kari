@@ -26,8 +26,9 @@ impl Stack {
         }
     }
 
-    pub fn push<T: Push>(&mut self, value: T) {
-        T::push(value, self)
+    pub fn push<T: Push>(&mut self, value: T) -> &mut Self {
+        T::push(value, self);
+        self
     }
 
     pub fn pop<T: Pop>(&mut self, ty: T, operator: &Span)
