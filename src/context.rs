@@ -13,6 +13,7 @@ use crate::{
         },
         types::TypeError,
     },
+    functions,
     pipeline::parser,
 };
 
@@ -20,7 +21,8 @@ use crate::{
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
     fn output(&mut self) -> &mut dyn io::Write;
-    fn define(&mut self, name: expr::Symbol, body: expr::List);
+    fn define(&mut self, name: expr::Symbol, body: expr::List)
+        -> Result<(), Error>;
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
     fn evaluate(&mut self,
@@ -35,6 +37,7 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
+    Functions(functions::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
@@ -51,8 +54,15 @@ impl Error {
             Error::Stack(error)  => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
 
-            Error::Io(_) => (),
+            Error::Functions(_) => (),
+            Error::Io(_)             => (),
         }
+    }
+}
+
+impl From<functions::Error> for Error {
+    fn from(from: functions::Error) -> Self {
+        Error::Functions(from)
     }
 }
 
@@ -93,9 +103,10 @@ impl fmt::Display for Error {
                 write!(f, "Error loading stream: {}", error)
             }
 
-            Error::Parser(error) => error.fmt(f),
-            Error::Stack(error)  => error.fmt(f),
-            Error::Type(error)   => error.fmt(f),
+            Error::Functions(error) => error.fmt(f),
+            Error::Parser(error)    => error.fmt(f),
+            Error::Stack(error)     => error.fmt(f),
+            Error::Type(error)      => error.fmt(f),
         }
     }
 }

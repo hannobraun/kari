@@ -26,11 +26,14 @@ macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
         pub fn builtins(builtins: &mut Functions<Builtin>) {
             builtins
-                $(.define(
-                    String::from($name),
-                    &[$(&$arg,)*],
-                    $fn as Builtin,
-                ))*;
+                $(
+                    .define(
+                        String::from($name),
+                        &[$(&$arg,)*],
+                        $fn as Builtin,
+                    )
+                    .expect("Failed to define builtin")
+                )*;
         }
     }
 }
@@ -68,7 +71,7 @@ fn define(context: &mut dyn Context, operator: Span) -> Result {
     let (body, name) = context.stack()
         .pop((&t::List, &t::Symbol), &operator)?;
 
-    context.define(name, body.clone());
+    context.define(name, body.clone())?;
 
     Ok(())
 }

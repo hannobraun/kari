@@ -148,8 +148,11 @@ impl<Host> Context for Evaluator<Host> {
         &mut self.stdout
     }
 
-    fn define(&mut self, name: expr::Symbol, body: expr::List) {
-        self.functions.define(name.inner, &[], body);
+    fn define(&mut self, name: expr::Symbol, body: expr::List)
+        -> Result<(), context::Error>
+    {
+        self.functions.define(name.inner, &[], body)?;
+        Ok(())
     }
 
     fn load(&mut self, name: expr::String)

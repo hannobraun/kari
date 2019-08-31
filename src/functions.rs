@@ -1,6 +1,7 @@
 use std::{
     cell::RefCell,
     collections::HashMap,
+    fmt,
     hash::{
         Hash,
         Hasher,
@@ -41,7 +42,7 @@ impl<T> Functions<T> where T: Clone {
         args:     &[&'static dyn Type],
         function: T,
     )
-        -> &mut Self
+        -> Result<&mut Self, Error>
     {
         self.functions.insert(
             Signature {
@@ -56,7 +57,7 @@ impl<T> Functions<T> where T: Clone {
             .and_modify(|num| *num = usize::max(*num, args.len()))
             .or_insert(args.len());
 
-        self
+        Ok(self)
     }
 
     pub fn get(&self, name: &str, stack: &Stack) -> Option<T> {
@@ -106,6 +107,16 @@ impl Hash for Signature {
         self.name.hash(state);
         // Arguments can't be part of hash, as types can have different names,
         // but still be equal (when one of them is "any").
+    }
+}
+
+
+#[derive(Debug)]
+pub enum Error {}
+
+impl fmt::Display for Error {
+    fn fmt(&self, _f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {}
     }
 }
 
