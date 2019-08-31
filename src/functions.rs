@@ -112,11 +112,16 @@ impl Hash for Signature {
 
 
 #[derive(Debug)]
-pub enum Error {}
+pub enum Error {
+    FunctionAlreadyDefined,
+}
 
 impl fmt::Display for Error {
-    fn fmt(&self, _f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {}
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Error::FunctionAlreadyDefined =>
+                write!(f, "Function already defined"),
+        }
     }
 }
 
