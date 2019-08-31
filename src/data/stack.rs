@@ -16,7 +16,7 @@ use crate::data::{
 
 #[derive(Debug)]
 pub struct Stack {
-    substacks: Vec<Vec<expr::Any>>
+    substacks: Vec<Vec<expr::Any>>,
 }
 
 impl Stack {
