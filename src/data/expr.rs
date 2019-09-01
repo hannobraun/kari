@@ -156,7 +156,7 @@ impl PartialEq for Kind {
                 //
                 // Panic, if we detect that both variants are the same, as that
                 // means this code needs to be extended.
-                assert_eq!(discriminant(self), discriminant(other));
+                assert_ne!(discriminant(self), discriminant(other));
 
                 // If we haven't panicked by this point, we have two different
                 // variants, which can't be equal.
