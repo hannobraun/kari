@@ -77,7 +77,12 @@ impl<Host> Evaluator<Host> {
         }
     }
 
-    pub fn run(&mut self, name: Cow<str>, mut stream: Box<dyn Stream>) -> bool {
+    pub fn run(&mut self,
+            name:   Cow<str>,
+        mut stream: Box<dyn Stream>,
+    )
+        -> bool
+    {
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut stream,
