@@ -2,10 +2,6 @@
 
 ## Design
 
-### Prelude
-
-Since `std` is a module, it obvioulsy can't be the place where the module system is implemented. There should be an invisible prelude that does that, which is added to the front of the top-level module by the interpreter.
-
 ### Scopes
 
 - Add a scope to each list. Calling `define` defines the function in the scope of the current list.
