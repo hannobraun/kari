@@ -22,6 +22,7 @@ use crate::{
 };
 
 
+#[derive(Debug)]
 pub struct Error {
     pub kind:        ErrorKind,
     pub stack_trace: Vec<Span>,
@@ -84,6 +85,7 @@ impl fmt::Display for Error {
 }
 
 
+#[derive(Debug)]
 pub enum ErrorKind {
     Context(context::Error),
     Parser(parser::Error),
