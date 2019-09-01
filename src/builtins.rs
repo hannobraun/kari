@@ -55,6 +55,10 @@ builtins!(
     "*", mul_n, (t::Number, t::Number,);
     ">", gt_n,  (t::Number, t::Number,);
 
+    "+", add_f, (t::Float, t::Float,);
+    "*", mul_f, (t::Float, t::Float,);
+    ">", gt_f,  (t::Float, t::Float,);
+
     "=",   eq,  (t::Any, t::Any,);
     "not", not, (t::Bool,);
 );
@@ -183,6 +187,37 @@ fn mul_n(context: &mut dyn Context, operator: Span) -> Result {
 fn gt_n(context: &mut dyn Context, operator: Span) -> Result {
     let is_greater = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
+        .compute::<expr::Bool, _, _>(|(a, b)| a > b);
+
+    context.stack().push(is_greater);
+
+    Ok(())
+}
+
+
+fn add_f(context: &mut dyn Context, operator: Span) -> Result {
+    let sum = context.stack()
+        .pop((&t::Float, &t::Float), &operator)?
+        .compute::<expr::Float, _, _>(|(a, b)| a + b);
+
+    context.stack().push(sum);
+
+    Ok(())
+}
+
+fn mul_f(context: &mut dyn Context, operator: Span) -> Result {
+    let product = context.stack()
+        .pop((&t::Float, &t::Float), &operator)?
+        .compute::<expr::Float, _, _>(|(a, b)| a * b);
+
+    context.stack().push(product);
+
+    Ok(())
+}
+
+fn gt_f(context: &mut dyn Context, operator: Span) -> Result {
+    let is_greater = context.stack()
+        .pop((&t::Float, &t::Float), &operator)?
         .compute::<expr::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
