@@ -130,6 +130,7 @@ impl PartialEq for Kind {
         // Determines equality based on data, ignoring spans.
         match (self, other) {
             (Kind::Bool(a),   Kind::Bool(b))   => return a == b,
+            (Kind::Float(a),  Kind::Float(b))  => return a == b,
             (Kind::Number(a), Kind::Number(b)) => return a == b,
             (Kind::String(a), Kind::String(b)) => return a == b,
             (Kind::Symbol(a), Kind::Symbol(b)) => return a == b,
