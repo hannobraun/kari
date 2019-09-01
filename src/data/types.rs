@@ -1,4 +1,10 @@
-use std::fmt;
+use std::{
+    fmt,
+    hash::{
+        Hash,
+        Hasher,
+    },
+};
 
 use crate::data::{
     expr,
@@ -24,6 +30,13 @@ impl PartialEq for dyn Type {
 }
 
 impl Eq for dyn Type {}
+
+impl Hash for dyn Type {
+    fn hash<H>(&self, _: &mut H) where H: Hasher {
+        // All types must have the same hash, because all types are equal to
+        // `Any`. This meant we can't feed anything into the hasher here.
+    }
+}
 
 
 pub trait Downcast : Type {
