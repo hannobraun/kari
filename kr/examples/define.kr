@@ -1,2 +1,2 @@
-[ "Hello, world!\n" print ] [ hello ] define
+[ "Hello, world!" println ] [ hello ] define
 hello

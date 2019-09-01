@@ -6,4 +6,4 @@
 ]
     each
 
-"\n" print
+"" println

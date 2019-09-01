@@ -1,1 +1,1 @@
-"Hello\n" dup print print
+"Hello" dup println println
