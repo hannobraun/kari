@@ -1,2 +1,4 @@
-[ "Hello, world!" println ] [ hello ] define
+"std" import
+
+[ "Hello, world!" println ] :hello define
 hello
