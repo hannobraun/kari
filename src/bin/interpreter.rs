@@ -37,6 +37,12 @@ fn main() {
     let stderr     = Box::new(stderr());
     let extensions = Functions::new();
 
+    let prelude = kari::prelude()
+        .unwrap_or_else(|error| {
+            print!("ERROR: Failed to load prelude: {}\n", error);
+            exit(1);
+        });
+
     match args.value_of("path") {
         Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
@@ -52,13 +58,13 @@ fn main() {
                 });
 
             Evaluator::new(stdout, stderr, (), extensions)
-                .run(path.into(), Box::new(file));
+                .run(path.into(), prelude, Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
             Evaluator::new(stdout, stderr, (), extensions)
-                .run("<stdin>".into(), stdin);
+                .run("<stdin>".into(), prelude, stdin);
         }
     }
 }

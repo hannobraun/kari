@@ -62,8 +62,14 @@ fn main() {
         let stderr     = Box::new(stderr());
         let extensions = Functions::new();
 
+        let prelude = kari::prelude()
+            .unwrap_or_else(|error| {
+                print!("ERROR: Failed to load prelude: {}\n", error);
+                exit(1);
+            });
+
         let success = Evaluator::new(stdout, stderr, (), extensions)
-            .run(path.into(), Box::new(file));
+            .run(path.into(), prelude, Box::new(file));
 
         if success {
             print!("    {}{}OK{}{} {}\n",

@@ -79,10 +79,18 @@ impl<Host> Evaluator<Host> {
 
     pub fn run(&mut self,
             name:    Cow<str>,
+        mut prelude: Box<dyn Stream>,
         mut program: Box<dyn Stream>,
     )
         -> bool
     {
+        let prelude = pipeline::new(
+            String::from("<prelude>"),
+            &mut prelude,
+        );
+        self.evaluate_expressions(prelude)
+            .expect("Error while evaluating prelude");
+
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut program,

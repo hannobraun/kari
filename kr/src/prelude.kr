@@ -1,0 +1,6 @@
+# Since `std` is a module, it obviously can't be the place where the module
+# system is implemented. This is why we have this prelude. The interpreter
+# automatically adds it in front of the top-level module, so it is available
+# everywhere, for loading `std` and other modules.
+
+[ load eval ] :import define
