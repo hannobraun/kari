@@ -11,7 +11,7 @@ pub trait Typed {
 }
 
 
-pub trait Type {
+pub trait Type : fmt::Debug {
     fn name(&self) -> &'static str;
 }
 
@@ -43,6 +43,7 @@ pub trait Downcast : Type {
 }
 
 
+#[derive(Debug)]
 pub struct Any;
 
 impl Type for Any {
@@ -76,6 +77,7 @@ macro_rules! impl_type {
         }
 
         $(
+            #[derive(Debug)]
             pub struct $ty;
 
             impl Type for $ty {
