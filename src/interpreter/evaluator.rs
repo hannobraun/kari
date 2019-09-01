@@ -78,21 +78,21 @@ impl<Host> Evaluator<Host> {
     }
 
     pub fn run(&mut self,
-            name:   Cow<str>,
-        mut stream: Box<dyn Stream>,
+            name:    Cow<str>,
+        mut program: Box<dyn Stream>,
     )
         -> bool
     {
         let pipeline = pipeline::new(
             name.clone().into_owned(),
-            &mut stream,
+            &mut program,
         );
 
         let result = self.evaluate_expressions(pipeline);
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
-                stream,
+                program,
             );
 
             if let Err(error) =
