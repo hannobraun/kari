@@ -55,8 +55,10 @@ fn main() {
                 .run(path.into(), Box::new(file));
         }
         None => {
+            let stdin = Box::new(AccReader::new(stdin()));
+
             Evaluator::new(stdout, stderr, (), extensions)
-                .run("<stdin>".into(), Box::new(AccReader::new(stdin())));
+                .run("<stdin>".into(), stdin);
         }
     }
 }
