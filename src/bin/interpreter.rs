@@ -33,6 +33,10 @@ fn main() {
         )
         .get_matches();
 
+    let stdout     = Box::new(stdout());
+    let stderr     = Box::new(stderr());
+    let extensions = Functions::new();
+
     match args.value_of("path") {
         Some(name) => {
             let path = format!("kr/examples/{}.kr", name);
@@ -47,18 +51,10 @@ fn main() {
                     exit(1);
                 });
 
-            let stdout     = Box::new(stdout());
-            let stderr     = Box::new(stderr());
-            let extensions = Functions::new();
-
             Evaluator::new(stdout, stderr, (), extensions)
                 .run(path.into(), Box::new(file));
         }
         None => {
-            let stdout     = Box::new(stdout());
-            let stderr     = Box::new(stderr());
-            let extensions = Functions::new();
-
             Evaluator::new(stdout, stderr, (), extensions)
                 .run("<stdin>".into(), Box::new(AccReader::new(stdin())));
         }
