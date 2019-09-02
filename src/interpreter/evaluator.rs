@@ -24,7 +24,7 @@ use crate::{
     functions::{
         Builtin,
         Extension,
-        Functions,
+        Scope,
     },
     interpreter::{
         error::Error,
@@ -44,10 +44,10 @@ pub struct Evaluator<Host> {
     stderr:  Box<dyn io::Write>,
 
     host:        Rc<RefCell<Host>>,
-    extensions:  Functions<Extension<Host>>,
-    builtins:    Functions<Builtin>,
+    extensions:  Scope<Extension<Host>>,
+    builtins:    Scope<Builtin>,
     stack:       Stack,
-    functions:   Functions<expr::List>,
+    functions:   Scope<expr::List>,
     stack_trace: Vec<Span>,
 }
 
@@ -56,11 +56,11 @@ impl<Host> Evaluator<Host> {
         stdout:     Box<dyn io::Write>,
         stderr:     Box<dyn io::Write>,
         host:       Host,
-        extensions: Functions<Extension<Host>>,
+        extensions: Scope<Extension<Host>>,
     )
         -> Self
     {
-        let mut builtins = Functions::new();
+        let mut builtins = Scope::new();
         builtins::builtins(&mut builtins);
 
         Self {
@@ -72,7 +72,7 @@ impl<Host> Evaluator<Host> {
             extensions,
             builtins,
             stack:       Stack::new(),
-            functions:   Functions::new(),
+            functions:   Scope::new(),
             stack_trace: Vec::new(),
         }
     }

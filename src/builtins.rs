@@ -14,7 +14,7 @@ use crate::{
     },
     functions::{
         Builtin,
-        Functions,
+        Scope,
     },
 };
 
@@ -24,7 +24,7 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
-        pub fn builtins(builtins: &mut Functions<Builtin>) {
+        pub fn builtins(builtins: &mut Scope<Builtin>) {
             builtins
                 $(
                     .define(
