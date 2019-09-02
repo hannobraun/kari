@@ -87,7 +87,7 @@ fn fail(_: &mut dyn Context, operator: Span) -> Result {
 fn eval(context: &mut dyn Context, operator: Span) -> Result {
     let list = context.stack().pop(&t::List, &operator)?;
 
-    context.evaluate(
+    context.evaluate_list(
         Some(operator),
         &mut list.into_iter(),
     )?;
@@ -127,7 +127,7 @@ fn map(context: &mut dyn Context, operator: Span) -> Result {
 
     for item in list.inner {
         context.stack().push(item);
-        context.evaluate(
+        context.evaluate_list(
             Some(operator.clone()),
             &mut function.clone().into_iter(),
         )?;
@@ -149,12 +149,12 @@ fn r#if(context: &mut dyn Context, operator: Span) -> Result {
     let (function, condition)  =context.stack()
         .pop((&t::List, &t::List), &operator)?;
 
-    context.evaluate(Some(operator.clone()), &mut condition.into_iter())?;
+    context.evaluate_list(Some(operator.clone()), &mut condition.into_iter())?;
 
     let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
 
     if evaluated_condition.inner {
-        context.evaluate(
+        context.evaluate_list(
             Some(operator),
             &mut function.into_iter(),
         )?;

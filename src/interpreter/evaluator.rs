@@ -198,7 +198,7 @@ impl<Host> Context for Evaluator<Host> {
         Ok(expr::List::new(expressions, start.merge(end)))
     }
 
-    fn evaluate(&mut self,
+    fn evaluate_list(&mut self,
         operator:    Option<Span>,
         expressions: &mut dyn Iterator<Item=expr::Any>,
     )
@@ -225,7 +225,7 @@ impl<Host> Context for Evaluator<Host> {
 
         if let expr::Kind::Word(word) = expression.kind {
             if let Some(list) = self.functions.get(&word, &self.stack) {
-                self.evaluate(
+                self.evaluate_list(
                     Some(expression.span),
                     &mut list.inner.into_iter(),
                 )?;
