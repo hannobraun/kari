@@ -29,7 +29,7 @@ pub struct Scope<T> {
 impl<T> Scope<T>
     where T: Clone
 {
-    pub fn new() -> Self {
+    pub fn root() -> Self {
         Self {
             functions: HashMap::new(),
         }
@@ -194,7 +194,7 @@ mod tests {
 
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
-        let scope = Scope::<()>::new();
+        let scope = Scope::<()>::root();
         let stack = Stack::new();
 
         let function = scope.get("a", &stack);
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result<(), Error> {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
         let mut stack = Stack::new();
 
         scope
@@ -223,7 +223,7 @@ mod tests {
     fn it_should_return_the_function_that_matches_the_types_on_the_stack()
         -> Result<(), Error>
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
         let mut stack = Stack::new();
 
         scope
@@ -243,7 +243,7 @@ mod tests {
     fn it_should_return_function_without_args_regardless_of_stack()
         -> Result<(), Error>
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
         let mut stack = Stack::new();
 
         scope
@@ -262,7 +262,7 @@ mod tests {
     fn it_should_reject_functions_that_are_already_defined()
         -> Result<(), Error>
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
 
         let result = scope
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -276,7 +276,7 @@ mod tests {
     fn it_should_reject_functions_more_specific_than_a_defined_function()
         -> Result<(), Error>
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
 
         let result = scope
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -294,7 +294,7 @@ mod tests {
         // arguments are specially handled in the code, so we also need a
         // special test for them.
 
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
 
         let result = scope
             .define("a", &[&t::Number], 1)?
@@ -308,7 +308,7 @@ mod tests {
     fn it_should_reject_functions_less_specific_than_a_defined_function()
         -> Result<(), Error>
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
 
         let result = scope
             .define("a", &[&t::Number], 1)?

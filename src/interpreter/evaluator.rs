@@ -57,7 +57,7 @@ impl<Host> Evaluator<Host> {
     )
         -> Self
     {
-        let mut scope = Scope::new();
+        let mut scope = Scope::root();
         builtins::builtins(&mut scope);
 
         Self {
