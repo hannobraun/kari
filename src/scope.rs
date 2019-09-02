@@ -22,15 +22,24 @@ use crate::{
 };
 
 
-pub struct Scope<T> {
+pub struct Scope<'r, T> {
+    parent:    Option<&'r Scope<'r, T>>,
     functions: HashMap<String, Node<T>>,
 }
 
-impl<T> Scope<T>
+impl<'r, T> Scope<'r, T>
     where T: Clone
 {
     pub fn root() -> Self {
         Self {
+            parent:    None,
+            functions: HashMap::new(),
+        }
+    }
+
+    pub fn child(&'r self) -> Self {
+        Scope {
+            parent:    Some(self),
             functions: HashMap::new(),
         }
     }
@@ -67,6 +76,16 @@ impl<T> Scope<T>
     }
 
     pub fn get(&self, name: &str, stack: &Stack) -> Option<T> {
+        self.get_inner(name, stack)
+            .or_else(||
+                match self.parent {
+                    Some(parent) => parent.get(name, stack),
+                    None         => None,
+                }
+            )
+    }
+
+    fn get_inner(&self, name: &str, stack: &Stack) -> Option<T> {
         let mut node = self.functions.get(name)?;
 
         for expr in stack.peek() {
@@ -311,6 +330,44 @@ mod tests {
             .define("a", &[&t::Number, &t::Number], 2);
 
         assert_eq!(result.map(|_| ()), Err(Error::Define));
+        Ok(())
+    }
+
+    #[test]
+    fn it_should_return_functions_that_were_defined_in_parent_scope()
+        -> Result
+    {
+        let mut scope = Scope::root();
+        let mut stack = Stack::new();
+
+        scope
+            .define("a", &[&t::Number, &t::Float], 1)?;
+        stack
+            .push(expr::Number::new(0, Span::default()))
+            .push(expr::Float::new(0.0, Span::default()));
+
+        let function = scope.child().get("a", &stack);
+
+        assert_eq!(function, Some(1));
+        Ok(())
+    }
+
+    #[test]
+    fn it_should_not_return_functions_that_were_defined_in_child_scope()
+        -> Result
+    {
+        let     scope = Scope::root();
+        let mut stack = Stack::new();
+
+        scope.child()
+            .define("a", &[&t::Number, &t::Float], 1)?;
+        stack
+            .push(expr::Number::new(0, Span::default()))
+            .push(expr::Float::new(0.0, Span::default()));
+
+        let function = scope.get("a", &stack);
+
+        assert_eq!(function, None);
         Ok(())
     }
 }
