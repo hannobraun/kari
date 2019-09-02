@@ -217,27 +217,25 @@ impl<Host> Context for Evaluator<Host> {
                         Some(expression.span),
                         &mut list.inner.into_iter(),
                     )?;
-                    continue;
                 }
-                if let Some(ext) = self.extensions.get(&word, &self.stack) {
+                else if let Some(ext) = self.extensions.get(&word, &self.stack) {
                     ext(
                         self.host.clone(),
                         self,
                         expression.span,
                     )?;
-                    continue;
                 }
-                if let Some(builtin) = self.builtins.get(&word, &self.stack) {
+                else if let Some(builtin) = self.builtins.get(&word, &self.stack) {
                     builtin(self, expression.span)?;
-                    continue;
                 }
-
-                return Err(
-                    context::Error::UnknownFunction {
-                        name: word,
-                        span: expression.span,
-                    }
-                );
+                else {
+                    return Err(
+                        context::Error::UnknownFunction {
+                            name: word,
+                            span: expression.span,
+                        }
+                    );
+                }
             }
             else {
                 self.stack.push::<expr::Any>(expression);
