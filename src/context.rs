@@ -29,10 +29,7 @@ pub trait Context {
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
 
-    fn evaluate_expr(&mut self,
-        operator: Option<Span>,
-        expr:     expr::Any,
-    )
+    fn evaluate_expr(&mut self, operator: Option<Span>, expr: expr::Any)
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
