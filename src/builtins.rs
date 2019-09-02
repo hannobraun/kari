@@ -13,7 +13,6 @@ use crate::{
         types as t,
     },
     scope::{
-        Builtin,
         Function,
         Scope,
     },
@@ -31,7 +30,7 @@ macro_rules! builtins {
                     .define(
                         String::from($name),
                         &[$(&$arg,)*],
-                        Function::Builtin($fn as Builtin),
+                        Function::Builtin($fn),
                     )
                     .expect("Failed to define builtin")
                 )*;
