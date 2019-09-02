@@ -71,8 +71,8 @@ fn main() {
                 exit(1);
             });
 
-        let success = Evaluator::new(stdout, stderr, (), root_scope)
-            .run(path.into(), prelude, Box::new(file));
+        let success = Evaluator::new(stdout, stderr, ())
+            .run(path.into(), prelude, Box::new(file), root_scope);
 
         if success {
             print!("    {}{}OK{}{} {}\n",

@@ -119,7 +119,8 @@ impl<H> Clone for Function<H> {
 pub type Host<H> = Rc<RefCell<H>>;
 
 pub type Builtin<H> =
-    fn(Host<H>, &mut dyn Context, Span) -> Result<(), context::Error>;
+    fn(Host<H>, &mut dyn Context<H>, &mut Scope<Function<H>>, Span)
+        -> Result<(), context::Error>;
 
 
 enum Node<T> {

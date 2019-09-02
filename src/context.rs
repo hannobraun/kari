@@ -14,25 +14,34 @@ use crate::{
         types::TypeError,
     },
     pipeline::parser,
-    scope,
+    scope::{
+        self,
+        Function,
+        Scope,
+    },
 };
 
 
-pub trait Context {
+pub trait Context<H> {
     fn stack(&mut self) -> &mut Stack;
 
     fn output(&mut self) -> &mut dyn io::Write;
 
-    fn define(&mut self, name: expr::Symbol, body: expr::List)
-        -> Result<(), Error>;
-
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
 
-    fn evaluate_expr(&mut self, operator: Option<Span>, expr: expr::Any)
+    fn evaluate_expr(&mut self,
+        scope:    &mut Scope<Function<H>>,
+        operator: Option<Span>,
+        expr:     expr::Any,
+    )
         -> Result<(), Error>;
 
-    fn evaluate_list(&mut self, operator: Option<Span>, list: expr::List)
+    fn evaluate_list(&mut self,
+        scope:    &mut Scope<Function<H>>,
+        operator: Option<Span>,
+        list:     expr::List,
+    )
         -> Result<(), Error>;
 }
 

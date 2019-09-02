@@ -42,8 +42,6 @@ pub struct Evaluator<H> {
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
-    scope: Scope<Function<H>>,
-
     host:        Host<H>,
     stack:       Stack,
     stack_trace: Vec<Span>,
@@ -54,7 +52,6 @@ impl<H> Evaluator<H> {
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
         host:   H,
-        scope:  Scope<Function<H>>,
     )
         -> Self
     {
@@ -63,22 +60,17 @@ impl<H> Evaluator<H> {
             stdout,
             stderr,
 
-            scope,
-
             host:        Rc::new(RefCell::new(host)),
             stack:       Stack::new(),
             stack_trace: Vec::new(),
         }
     }
 
-    pub fn root_scope(&mut self) -> &mut Scope<Function<H>> {
-        &mut self.scope
-    }
-
     pub fn run(mut self,
             name:    Cow<str>,
         mut prelude: Box<dyn Stream>,
         mut program: Box<dyn Stream>,
+        mut scope:   Scope<Function<H>>,
     )
         -> bool
     {
@@ -86,7 +78,7 @@ impl<H> Evaluator<H> {
             String::from("<prelude>"),
             &mut prelude,
         );
-        self.evaluate_expressions(prelude)
+        self.evaluate_expressions(prelude, &mut scope)
             .expect("Error while evaluating prelude");
 
         let pipeline = pipeline::new(
@@ -94,7 +86,7 @@ impl<H> Evaluator<H> {
             &mut program,
         );
 
-        let result = self.evaluate_expressions(pipeline);
+        let result = self.evaluate_expressions(pipeline, &mut scope);
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
@@ -112,7 +104,10 @@ impl<H> Evaluator<H> {
         true
     }
 
-    fn evaluate_expressions<Parser>(&mut self, mut parser: Parser)
+    fn evaluate_expressions<Parser>(&mut self,
+        mut parser: Parser,
+            scope:  &mut Scope<Function<H>>,
+    )
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=expr::Any, Error=parser::Error>
     {
@@ -135,6 +130,7 @@ impl<H> Evaluator<H> {
             };
 
             let result = self.evaluate_expr(
+                scope,
                 None,
                 expression,
             );
@@ -150,20 +146,13 @@ impl<H> Evaluator<H> {
     }
 }
 
-impl<H> Context for Evaluator<H> {
+impl<H> Context<H> for Evaluator<H> {
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
     }
 
     fn output(&mut self) -> &mut dyn io::Write {
         &mut self.stdout
-    }
-
-    fn define(&mut self, name: expr::Symbol, body: expr::List)
-        -> Result<(), context::Error>
-    {
-        self.scope.define(name.inner, &[], Function::UserDefined(body))?;
-        Ok(())
     }
 
     fn load(&mut self, name: expr::String)
@@ -196,7 +185,11 @@ impl<H> Context for Evaluator<H> {
         Ok(expr::List::new(expressions, start.merge(end)))
     }
 
-    fn evaluate_expr(&mut self, operator: Option<Span>, expr: expr::Any)
+    fn evaluate_expr(&mut self,
+        scope:    &mut Scope<Function<H>>,
+        operator: Option<Span>,
+        expr:     expr::Any,
+    )
         -> Result<(), context::Error>
     {
         let mut pop_operator = false;
@@ -206,13 +199,13 @@ impl<H> Context for Evaluator<H> {
         }
 
         if let expr::Kind::Word(word) = expr.kind {
-            if let Some(f) = self.scope.get(&word, &self.stack) {
+            if let Some(f) = scope.get(&word, &self.stack) {
                 match f {
                     Function::Builtin(f) => {
-                        f(self.host.clone(), self, expr.span)?;
+                        f(self.host.clone(), self, scope, expr.span)?;
                     }
                     Function::UserDefined(f) => {
-                        self.evaluate_list(Some(expr.span), f)?;
+                        self.evaluate_list(scope, Some(expr.span), f)?;
                     }
                 }
             }
@@ -236,11 +229,15 @@ impl<H> Context for Evaluator<H> {
         Ok(())
     }
 
-    fn evaluate_list(&mut self, operator: Option<Span>, list: expr::List)
+    fn evaluate_list(&mut self,
+        scope:    &mut Scope<Function<H>>,
+        operator: Option<Span>,
+        list:     expr::List,
+    )
         -> Result<(), context::Error>
     {
         for expr in list {
-            self.evaluate_expr(operator.clone(), expr)?;
+            self.evaluate_expr(scope, operator.clone(), expr)?;
         }
 
         Ok(())

@@ -60,14 +60,14 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::new(stdout, stderr, (), root_scope)
-                .run(path.into(), prelude, Box::new(file));
+            Evaluator::new(stdout, stderr, ())
+                .run(path.into(), prelude, Box::new(file), root_scope);
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            Evaluator::new(stdout, stderr, (), root_scope)
-                .run("<stdin>".into(), prelude, stdin);
+            Evaluator::new(stdout, stderr, ())
+                .run("<stdin>".into(), prelude, stdin, root_scope);
         }
     }
 }
