@@ -199,8 +199,8 @@ impl<Host> Context for Evaluator<Host> {
     }
 
     fn evaluate_expr(&mut self,
-        operator:   Option<Span>,
-        expression: expr::Any,
+        operator: Option<Span>,
+        expr:     expr::Any,
     )
         -> Result<(), context::Error>
     {
@@ -210,10 +210,10 @@ impl<Host> Context for Evaluator<Host> {
             pop_operator = true;
         }
 
-        if let expr::Kind::Word(word) = expression.kind {
+        if let expr::Kind::Word(word) = expr.kind {
             if let Some(list) = self.functions.get(&word, &self.stack) {
                 self.evaluate_list(
-                    Some(expression.span),
+                    Some(expr.span),
                     list,
                 )?;
             }
@@ -221,23 +221,23 @@ impl<Host> Context for Evaluator<Host> {
                 ext(
                     self.host.clone(),
                     self,
-                    expression.span,
+                    expr.span,
                 )?;
             }
             else if let Some(builtin) = self.builtins.get(&word, &self.stack) {
-                builtin(self, expression.span)?;
+                builtin(self, expr.span)?;
             }
             else {
                 return Err(
                     context::Error::UnknownFunction {
                         name: word,
-                        span: expression.span,
+                        span: expr.span,
                     }
                 );
             }
         }
         else {
-            self.stack.push::<expr::Any>(expression);
+            self.stack.push::<expr::Any>(expr);
         }
 
         if pop_operator {
