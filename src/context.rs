@@ -20,11 +20,15 @@ use crate::{
 
 pub trait Context {
     fn stack(&mut self) -> &mut Stack;
+
     fn output(&mut self) -> &mut dyn io::Write;
+
     fn define(&mut self, name: expr::Symbol, body: expr::List)
         -> Result<(), Error>;
+
     fn load(&mut self, name: expr::String)
         -> Result<expr::List, Error>;
+
     fn evaluate(&mut self,
         operator:    Option<Span>,
         expressions: &mut dyn Iterator<Item=expr::Any>,
