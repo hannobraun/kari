@@ -211,9 +211,6 @@ impl<Host> Context for Evaluator<Host> {
             if let Some(f) = self.scope.get(&word, &self.stack) {
                 match f {
                     Function::Builtin(f) => {
-                        f(self, expr.span)?;
-                    }
-                    Function::Extension(f) => {
                         f(self.host.clone(), self, expr.span)?;
                     }
                     Function::UserDefined(f) => {
