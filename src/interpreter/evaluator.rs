@@ -78,7 +78,7 @@ impl<H> Evaluator<H> {
         &mut self.scope
     }
 
-    pub fn run(&mut self,
+    pub fn run(mut self,
             name:    Cow<str>,
         mut prelude: Box<dyn Stream>,
         mut program: Box<dyn Stream>,
