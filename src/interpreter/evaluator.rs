@@ -21,11 +21,6 @@ use crate::{
         span::Span,
         stack::Stack,
     },
-    functions::{
-        Builtin,
-        Extension,
-        Scope,
-    },
     interpreter::{
         error::Error,
         stream::Stream,
@@ -34,6 +29,11 @@ use crate::{
         self,
         Stage as _,
         parser,
+    },
+    scope::{
+        Builtin,
+        Extension,
+        Scope,
     },
 };
 

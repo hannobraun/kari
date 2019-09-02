@@ -13,8 +13,8 @@ use crate::{
         },
         types::TypeError,
     },
-    functions,
     pipeline::parser,
+    scope,
 };
 
 
@@ -41,7 +41,7 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
-    Functions(functions::Error),
+    Functions(scope::Error),
     Io(io::Error),
     Parser(parser::Error),
     Stack(stack::Error),
@@ -64,8 +64,8 @@ impl Error {
     }
 }
 
-impl From<functions::Error> for Error {
-    fn from(from: functions::Error) -> Self {
+impl From<scope::Error> for Error {
+    fn from(from: scope::Error) -> Self {
         Error::Functions(from)
     }
 }

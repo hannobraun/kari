@@ -14,8 +14,8 @@ use termion::{
 use walkdir::WalkDir;
 
 use kari::{
-    functions::Scope,
     interpreter::evaluator::Evaluator,
+    scope::Scope,
 };
 
 
