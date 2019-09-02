@@ -247,8 +247,8 @@ impl<Host> Context for Evaluator<Host> {
     fn evaluate_list(&mut self, operator: Option<Span>, list: expr::List)
         -> Result<(), context::Error>
     {
-        for expression in list {
-            self.evaluate_expr(operator.clone(), expression)?;
+        for expr in list {
+            self.evaluate_expr(operator.clone(), expr)?;
         }
 
         Ok(())
