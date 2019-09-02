@@ -37,23 +37,23 @@ use crate::{
 };
 
 
-pub struct Evaluator<Host> {
+pub struct Evaluator<H> {
     streams: HashMap<String, Box<dyn Stream>>,
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
-    scope: Scope<Function<Host>>,
+    scope: Scope<Function<H>>,
 
-    host:        Rc<RefCell<Host>>,
+    host:        Rc<RefCell<H>>,
     stack:       Stack,
     stack_trace: Vec<Span>,
 }
 
-impl<Host> Evaluator<Host> {
+impl<H> Evaluator<H> {
     pub fn new(
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
-        host:   Host,
+        host:   H,
     )
         -> Self
     {
@@ -73,7 +73,7 @@ impl<Host> Evaluator<Host> {
         }
     }
 
-    pub fn root_scope(&mut self) -> &mut Scope<Function<Host>> {
+    pub fn root_scope(&mut self) -> &mut Scope<Function<H>> {
         &mut self.scope
     }
 
@@ -152,7 +152,7 @@ impl<Host> Evaluator<Host> {
     }
 }
 
-impl<Host> Context for Evaluator<Host> {
+impl<H> Context for Evaluator<H> {
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
     }

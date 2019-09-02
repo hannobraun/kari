@@ -29,7 +29,7 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
-        pub fn builtins<Host>(builtins: &mut Scope<Function<Host>>) {
+        pub fn builtins<H>(builtins: &mut Scope<Function<H>>) {
             builtins
                 $(
                     .define(
@@ -69,7 +69,7 @@ builtins!(
 );
 
 
-fn print<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn print<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let expression = context.stack().pop(&t::Any, &operator)?;
@@ -78,7 +78,7 @@ fn print<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn define<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn define<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let (body, name) = context.stack()
@@ -89,13 +89,13 @@ fn define<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn fail<Host>(_: Rc<RefCell<Host>>, _: &mut dyn Context, operator: Span)
+fn fail<H>(_: Rc<RefCell<H>>, _: &mut dyn Context, operator: Span)
     -> Result
 {
     Err(context::Error::Failure { operator })
 }
 
-fn eval<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn eval<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let list = context.stack().pop(&t::List, &operator)?;
@@ -107,7 +107,7 @@ fn eval<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn load<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn load<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let path = context.stack().pop(&t::String, &operator)?;
@@ -118,14 +118,14 @@ fn load<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn drop<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn drop<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     context.stack().pop(&t::Any, &operator)?;
     Ok(())
 }
 
-fn dup<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn dup<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let mut expression = context.stack().pop(&t::Any, &operator)?;
@@ -138,7 +138,7 @@ fn dup<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn map<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn map<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let (list, function) = context.stack()
@@ -166,7 +166,7 @@ fn map<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn r#if<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn r#if<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let (function, condition)  =context.stack()
@@ -187,7 +187,7 @@ fn r#if<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn add_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn add_n<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let sum = context.stack()
@@ -199,7 +199,7 @@ fn add_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn mul_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn mul_n<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let product = context.stack()
@@ -211,7 +211,7 @@ fn mul_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn gt_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn gt_n<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let is_greater = context.stack()
@@ -224,7 +224,7 @@ fn gt_n<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn add_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn add_f<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let sum = context.stack()
@@ -236,7 +236,7 @@ fn add_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn mul_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn mul_f<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let product = context.stack()
@@ -248,7 +248,7 @@ fn mul_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn gt_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn gt_f<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let is_greater = context.stack()
@@ -261,7 +261,7 @@ fn gt_f<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn eq<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn eq<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let is_equal = context.stack()
@@ -273,7 +273,7 @@ fn eq<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn not<Host>(_: Rc<RefCell<Host>>, context: &mut dyn Context, operator: Span)
+fn not<H>(_: Rc<RefCell<H>>, context: &mut dyn Context, operator: Span)
     -> Result
 {
     let inverted = context.stack()

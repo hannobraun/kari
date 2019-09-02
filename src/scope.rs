@@ -101,12 +101,12 @@ impl fmt::Display for Error {
 }
 
 
-pub enum Function<Host> {
-    Builtin(Builtin<Host>),
+pub enum Function<H> {
+    Builtin(Builtin<H>),
     UserDefined(expr::List),
 }
 
-impl<Host> Clone for Function<Host> {
+impl<H> Clone for Function<H> {
     fn clone(&self) -> Self {
         match self {
             Function::Builtin(f)     => Function::Builtin(f.clone()),
@@ -116,8 +116,8 @@ impl<Host> Clone for Function<Host> {
 }
 
 
-pub type Builtin<Host> =
-    fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
+pub type Builtin<H> =
+    fn(Rc<RefCell<H>>, &mut dyn Context, Span) -> Result<(), context::Error>;
 
 
 enum Node<T> {
