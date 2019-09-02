@@ -37,7 +37,7 @@ pub trait Context {
 
     fn evaluate_list(&mut self,
         operator:    Option<Span>,
-        expressions: &mut dyn Iterator<Item=expr::Any>,
+        expressions: expr::List,
     )
         -> Result<(), Error>;
 }

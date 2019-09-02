@@ -214,7 +214,7 @@ impl<Host> Context for Evaluator<Host> {
             if let Some(list) = self.functions.get(&word, &self.stack) {
                 self.evaluate_list(
                     Some(expression.span),
-                    &mut list.inner.into_iter(),
+                    list,
                 )?;
             }
             else if let Some(ext) = self.extensions.get(&word, &self.stack) {
@@ -249,7 +249,7 @@ impl<Host> Context for Evaluator<Host> {
 
     fn evaluate_list(&mut self,
         operator:    Option<Span>,
-        expressions: &mut dyn Iterator<Item=expr::Any>,
+        expressions: expr::List,
     )
         -> Result<(), context::Error>
     {
