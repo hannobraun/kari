@@ -65,7 +65,11 @@ builtins!(
 );
 
 
-fn print<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn print<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let expression = context.stack().pop(&t::Any, &operator)?;
@@ -74,7 +78,11 @@ fn print<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn define<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn define<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let (body, name) = context.stack()
@@ -85,13 +93,21 @@ fn define<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn fail<H>(_: Host<H>, _: &mut dyn Context, operator: Span)
+fn fail<H>(
+    _:        Host<H>,
+    _:        &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     Err(context::Error::Failure { operator })
 }
 
-fn eval<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn eval<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let list = context.stack().pop(&t::List, &operator)?;
@@ -103,7 +119,11 @@ fn eval<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn load<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn load<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let path = context.stack().pop(&t::String, &operator)?;
@@ -114,14 +134,22 @@ fn load<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn drop<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn drop<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     context.stack().pop(&t::Any, &operator)?;
     Ok(())
 }
 
-fn dup<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn dup<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let mut expression = context.stack().pop(&t::Any, &operator)?;
@@ -134,7 +162,11 @@ fn dup<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn map<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn map<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let (list, function) = context.stack()
@@ -162,7 +194,11 @@ fn map<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn r#if<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn r#if<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let (function, condition)  =context.stack()
@@ -183,7 +219,11 @@ fn r#if<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn add_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn add_n<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let sum = context.stack()
@@ -195,7 +235,11 @@ fn add_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn mul_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn mul_n<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let product = context.stack()
@@ -207,7 +251,11 @@ fn mul_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn gt_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn gt_n<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let is_greater = context.stack()
@@ -220,7 +268,11 @@ fn gt_n<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn add_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn add_f<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let sum = context.stack()
@@ -232,7 +284,11 @@ fn add_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn mul_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn mul_f<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let product = context.stack()
@@ -244,7 +300,11 @@ fn mul_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn gt_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn gt_f<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let is_greater = context.stack()
@@ -257,7 +317,11 @@ fn gt_f<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
 }
 
 
-fn eq<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn eq<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let is_equal = context.stack()
@@ -269,7 +333,11 @@ fn eq<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
     Ok(())
 }
 
-fn not<H>(_: Host<H>, context: &mut dyn Context, operator: Span)
+fn not<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context,
+    operator: Span,
+)
     -> Result
 {
     let inverted = context.stack()
