@@ -41,9 +41,9 @@ pub trait Context {
 pub enum Error {
     Failure { operator: Span },
     UnknownFunction { name: String, span: Span },
-    Functions(scope::Error),
     Io(io::Error),
     Parser(parser::Error),
+    Scope(scope::Error),
     Stack(stack::Error),
     Type(TypeError),
 }
@@ -58,15 +58,15 @@ impl Error {
             Error::Stack(error)  => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
 
-            Error::Functions(_) => (),
-            Error::Io(_)        => (),
+            Error::Scope(_) => (),
+            Error::Io(_)    => (),
         }
     }
 }
 
 impl From<scope::Error> for Error {
     fn from(from: scope::Error) -> Self {
-        Error::Functions(from)
+        Error::Scope(from)
     }
 }
 
@@ -107,10 +107,10 @@ impl fmt::Display for Error {
                 write!(f, "Error loading stream: {}", error)
             }
 
-            Error::Functions(error) => error.fmt(f),
-            Error::Parser(error)    => error.fmt(f),
-            Error::Stack(error)     => error.fmt(f),
-            Error::Type(error)      => error.fmt(f),
+            Error::Scope(error)  => error.fmt(f),
+            Error::Parser(error) => error.fmt(f),
+            Error::Stack(error)  => error.fmt(f),
+            Error::Type(error)   => error.fmt(f),
         }
     }
 }
