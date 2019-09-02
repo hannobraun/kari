@@ -30,8 +30,8 @@ pub trait Context {
         -> Result<expr::List, Error>;
 
     fn evaluate_expr(&mut self,
-        operator:   Option<Span>,
-        expression: expr::Any,
+        operator: Option<Span>,
+        expr:     expr::Any,
     )
         -> Result<(), Error>;
 
