@@ -198,19 +198,6 @@ impl<Host> Context for Evaluator<Host> {
         Ok(expr::List::new(expressions, start.merge(end)))
     }
 
-    fn evaluate_list(&mut self,
-        operator:    Option<Span>,
-        expressions: &mut dyn Iterator<Item=expr::Any>,
-    )
-        -> Result<(), context::Error>
-    {
-        for expression in expressions {
-            self.evaluate_expr(operator.clone(), expression)?;
-        }
-
-        Ok(())
-    }
-
     fn evaluate_expr(&mut self,
         operator:   Option<Span>,
         expression: expr::Any,
@@ -255,6 +242,19 @@ impl<Host> Context for Evaluator<Host> {
 
         if pop_operator {
             self.stack_trace.pop();
+        }
+
+        Ok(())
+    }
+
+    fn evaluate_list(&mut self,
+        operator:    Option<Span>,
+        expressions: &mut dyn Iterator<Item=expr::Any>,
+    )
+        -> Result<(), context::Error>
+    {
+        for expression in expressions {
+            self.evaluate_expr(operator.clone(), expression)?;
         }
 
         Ok(())
