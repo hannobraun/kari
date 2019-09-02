@@ -192,6 +192,9 @@ mod tests {
     };
 
 
+    type Result = std::result::Result<(), Error>;
+
+
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
         let scope = Scope::<()>::root();
@@ -203,7 +206,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_return_functions_that_were_defined() -> Result<(), Error> {
+    fn it_should_return_functions_that_were_defined() -> Result {
         let mut scope = Scope::root();
         let mut stack = Stack::new();
 
@@ -221,7 +224,7 @@ mod tests {
 
     #[test]
     fn it_should_return_the_function_that_matches_the_types_on_the_stack()
-        -> Result<(), Error>
+        -> Result
     {
         let mut scope = Scope::root();
         let mut stack = Stack::new();
@@ -240,9 +243,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_return_function_without_args_regardless_of_stack()
-        -> Result<(), Error>
-    {
+    fn it_should_return_function_without_args_regardless_of_stack() -> Result {
         let mut scope = Scope::root();
         let mut stack = Stack::new();
 
@@ -259,9 +260,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_reject_functions_that_are_already_defined()
-        -> Result<(), Error>
-    {
+    fn it_should_reject_functions_that_are_already_defined() -> Result {
         let mut scope = Scope::root();
 
         let result = scope
@@ -274,7 +273,7 @@ mod tests {
 
     #[test]
     fn it_should_reject_functions_more_specific_than_a_defined_function()
-        -> Result<(), Error>
+        -> Result
     {
         let mut scope = Scope::root();
 
@@ -287,9 +286,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_reject_no_arg_functions_if_name_is_already_taken()
-        -> Result<(), Error>
-    {
+    fn it_should_reject_no_arg_functions_if_name_is_already_taken() -> Result {
         // This is a special case of the previous test case. Functions with no
         // arguments are specially handled in the code, so we also need a
         // special test for them.
@@ -306,7 +303,7 @@ mod tests {
 
     #[test]
     fn it_should_reject_functions_less_specific_than_a_defined_function()
-        -> Result<(), Error>
+        -> Result
     {
         let mut scope = Scope::root();
 
