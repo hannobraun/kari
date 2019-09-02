@@ -59,7 +59,7 @@ impl Error {
             Error::Type(error)   => error.spans(spans),
 
             Error::Functions(_) => (),
-            Error::Io(_)             => (),
+            Error::Io(_)        => (),
         }
     }
 }
