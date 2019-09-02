@@ -198,10 +198,7 @@ impl<Host> Context for Evaluator<Host> {
         Ok(expr::List::new(expressions, start.merge(end)))
     }
 
-    fn evaluate_expr(&mut self,
-        operator: Option<Span>,
-        expr:     expr::Any,
-    )
+    fn evaluate_expr(&mut self, operator: Option<Span>, expr: expr::Any)
         -> Result<(), context::Error>
     {
         let mut pop_operator = false;
