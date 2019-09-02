@@ -14,6 +14,7 @@ use crate::{
     },
     scope::{
         Builtin,
+        Function,
         Scope,
     },
 };
@@ -24,13 +25,13 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
-        pub fn builtins(builtins: &mut Scope<Builtin>) {
+        pub fn builtins<Host>(builtins: &mut Scope<Function<Host>>) {
             builtins
                 $(
                     .define(
                         String::from($name),
                         &[$(&$arg,)*],
-                        $fn as Builtin,
+                        Function::Builtin($fn as Builtin),
                     )
                     .expect("Failed to define builtin")
                 )*;

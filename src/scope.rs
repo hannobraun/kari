@@ -11,6 +11,7 @@ use crate::{
         Context,
     },
     data::{
+        expr,
         span::Span,
         stack::Stack,
         types::{
@@ -95,6 +96,23 @@ impl fmt::Display for Error {
         match *self {
             Error::Define =>
                 write!(f, "Conflicting function definition found"),
+        }
+    }
+}
+
+
+pub enum Function<Host> {
+    Builtin(Builtin),
+    Extension(Extension<Host>),
+    UserDefined(expr::List),
+}
+
+impl<Host> Clone for Function<Host> {
+    fn clone(&self) -> Self {
+        match self {
+            Function::Builtin(f)     => Function::Builtin(f.clone()),
+            Function::Extension(f)   => Function::Extension(f.clone()),
+            Function::UserDefined(f) => Function::UserDefined(f.clone()),
         }
     }
 }

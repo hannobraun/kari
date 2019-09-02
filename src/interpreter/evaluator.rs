@@ -31,8 +31,7 @@ use crate::{
         parser,
     },
     scope::{
-        Builtin,
-        Extension,
+        Function,
         Scope,
     },
 };
@@ -43,11 +42,10 @@ pub struct Evaluator<Host> {
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
+    scope: Scope<Function<Host>>,
+
     host:        Rc<RefCell<Host>>,
-    extensions:  Scope<Extension<Host>>,
-    builtins:    Scope<Builtin>,
     stack:       Stack,
-    functions:   Scope<expr::List>,
     stack_trace: Vec<Span>,
 }
 
@@ -59,25 +57,24 @@ impl<Host> Evaluator<Host> {
     )
         -> Self
     {
-        let mut builtins = Scope::new();
-        builtins::builtins(&mut builtins);
+        let mut scope = Scope::new();
+        builtins::builtins(&mut scope);
 
         Self {
             streams: HashMap::new(),
             stdout,
             stderr,
 
+            scope,
+
             host:        Rc::new(RefCell::new(host)),
-            extensions:  Scope::new(),
-            builtins,
             stack:       Stack::new(),
-            functions:   Scope::new(),
             stack_trace: Vec::new(),
         }
     }
 
-    pub fn root_scope(&mut self) -> &mut Scope<Extension<Host>> {
-        &mut self.extensions
+    pub fn root_scope(&mut self) -> &mut Scope<Function<Host>> {
+        &mut self.scope
     }
 
     pub fn run(&mut self,
@@ -167,7 +164,7 @@ impl<Host> Context for Evaluator<Host> {
     fn define(&mut self, name: expr::Symbol, body: expr::List)
         -> Result<(), context::Error>
     {
-        self.functions.define(name.inner, &[], body)?;
+        self.scope.define(name.inner, &[], Function::UserDefined(body))?;
         Ok(())
     }
 
@@ -211,21 +208,18 @@ impl<Host> Context for Evaluator<Host> {
         }
 
         if let expr::Kind::Word(word) = expr.kind {
-            if let Some(list) = self.functions.get(&word, &self.stack) {
-                self.evaluate_list(
-                    Some(expr.span),
-                    list,
-                )?;
-            }
-            else if let Some(ext) = self.extensions.get(&word, &self.stack) {
-                ext(
-                    self.host.clone(),
-                    self,
-                    expr.span,
-                )?;
-            }
-            else if let Some(builtin) = self.builtins.get(&word, &self.stack) {
-                builtin(self, expr.span)?;
+            if let Some(f) = self.scope.get(&word, &self.stack) {
+                match f {
+                    Function::Builtin(f) => {
+                        f(self, expr.span)?;
+                    }
+                    Function::Extension(f) => {
+                        f(self.host.clone(), self, expr.span)?;
+                    }
+                    Function::UserDefined(f) => {
+                        self.evaluate_list(Some(expr.span), f)?;
+                    }
+                }
             }
             else {
                 return Err(
