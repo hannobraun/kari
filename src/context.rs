@@ -64,12 +64,6 @@ impl Error {
     }
 }
 
-impl From<scope::Error> for Error {
-    fn from(from: scope::Error) -> Self {
-        Error::Scope(from)
-    }
-}
-
 impl From<TypeError> for Error {
     fn from(from: TypeError) -> Self {
         Error::Type(from)
@@ -85,6 +79,12 @@ impl From<io::Error> for Error {
 impl From<parser::Error> for Error {
     fn from(from: parser::Error) -> Self {
         Error::Parser(from)
+    }
+}
+
+impl From<scope::Error> for Error {
+    fn from(from: scope::Error) -> Self {
+        Error::Scope(from)
     }
 }
 
