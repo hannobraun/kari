@@ -8,7 +8,6 @@ use std::{
 };
 
 use crate::{
-    builtins,
     context::{
         self,
         Context,
@@ -55,12 +54,10 @@ impl<H> Evaluator<H> {
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
         host:   H,
+        scope:  Scope<Function<H>>,
     )
         -> Self
     {
-        let mut scope = Scope::root();
-        builtins::builtins(&mut scope);
-
         Self {
             streams: HashMap::new(),
             stdout,

@@ -14,7 +14,11 @@ use clap::{
     Arg,
 };
 
-use kari::interpreter::evaluator::Evaluator;
+use kari::{
+    builtins,
+    interpreter::evaluator::Evaluator,
+    scope::Scope,
+};
 
 
 fn main() {
@@ -32,6 +36,9 @@ fn main() {
 
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
+
+    let mut root_scope = Scope::root();
+    builtins::builtins(&mut root_scope);
 
     let prelude = kari::prelude()
         .unwrap_or_else(|error| {
@@ -53,13 +60,13 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::new(stdout, stderr, ())
+            Evaluator::new(stdout, stderr, (), root_scope)
                 .run(path.into(), prelude, Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            Evaluator::new(stdout, stderr, ())
+            Evaluator::new(stdout, stderr, (), root_scope)
                 .run("<stdin>".into(), prelude, stdin);
         }
     }

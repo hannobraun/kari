@@ -13,7 +13,11 @@ use termion::{
 };
 use walkdir::WalkDir;
 
-use kari::interpreter::evaluator::Evaluator;
+use kari::{
+    builtins,
+    interpreter::evaluator::Evaluator,
+    scope::Scope,
+};
 
 
 fn main() {
@@ -58,13 +62,16 @@ fn main() {
         let stdout = Box::new(stdout());
         let stderr = Box::new(stderr());
 
+        let mut root_scope = Scope::root();
+        builtins::builtins(&mut root_scope);
+
         let prelude = kari::prelude()
             .unwrap_or_else(|error| {
                 print!("ERROR: Failed to load prelude: {}\n", error);
                 exit(1);
             });
 
-        let success = Evaluator::new(stdout, stderr, ())
+        let success = Evaluator::new(stdout, stderr, (), root_scope)
             .run(path.into(), prelude, Box::new(file));
 
         if success {
