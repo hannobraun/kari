@@ -47,7 +47,7 @@ impl<T> Scope<T>
 
         if args.len() == 0 {
             if self.functions.contains_key(&name) {
-                return Err(Error::FunctionAlreadyDefined);
+                return Err(Error::Define);
             }
 
             self.functions.insert(
@@ -98,7 +98,7 @@ impl<T> Node<T> {
     {
         let map = match self {
             Node::Type(map)   => map,
-            Node::Function(_) => return Err(Error::FunctionAlreadyDefined),
+            Node::Function(_) => return Err(Error::Define),
         };
 
         let (&t, args) = match args.split_last() {
@@ -108,7 +108,7 @@ impl<T> Node<T> {
                 // We've run out of arguments to look at while unpacking the
                 // already existing nodes on the path to our functions. This
                 // means that a less specific function is already defined.
-                return Err(Error::FunctionAlreadyDefined);
+                return Err(Error::Define);
             }
         };
 
@@ -139,13 +139,13 @@ impl<T> Node<T> {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Error {
-    FunctionAlreadyDefined,
+    Define,
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::FunctionAlreadyDefined =>
+            Error::Define =>
                 write!(f, "Function already defined"),
         }
     }
@@ -252,7 +252,7 @@ mod tests {
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::FunctionAlreadyDefined));
+        assert_eq!(result.map(|_| ()), Err(Error::Define));
         Ok(())
     }
 
@@ -266,7 +266,7 @@ mod tests {
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::FunctionAlreadyDefined));
+        assert_eq!(result.map(|_| ()), Err(Error::Define));
         Ok(())
     }
 
@@ -284,7 +284,7 @@ mod tests {
             .define("a", &[&t::Number], 1)?
             .define("a", &[], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::FunctionAlreadyDefined));
+        assert_eq!(result.map(|_| ()), Err(Error::Define));
         Ok(())
     }
 
@@ -298,7 +298,7 @@ mod tests {
             .define("a", &[&t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::FunctionAlreadyDefined));
+        assert_eq!(result.map(|_| ()), Err(Error::Define));
         Ok(())
     }
 }
