@@ -34,6 +34,12 @@ pub trait Context {
         expressions: &mut dyn Iterator<Item=expr::Any>,
     )
         -> Result<(), Error>;
+
+    fn evaluate_expr(&mut self,
+        operator:   Option<Span>,
+        expression: expr::Any,
+    )
+        -> Result<(), Error>;
 }
 
 

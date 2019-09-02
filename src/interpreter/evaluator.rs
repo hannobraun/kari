@@ -204,42 +204,53 @@ impl<Host> Context for Evaluator<Host> {
     )
         -> Result<(), context::Error>
     {
+        for expression in expressions {
+            self.evaluate_expr(operator.clone(), expression)?;
+        }
+
+        Ok(())
+    }
+
+    fn evaluate_expr(&mut self,
+        operator:   Option<Span>,
+        expression: expr::Any,
+    )
+        -> Result<(), context::Error>
+    {
         let mut pop_operator = false;
         if let Some(operator) = operator {
             self.stack_trace.push(operator);
             pop_operator = true;
         }
 
-        for expression in expressions {
-            if let expr::Kind::Word(word) = expression.kind {
-                if let Some(list) = self.functions.get(&word, &self.stack) {
-                    self.evaluate(
-                        Some(expression.span),
-                        &mut list.inner.into_iter(),
-                    )?;
-                }
-                else if let Some(ext) = self.extensions.get(&word, &self.stack) {
-                    ext(
-                        self.host.clone(),
-                        self,
-                        expression.span,
-                    )?;
-                }
-                else if let Some(builtin) = self.builtins.get(&word, &self.stack) {
-                    builtin(self, expression.span)?;
-                }
-                else {
-                    return Err(
-                        context::Error::UnknownFunction {
-                            name: word,
-                            span: expression.span,
-                        }
-                    );
-                }
+        if let expr::Kind::Word(word) = expression.kind {
+            if let Some(list) = self.functions.get(&word, &self.stack) {
+                self.evaluate(
+                    Some(expression.span),
+                    &mut list.inner.into_iter(),
+                )?;
+            }
+            else if let Some(ext) = self.extensions.get(&word, &self.stack) {
+                ext(
+                    self.host.clone(),
+                    self,
+                    expression.span,
+                )?;
+            }
+            else if let Some(builtin) = self.builtins.get(&word, &self.stack) {
+                builtin(self, expression.span)?;
             }
             else {
-                self.stack.push::<expr::Any>(expression);
+                return Err(
+                    context::Error::UnknownFunction {
+                        name: word,
+                        span: expression.span,
+                    }
+                );
             }
+        }
+        else {
+            self.stack.push::<expr::Any>(expression);
         }
 
         if pop_operator {
