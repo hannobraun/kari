@@ -53,10 +53,9 @@ pub struct Evaluator<Host> {
 
 impl<Host> Evaluator<Host> {
     pub fn new(
-        stdout:     Box<dyn io::Write>,
-        stderr:     Box<dyn io::Write>,
-        host:       Host,
-        extensions: Scope<Extension<Host>>,
+        stdout: Box<dyn io::Write>,
+        stderr: Box<dyn io::Write>,
+        host:   Host,
     )
         -> Self
     {
@@ -69,12 +68,16 @@ impl<Host> Evaluator<Host> {
             stderr,
 
             host:        Rc::new(RefCell::new(host)),
-            extensions,
+            extensions:  Scope::new(),
             builtins,
             stack:       Stack::new(),
             functions:   Scope::new(),
             stack_trace: Vec::new(),
         }
+    }
+
+    pub fn root_scope(&mut self) -> &mut Scope<Extension<Host>> {
+        &mut self.extensions
     }
 
     pub fn run(&mut self,

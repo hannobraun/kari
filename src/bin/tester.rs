@@ -13,10 +13,7 @@ use termion::{
 };
 use walkdir::WalkDir;
 
-use kari::{
-    interpreter::evaluator::Evaluator,
-    scope::Scope,
-};
+use kari::interpreter::evaluator::Evaluator;
 
 
 fn main() {
@@ -58,9 +55,8 @@ fn main() {
                 exit(1);
             });
 
-        let stdout     = Box::new(stdout());
-        let stderr     = Box::new(stderr());
-        let extensions = Scope::new();
+        let stdout = Box::new(stdout());
+        let stderr = Box::new(stderr());
 
         let prelude = kari::prelude()
             .unwrap_or_else(|error| {
@@ -68,7 +64,7 @@ fn main() {
                 exit(1);
             });
 
-        let success = Evaluator::new(stdout, stderr, (), extensions)
+        let success = Evaluator::new(stdout, stderr, ())
             .run(path.into(), prelude, Box::new(file));
 
         if success {
