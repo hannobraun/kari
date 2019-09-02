@@ -136,9 +136,9 @@ impl<Host> Evaluator<Host> {
                 }
             };
 
-            let result = self.evaluate(
+            let result = self.evaluate_expr(
                 None,
-                &mut Some(expression).into_iter(),
+                expression,
             );
             if let Err(error) = result {
                 return Err(
