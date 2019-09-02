@@ -21,7 +21,6 @@ use crate::{
 };
 
 
-#[derive(Debug)]
 pub struct Scope<T> {
     functions: HashMap<String, Node<T>>,
 }
@@ -107,7 +106,6 @@ pub type Extension<Host> =
     fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
 
 
-#[derive(Debug)]
 enum Node<T> {
     Type(HashMap<&'static dyn Type, Node<T>>),
     Function(T),
