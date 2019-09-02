@@ -32,6 +32,7 @@ use crate::{
     },
     scope::{
         Function,
+        Host,
         Scope,
     },
 };
@@ -44,7 +45,7 @@ pub struct Evaluator<H> {
 
     scope: Scope<Function<H>>,
 
-    host:        Rc<RefCell<H>>,
+    host:        Host<H>,
     stack:       Stack,
     stack_trace: Vec<Span>,
 }
