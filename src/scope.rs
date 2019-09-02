@@ -146,7 +146,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::Define =>
-                write!(f, "Function already defined"),
+                write!(f, "Conflicting function definition found"),
         }
     }
 }
