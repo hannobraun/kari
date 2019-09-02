@@ -86,6 +86,27 @@ impl<T> Scope<T>
 }
 
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum Error {
+    Define,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Error::Define =>
+                write!(f, "Conflicting function definition found"),
+        }
+    }
+}
+
+
+pub type Builtin =
+    fn(&mut dyn Context, Span) -> Result<(), context::Error>;
+pub type Extension<Host> =
+    fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
+
+
 #[derive(Debug)]
 enum Node<T> {
     Type(HashMap<&'static dyn Type, Node<T>>),
@@ -135,27 +156,6 @@ impl<T> Node<T> {
         Ok(())
     }
 }
-
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Error {
-    Define,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::Define =>
-                write!(f, "Conflicting function definition found"),
-        }
-    }
-}
-
-
-pub type Builtin =
-    fn(&mut dyn Context, Span) -> Result<(), context::Error>;
-pub type Extension<Host> =
-    fn(Rc<RefCell<Host>>, &mut dyn Context, Span) -> Result<(), context::Error>;
 
 
 #[cfg(test)]
