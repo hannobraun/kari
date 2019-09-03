@@ -83,6 +83,14 @@ impl<H> Evaluator<H> {
         self.evaluate_expressions(prelude_pipeline, &mut scope)
             .expect("Error while evaluating prelude");
 
+        // We panic on errors in the prelude itself, but errors in other modules
+        // might still produce stack traces with spans that refer to the
+        // prelude.
+        self.streams.insert(
+            prelude_name.into(),
+            prelude,
+        );
+
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut program,
