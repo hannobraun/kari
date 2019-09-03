@@ -1,0 +1,4 @@
+"std" import
+
+2 84 swap /
+42 = assert
