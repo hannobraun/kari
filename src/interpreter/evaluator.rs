@@ -76,11 +76,11 @@ impl<H> Evaluator<H> {
     {
         let prelude_name = String::from("<prelude>");
 
-        let prelude = pipeline::new(
+        let prelude_pipeline = pipeline::new(
             prelude_name,
             &mut prelude,
         );
-        self.evaluate_expressions(prelude, &mut scope)
+        self.evaluate_expressions(prelude_pipeline, &mut scope)
             .expect("Error while evaluating prelude");
 
         let pipeline = pipeline::new(
