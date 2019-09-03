@@ -11,7 +11,7 @@ pub struct Span {
 }
 
 impl Span {
-    pub fn merge(mut self, other: Self) -> Self {
+    pub fn merge(mut self, other: &Self) -> Self {
         if self.start > other.start {
             self.start = other.start;
         }

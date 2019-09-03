@@ -155,7 +155,7 @@ fn to_list<H>(
     let (word, span) = symbol.open();
     let word = expr::Any::new(expr::Kind::Word(word), span.clone());
 
-    let list = expr::List::new(vec![word], operator.merge(span));
+    let list = expr::List::new(vec![word], operator.merge(&span));
     context.stack().push(list);
 
     Ok(())
@@ -184,7 +184,7 @@ fn dup<H>(
 {
     let mut expression = context.stack().pop(&t::Any, &operator)?;
 
-    expression.span = operator.merge(expression.span);
+    expression.span = operator.merge(&expression.span);
 
     context.stack().push((expression.clone(), expression));
 
@@ -232,7 +232,7 @@ fn map<H>(
 
     let data = expr::List::new(
         result,
-        operator.merge(list.span).merge(function.span),
+        operator.merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
 

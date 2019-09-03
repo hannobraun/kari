@@ -62,7 +62,7 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            list_span = list_span.merge(token.span.clone());
+            list_span = list_span.merge(&token.span);
 
             let expr = match token.kind {
                 token::Kind::ListOpen => {

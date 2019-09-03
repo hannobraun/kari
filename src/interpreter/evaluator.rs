@@ -182,7 +182,7 @@ impl<H> Context<H> for Evaluator<H> {
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
 
-        Ok(expr::List::new(expressions, start.merge(end)))
+        Ok(expr::List::new(expressions, start.merge(&end)))
     }
 
     fn evaluate_expr(&mut self,

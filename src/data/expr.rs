@@ -252,7 +252,7 @@ impl<A, B> Compute for (A, B)
         let (b_inner, b_span) = self.1.open();
         Out::new(
             f((a_inner, b_inner)),
-            a_span.merge(b_span),
+            a_span.merge(&b_span),
         )
     }
 }
