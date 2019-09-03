@@ -162,7 +162,7 @@ fn print_span<Stream>(
             color::Fg(color::Magenta),
 
             style::Bold, color::Fg(color::LightWhite),
-            line,
+            line.replace("\t", "    "),
             color::Fg(color::Reset), style::Reset,
         )?;
 
@@ -194,7 +194,16 @@ fn print_span<Stream>(
                 write!(stderr, "^")?;
             }
             else {
-                write!(stderr, " ")?;
+                if line.chars().nth(column) == Some('\t') {
+                    // Before we printed the line above, we replaced each tab
+                    // with 4 spaces. This means, if we encounter a tab here, we
+                    // know that we can just replace it with 4 spaces to make
+                    // everything line up.
+                    write!(stderr, "    ")?;
+                }
+                else {
+                    write!(stderr, " ")?;
+                }
             }
         }
         write!(
