@@ -74,8 +74,10 @@ impl<H> Evaluator<H> {
     )
         -> bool
     {
+        let prelude_name = String::from("<prelude>");
+
         let prelude = pipeline::new(
-            String::from("<prelude>"),
+            prelude_name,
             &mut prelude,
         );
         self.evaluate_expressions(prelude, &mut scope)
