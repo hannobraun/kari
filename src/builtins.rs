@@ -153,9 +153,10 @@ fn to_list<H>(
     let symbol = context.stack().pop(&t::Symbol, &operator)?;
 
     let (word, span) = symbol.open();
-    let word = expr::Any::new(expr::Kind::Word(word), span.clone());
+    let list_span    = operator.merge(&span);
+    let word         = expr::Any::new(expr::Kind::Word(word), span);
 
-    let list = expr::List::new(vec![word], operator.merge(&span));
+    let list = expr::List::new(vec![word], list_span);
     context.stack().push(list);
 
     Ok(())
