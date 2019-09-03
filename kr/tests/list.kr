@@ -8,3 +8,6 @@
 
 42 wrap
 [ 42 ] = assert
+
+[ 2 ] 1 prepend
+[ 1 2 ] = assert
