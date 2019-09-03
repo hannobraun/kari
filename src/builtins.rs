@@ -40,11 +40,12 @@ macro_rules! builtins {
 }
 
 builtins!(
-    "print",  print,  (t::Any,);
-    "define", define, (t::List, t::Symbol,);
-    "fail",   fail,   ();
-    "eval",   eval,   (t::List,);
-    "load",   load,   (t::String,);
+    "print",   print,   (t::Any,);
+    "define",  define,  (t::List, t::Symbol,);
+    "fail",    fail,    ();
+    "eval",    eval,    (t::List,);
+    "load",    load,    (t::String,);
+    "to_list", to_list, (t::Symbol,);
 
     "drop", drop, (t::Any,);
     "dup",  dup,  (t::Any,);
@@ -138,6 +139,25 @@ fn load<H>(
 
     let list = context.load(path)?;
     context.stack().push(list);
+    Ok(())
+}
+
+fn to_list<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    _:        &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let symbol = context.stack().pop(&t::Symbol, &operator)?;
+
+    let (word, span) = symbol.open();
+    let word = expr::Any::new(expr::Kind::Word(word), span.clone());
+
+    let list = expr::List::new(vec![word], operator.merge(span));
+    context.stack().push(list);
+
     Ok(())
 }
 
