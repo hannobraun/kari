@@ -55,6 +55,7 @@ builtins!(
 
     "+", add_n, (t::Number, t::Number,);
     "*", mul_n, (t::Number, t::Number,);
+    "/", div_n, (t::Number, t::Number,);
     ">", gt_n,  (t::Number, t::Number,);
 
     "+", add_f, (t::Float, t::Float,);
@@ -276,6 +277,23 @@ fn mul_n<H>(
         .compute::<expr::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
+
+    Ok(())
+}
+
+fn div_n<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    _:        &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let quotient = context.stack()
+        .pop((&t::Number, &t::Number), &operator)?
+        .compute::<expr::Number, _, _>(|(a, b)| a / b);
+
+    context.stack().push(quotient);
 
     Ok(())
 }
