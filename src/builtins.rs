@@ -48,6 +48,7 @@ builtins!(
 
     "drop", drop, (t::Any,);
     "dup",  dup,  (t::Any,);
+    "swap", swap, (t::Any, t::Any,);
 
     "if",  r#if, (t::List, t::List,);
     "map", map,  (t::List, t::List,);
@@ -165,6 +166,20 @@ fn dup<H>(
     expression.span = operator.merge(expression.span);
 
     context.stack().push((expression.clone(), expression));
+
+    Ok(())
+}
+
+fn swap<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    _:        &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let (a, b) = context.stack().pop((&t::Any, &t::Any), &operator)?;
+    context.stack().push((b, a));
 
     Ok(())
 }
