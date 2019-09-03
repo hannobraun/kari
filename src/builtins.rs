@@ -51,8 +51,9 @@ builtins!(
     "dup",  dup,  (t::Any,);
     "swap", swap, (t::Any, t::Any,);
 
-    "if",  r#if, (t::List, t::List,);
-    "map", map,  (t::List, t::List,);
+    "if",   r#if, (t::List, t::List,);
+    "map",  map,  (t::List, t::List,);
+    "wrap", wrap, (t::Any,);
 
     "+", add_n, (t::Number, t::Number,);
     "*", mul_n, (t::Number, t::Number,);
@@ -236,6 +237,24 @@ fn map<H>(
         operator.merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
+
+    Ok(())
+}
+
+fn wrap<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    _:        &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let arg = context.stack().pop(&t::Any, &operator)?;
+
+    let span = operator.merge(&arg.span);
+    let list = expr::List::new(vec![arg], span);
+
+    context.stack().push(list);
 
     Ok(())
 }

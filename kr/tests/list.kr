@@ -5,3 +5,6 @@
 
 1 [ 2 3 7 ] [ * ] fold
 42 = assert
+
+42 wrap
+[ 42 ] = assert
