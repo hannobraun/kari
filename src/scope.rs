@@ -87,7 +87,9 @@ impl<'r, T> Scope<'r, T>
 
     fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
         let mut node = self.functions.get(name)
-            .ok_or_else(|| GetError)?;
+            .ok_or_else(||
+                GetError { candidates: self.candidates_for(name) }
+            )?;
 
         for expr in stack.peek() {
             let map = match node {
@@ -96,17 +98,29 @@ impl<'r, T> Scope<'r, T>
             };
 
             node = map.get(expr.get_type())
-                .ok_or_else(|| GetError)?;
+                .ok_or_else(||
+                    GetError { candidates: self.candidates_for(name) }
+                )?;
         }
 
         match node {
             Node::Type(_) => {
-                Err(GetError)
+                Err(GetError { candidates: self.candidates_for(name) })
             }
             Node::Function(f) => {
                 Ok(f.clone())
             }
         }
+    }
+
+    fn candidates_for(&self, name: &str) -> Vec<Vec<&'static dyn Type>> {
+        let mut candidates = Vec::new();
+
+        if let Some(node) = self.functions.get(name) {
+            node.all_paths(Vec::new(), &mut candidates);
+        }
+
+        candidates
     }
 }
 
@@ -122,7 +136,9 @@ impl fmt::Display for DefineError {
 
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct GetError;
+pub struct GetError {
+    pub candidates: Vec<Vec<&'static dyn Type>>,
+}
 
 
 pub enum Function<H> {
@@ -194,6 +210,24 @@ impl<T> Node<T> {
 
         Ok(())
     }
+
+    fn all_paths(&self,
+        current_path: Vec<&'static dyn Type>,
+        paths:        &mut Vec<Vec<&'static dyn Type>>,
+    ) {
+        match self {
+            Node::Type(map) => {
+                for (ty, node) in map.iter() {
+                    let mut path = current_path.clone();
+                    path.insert(0, *ty);
+                    node.all_paths(path, paths);
+                }
+            }
+            Node::Function(_) => {
+                paths.push(current_path);
+            }
+        }
+    }
 }
 
 
@@ -206,7 +240,10 @@ mod tests {
         },
         span::Span,
         stack::Stack,
-        types as t,
+        types::{
+            self as t,
+            Type,
+        },
     };
 
     use super::{
@@ -279,6 +316,35 @@ mod tests {
         let result = scope.get("a", &stack);
 
         assert_eq!(result, Ok(1));
+        Ok(())
+    }
+
+    #[test]
+    fn it_should_return_list_of_candidates_if_function_doesnt_match_stack()
+        -> Result
+    {
+        let mut scope = Scope::root();
+        let mut stack = Stack::new();
+
+        scope
+            .define("a", &[&t::Number, &t::Float], 1)?
+            .define("a", &[&t::Float, &t::Float],  2)?;
+        stack
+            .push(expr::Number::new(0, Span::default()))
+            .push(expr::Number::new(0, Span::default()));
+
+        let error = match scope.get("a", &stack) {
+            Ok(_)      => panic!("Expected error"),
+            Err(error) => error,
+        };
+
+        assert!(
+            error.candidates.contains(&vec![&t::Number as &dyn Type, &t::Float])
+        );
+        assert!(
+            error.candidates.contains(&vec![&t::Float, &t::Float])
+        );
+
         Ok(())
     }
 
