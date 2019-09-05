@@ -11,7 +11,10 @@ use crate::{
             self,
             Stack,
         },
-        types::TypeError,
+        types::{
+            Type,
+            TypeError,
+        },
     },
     pipeline::parser,
     scope::{
@@ -49,7 +52,12 @@ pub trait Context<H> {
 #[derive(Debug)]
 pub enum Error {
     Failure { operator: Span },
-    FunctionNotFound { name: String, span: Span },
+    FunctionNotFound {
+        name:       String,
+        span:       Span,
+        stack:      Stack,
+        candidates: Vec<Vec<&'static dyn Type>>,
+    },
     Io(io::Error),
     Parser(parser::Error),
     Scope(scope::DefineError),

@@ -30,6 +30,7 @@ use crate::{
         parser,
     },
     scope::{
+        self,
         Function,
         Host,
         Scope,
@@ -220,11 +221,13 @@ impl<H> Context<H> for Evaluator<H> {
                         }
                     }
                 }
-                Err(_) => {
+                Err(scope::GetError { candidates }) => {
                     return Err(
                         context::Error::FunctionNotFound {
-                            name: word,
-                            span: expr.span,
+                            name:  word,
+                            span:  expr.span,
+                            stack: self.stack.clone(),
+                            candidates,
                         }
                     );
                 }
