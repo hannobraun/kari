@@ -221,7 +221,7 @@ impl<H> Context<H> for Evaluator<H> {
             }
             else {
                 return Err(
-                    context::Error::UnknownFunction {
+                    context::Error::FunctionNotFound {
                         name: word,
                         span: expr.span,
                     }

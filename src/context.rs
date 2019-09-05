@@ -49,7 +49,7 @@ pub trait Context<H> {
 #[derive(Debug)]
 pub enum Error {
     Failure { operator: Span },
-    UnknownFunction { name: String, span: Span },
+    FunctionNotFound { name: String, span: Span },
     Io(io::Error),
     Parser(parser::Error),
     Scope(scope::Error),
@@ -60,8 +60,8 @@ pub enum Error {
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            Error::Failure { operator }         => spans.push(operator),
-            Error::UnknownFunction { span, .. } => spans.push(span),
+            Error::Failure { operator }          => spans.push(operator),
+            Error::FunctionNotFound { span, .. } => spans.push(span),
 
             Error::Parser(error) => error.spans(spans),
             Error::Stack(error)  => error.spans(spans),
@@ -109,7 +109,7 @@ impl fmt::Display for Error {
             Error::Failure { .. } => {
                 write!(f, "Explicit failure")
             }
-            Error::UnknownFunction { name, .. } => {
+            Error::FunctionNotFound { name, .. } => {
                 write!(f, "No matching function found: `{}`", name)
             }
             Error::Io(error) => {
