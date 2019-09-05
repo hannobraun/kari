@@ -49,14 +49,14 @@ impl<'r, T> Scope<'r, T>
         args: &[&'static dyn Type],
         f:    T,
     )
-        -> Result<&mut Self, Error>
+        -> Result<&mut Self, DefineError>
         where S: Into<String>
     {
         let name = name.into();
 
         if args.len() == 0 {
             if self.functions.contains_key(&name) {
-                return Err(Error::Define);
+                return Err(DefineError);
             }
 
             self.functions.insert(
@@ -75,7 +75,7 @@ impl<'r, T> Scope<'r, T>
         Ok(self)
     }
 
-    pub fn get(&self, name: &str, stack: &Stack) -> Result<T, Error> {
+    pub fn get(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
         self.get_inner(name, stack)
             .or_else(|error|
                 match self.parent {
@@ -85,9 +85,9 @@ impl<'r, T> Scope<'r, T>
             )
     }
 
-    fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, Error> {
+    fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
         let mut node = self.functions.get(name)
-            .ok_or_else(|| Error::Get)?;
+            .ok_or_else(|| GetError)?;
 
         for expr in stack.peek() {
             let map = match node {
@@ -96,12 +96,12 @@ impl<'r, T> Scope<'r, T>
             };
 
             node = map.get(expr.get_type())
-                .ok_or_else(|| Error::Get)?;
+                .ok_or_else(|| GetError)?;
         }
 
         match node {
             Node::Type(_) => {
-                Err(Error::Get)
+                Err(GetError)
             }
             Node::Function(f) => {
                 Ok(f.clone())
@@ -112,25 +112,17 @@ impl<'r, T> Scope<'r, T>
 
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Error {
-    Define,
-    Get,
-}
+pub struct DefineError;
 
-impl fmt::Display for Error {
+impl fmt::Display for DefineError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::Define =>
-                write!(f, "Conflicting function definition found"),
-            Error::Get => {
-                // The call site wraps this error in its own error, as it has
-                // more information about the error condition. This error should
-                // never be formatted directly.
-                unreachable!();
-            }
-        }
+        write!(f, "Conflicting function definition found")
     }
 }
+
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct GetError;
 
 
 pub enum Function<H> {
@@ -162,11 +154,11 @@ enum Node<T> {
 
 impl<T> Node<T> {
     fn insert(&mut self, args: &[&'static dyn Type], f: T)
-        -> Result<(), Error>
+        -> Result<(), DefineError>
     {
         let map = match self {
             Node::Type(map)   => map,
-            Node::Function(_) => return Err(Error::Define),
+            Node::Function(_) => return Err(DefineError),
         };
 
         let (&t, args) = match args.split_last() {
@@ -176,7 +168,7 @@ impl<T> Node<T> {
                 // We've run out of arguments to look at while unpacking the
                 // already existing nodes on the path to our functions. This
                 // means that a less specific function is already defined.
-                return Err(Error::Define);
+                return Err(DefineError);
             }
         };
 
@@ -218,12 +210,12 @@ mod tests {
     };
 
     use super::{
-        Error,
+        DefineError,
         Scope,
     };
 
 
-    type Result = std::result::Result<(), Error>;
+    type Result = std::result::Result<(), DefineError>;
 
 
     #[test]

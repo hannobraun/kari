@@ -52,7 +52,7 @@ pub enum Error {
     FunctionNotFound { name: String, span: Span },
     Io(io::Error),
     Parser(parser::Error),
-    Scope(scope::Error),
+    Scope(scope::DefineError),
     Stack(stack::Error),
     Type(TypeError),
 }
@@ -91,8 +91,8 @@ impl From<parser::Error> for Error {
     }
 }
 
-impl From<scope::Error> for Error {
-    fn from(from: scope::Error) -> Self {
+impl From<scope::DefineError> for Error {
+    fn from(from: scope::DefineError) -> Self {
         Error::Scope(from)
     }
 }
