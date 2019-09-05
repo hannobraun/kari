@@ -70,6 +70,18 @@ impl Stack {
     }
 }
 
+impl fmt::Display for Stack {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for substack in &self.substacks {
+            for expr in substack {
+                write!(f, "{} ", expr.kind)?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
 
 pub trait Push {
     fn push(self, _: &mut Stack);
