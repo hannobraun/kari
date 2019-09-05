@@ -14,7 +14,7 @@ use crate::data::{
 };
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Stack {
     substacks: Vec<Vec<expr::Any>>,
 }
