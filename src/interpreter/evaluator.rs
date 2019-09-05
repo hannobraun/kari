@@ -209,23 +209,25 @@ impl<H> Context<H> for Evaluator<H> {
         }
 
         if let expr::Kind::Word(word) = expr.kind {
-            if let Some(f) = scope.get(&word, &self.stack) {
-                match f {
-                    Function::Builtin(f) => {
-                        f(self.host.clone(), self, scope, expr.span)?;
-                    }
-                    Function::UserDefined(f) => {
-                        self.evaluate_list(scope, Some(expr.span), f)?;
+            match scope.get(&word, &self.stack) {
+                Some(f) => {
+                    match f {
+                        Function::Builtin(f) => {
+                            f(self.host.clone(), self, scope, expr.span)?;
+                        }
+                        Function::UserDefined(f) => {
+                            self.evaluate_list(scope, Some(expr.span), f)?;
+                        }
                     }
                 }
-            }
-            else {
-                return Err(
-                    context::Error::FunctionNotFound {
-                        name: word,
-                        span: expr.span,
-                    }
-                );
+                None => {
+                    return Err(
+                        context::Error::FunctionNotFound {
+                            name: word,
+                            span: expr.span,
+                        }
+                    );
+                }
             }
         }
         else {
