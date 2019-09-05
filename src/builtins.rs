@@ -55,6 +55,7 @@ builtins!(
 
     "map",     map,     (t::List, t::List,);
     "wrap",    wrap,    (t::Any,);
+    "unwrap",  unwrap,  (t::List,);
     "prepend", prepend, (t::List, t::Any,);
 
     "+", add_n, (t::Number, t::Number,);
@@ -284,6 +285,23 @@ fn wrap<H>(
     let list = expr::List::new(vec![arg], span);
 
     context.stack().push(list);
+
+    Ok(())
+}
+
+fn unwrap<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    _:        &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let list = context.stack().pop(&t::List, &operator)?;
+
+    for expr in list.inner {
+        context.stack().push(expr);
+    }
 
     Ok(())
 }

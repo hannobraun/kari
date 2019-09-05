@@ -9,5 +9,8 @@
 42 wrap
 [ 42 ] = assert
 
+[ 1 2 ] unwrap +
+3 = assert
+
 [ 2 ] 1 prepend
 [ 1 2 ] = assert
