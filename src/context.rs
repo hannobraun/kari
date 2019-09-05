@@ -110,7 +110,7 @@ impl fmt::Display for Error {
                 write!(f, "Explicit failure")
             }
             Error::UnknownFunction { name, .. } => {
-                write!(f, "Unknown function: `{}`", name)
+                write!(f, "No matching function found: `{}`", name)
             }
             Error::Io(error) => {
                 write!(f, "Error loading stream: {}", error)
