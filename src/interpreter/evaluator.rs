@@ -210,7 +210,7 @@ impl<H> Context<H> for Evaluator<H> {
 
         if let expr::Kind::Word(word) = expr.kind {
             match scope.get(&word, &self.stack) {
-                Some(f) => {
+                Ok(f) => {
                     match f {
                         Function::Builtin(f) => {
                             f(self.host.clone(), self, scope, expr.span)?;
@@ -220,7 +220,7 @@ impl<H> Context<H> for Evaluator<H> {
                         }
                     }
                 }
-                None => {
+                Err(_) => {
                     return Err(
                         context::Error::FunctionNotFound {
                             name: word,

@@ -75,31 +75,33 @@ impl<'r, T> Scope<'r, T>
         Ok(self)
     }
 
-    pub fn get(&self, name: &str, stack: &Stack) -> Option<T> {
+    pub fn get(&self, name: &str, stack: &Stack) -> Result<T, Error> {
         self.get_inner(name, stack)
-            .or_else(||
+            .or_else(|error|
                 match self.parent {
                     Some(parent) => parent.get(name, stack),
-                    None         => None,
+                    None         => Err(error),
                 }
             )
     }
 
-    fn get_inner(&self, name: &str, stack: &Stack) -> Option<T> {
-        let mut node = self.functions.get(name)?;
+    fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, Error> {
+        let mut node = self.functions.get(name)
+            .ok_or_else(|| Error::Get)?;
 
         for expr in stack.peek() {
             let map = match node {
                 Node::Type(map)   => map,
-                Node::Function(f) => return Some(f.clone()),
+                Node::Function(f) => return Ok(f.clone()),
             };
 
-            node = map.get(expr.get_type())?;
+            node = map.get(expr.get_type())
+                .ok_or_else(|| Error::Get)?;
         }
 
         match node {
-            Node::Type(_)     => None,
-            Node::Function(f) => Some(f.clone()),
+            Node::Type(_)     => Err(Error::Get),
+            Node::Function(f) => Ok(f.clone()),
         }
     }
 }
@@ -108,6 +110,7 @@ impl<'r, T> Scope<'r, T>
 #[derive(Debug, Eq, PartialEq)]
 pub enum Error {
     Define,
+    Get,
 }
 
 impl fmt::Display for Error {
@@ -115,6 +118,12 @@ impl fmt::Display for Error {
         match *self {
             Error::Define =>
                 write!(f, "Conflicting function definition found"),
+            Error::Get => {
+                // The call site wraps this error in its own error, as it has
+                // more information about the error condition. This error should
+                // never be formatted directly.
+                unreachable!();
+            }
         }
     }
 }
@@ -220,7 +229,7 @@ mod tests {
 
         let result = scope.get("a", &stack);
 
-        assert_eq!(result, None);
+        assert!(result.is_err());
     }
 
     #[test]
@@ -236,7 +245,7 @@ mod tests {
 
         let result = scope.get("a", &stack);
 
-        assert_eq!(result, Some(1));
+        assert_eq!(result, Ok(1));
         Ok(())
     }
 
@@ -256,7 +265,7 @@ mod tests {
 
         let result = scope.get("a", &stack);
 
-        assert_eq!(result, Some(1));
+        assert_eq!(result, Ok(1));
         Ok(())
     }
 
@@ -273,7 +282,7 @@ mod tests {
 
         let result = scope.get("a", &stack);
 
-        assert_eq!(result, Some(1));
+        assert_eq!(result, Ok(1));
         Ok(())
     }
 
@@ -348,7 +357,7 @@ mod tests {
 
         let result = scope.child().get("a", &stack);
 
-        assert_eq!(result, Some(1));
+        assert_eq!(result, Ok(1));
         Ok(())
     }
 
@@ -367,7 +376,7 @@ mod tests {
 
         let result = scope.get("a", &stack);
 
-        assert_eq!(result, None);
+        assert!(result.is_err());
         Ok(())
     }
 }
