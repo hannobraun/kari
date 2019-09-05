@@ -49,7 +49,7 @@ impl Error {
 
         for span in spans {
             print_span(
-                span,
+                &span,
                 streams,
                 stderr,
             )?;
@@ -63,7 +63,7 @@ impl Error {
                 color::Fg(color::Reset),
             )?;
             print_span(
-                span,
+                &span,
                 streams,
                 stderr,
             )?;
@@ -114,7 +114,7 @@ impl From<parser::Error> for ErrorKind {
 
 
 fn print_span<Stream>(
-    span:    Span,
+    span:    &Span,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
 )
