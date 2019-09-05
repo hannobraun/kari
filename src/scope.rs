@@ -298,7 +298,7 @@ mod tests {
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::Define));
+        assert!(result.is_err());
         Ok(())
     }
 
@@ -312,7 +312,7 @@ mod tests {
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::Define));
+        assert!(result.is_err());
         Ok(())
     }
 
@@ -328,7 +328,7 @@ mod tests {
             .define("a", &[&t::Number], 1)?
             .define("a", &[], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::Define));
+        assert!(result.is_err());
         Ok(())
     }
 
@@ -342,7 +342,7 @@ mod tests {
             .define("a", &[&t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
-        assert_eq!(result.map(|_| ()), Err(Error::Define));
+        assert!(result.is_err());
         Ok(())
     }
 
