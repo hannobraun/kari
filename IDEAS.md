@@ -25,7 +25,6 @@ If I ever end up modelling side effects somehow, then `Evaluator` could be turne
 - Make it possible to return multiple spans per error. For example the type error message can point to the expression that has the wrong type, as well as the operator that expects a different one.
 - Give spans a type, so operands and operators can be colored differently in error messages.
 - Extend the spans of expressions that are the result of an evaluation, so they also point to the operator that did the evaluation (like `eval`, `each`). This requires support for discontinuous spans, or maybe expressions can just have different spans.
-- When a function is not found, the error message should show the signatures of candidates with the same name, as well as the current stack.
 - When a function definition conlicts with an existing definition, that definition should be shown.
 
 ### REPL
