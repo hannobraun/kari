@@ -100,8 +100,12 @@ impl<'r, T> Scope<'r, T>
         }
 
         match node {
-            Node::Type(_)     => Err(Error::Get),
-            Node::Function(f) => Ok(f.clone()),
+            Node::Type(_) => {
+                Err(Error::Get)
+            }
+            Node::Function(f) => {
+                Ok(f.clone())
+            }
         }
     }
 }
