@@ -218,9 +218,9 @@ mod tests {
         let scope = Scope::<()>::root();
         let stack = Stack::new();
 
-        let function = scope.get("a", &stack);
+        let result = scope.get("a", &stack);
 
-        assert_eq!(function, None);
+        assert_eq!(result, None);
     }
 
     #[test]
@@ -234,9 +234,9 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let function = scope.get("a", &stack);
+        let result = scope.get("a", &stack);
 
-        assert_eq!(function, Some(1));
+        assert_eq!(result, Some(1));
         Ok(())
     }
 
@@ -254,9 +254,9 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let function = scope.get("a", &stack);
+        let result = scope.get("a", &stack);
 
-        assert_eq!(function, Some(1));
+        assert_eq!(result, Some(1));
         Ok(())
     }
 
@@ -271,9 +271,9 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let function = scope.get("a", &stack);
+        let result = scope.get("a", &stack);
 
-        assert_eq!(function, Some(1));
+        assert_eq!(result, Some(1));
         Ok(())
     }
 
@@ -346,9 +346,9 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let function = scope.child().get("a", &stack);
+        let result = scope.child().get("a", &stack);
 
-        assert_eq!(function, Some(1));
+        assert_eq!(result, Some(1));
         Ok(())
     }
 
@@ -365,9 +365,9 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let function = scope.get("a", &stack);
+        let result = scope.get("a", &stack);
 
-        assert_eq!(function, None);
+        assert_eq!(result, None);
         Ok(())
     }
 }
