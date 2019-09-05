@@ -95,9 +95,9 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans(self, spans: &mut Vec<Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            Error::UnexpectedToken(token) => spans.push(token.span),
+            Error::UnexpectedToken(token) => spans.push(&token.span),
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream  => (),

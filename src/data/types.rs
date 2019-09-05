@@ -135,8 +135,8 @@ pub struct TypeError {
 }
 
 impl TypeError {
-    pub fn spans(self, spans: &mut Vec<Span>) {
-        spans.push(self.actual.span);
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+        spans.push(&self.actual.span);
     }
 }
 

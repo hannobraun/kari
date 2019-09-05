@@ -49,7 +49,7 @@ impl Error {
 
         for span in spans {
             print_span(
-                &span,
+                span,
                 streams,
                 stderr,
             )?;
@@ -92,7 +92,7 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn spans(self, spans: &mut Vec<Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
             ErrorKind::Context(error) => error.spans(spans),
             ErrorKind::Parser(error)  => error.spans(spans),
