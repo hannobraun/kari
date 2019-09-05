@@ -51,7 +51,8 @@ builtins!(
     "dup",  dup,  (t::Any,);
     "swap", swap, (t::Any, t::Any,);
 
-    "if",      r#if,    (t::List, t::List,);
+    "if", r#if, (t::List, t::List,);
+
     "map",     map,     (t::List, t::List,);
     "wrap",    wrap,    (t::Any,);
     "prepend", prepend, (t::List, t::Any,);
@@ -209,6 +210,33 @@ fn swap<H>(
 }
 
 
+fn r#if<H>(
+    _:        Host<H>,
+    context:  &mut dyn Context<H>,
+    scope:    &mut Scope<Function<H>>,
+    operator: Span,
+)
+    -> Result
+{
+    let (function, condition)  =context.stack()
+        .pop((&t::List, &t::List), &operator)?;
+
+    context.evaluate_list(scope, Some(operator.clone()), condition)?;
+
+    let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
+
+    if evaluated_condition.inner {
+        context.evaluate_list(
+            scope,
+            Some(operator),
+            function,
+        )?;
+    }
+
+    Ok(())
+}
+
+
 fn map<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
@@ -274,33 +302,6 @@ fn prepend<H>(
     list.inner.insert(0, arg);
 
     context.stack().push(list);
-
-    Ok(())
-}
-
-
-fn r#if<H>(
-    _:        Host<H>,
-    context:  &mut dyn Context<H>,
-    scope:    &mut Scope<Function<H>>,
-    operator: Span,
-)
-    -> Result
-{
-    let (function, condition)  =context.stack()
-        .pop((&t::List, &t::List), &operator)?;
-
-    context.evaluate_list(scope, Some(operator.clone()), condition)?;
-
-    let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
-
-    if evaluated_condition.inner {
-        context.evaluate_list(
-            scope,
-            Some(operator),
-            function,
-        )?;
-    }
 
     Ok(())
 }
