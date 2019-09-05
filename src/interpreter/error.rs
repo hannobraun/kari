@@ -55,6 +55,8 @@ impl Error {
             )?;
         }
 
+        self.kind.write_hint(stderr)?;
+
         for span in self.stack_trace.into_iter().rev() {
             write!(
                 stderr,
@@ -96,6 +98,13 @@ impl ErrorKind {
         match self {
             ErrorKind::Context(error) => error.spans(spans),
             ErrorKind::Parser(error)  => error.spans(spans),
+        }
+    }
+
+    pub fn write_hint(&self, stderr: &mut dyn io::Write) -> io::Result<()> {
+        match self {
+            ErrorKind::Context(error) => error.write_hint(stderr),
+            ErrorKind::Parser(_)      => Ok(()),
         }
     }
 }
