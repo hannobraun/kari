@@ -122,12 +122,21 @@ fn eval<H>(
     -> Result
 {
     let list = context.stack().pop(&t::List, &operator)?;
+    let span = operator.clone().merge(&list.span);
+
+    context.stack().create_substack();
 
     context.evaluate_list(
         scope,
         Some(operator),
         list,
     )?;
+
+    let items = context.stack().destroy_substack();
+
+    let list = expr::List::new(items, span);
+    context.stack().push(list);
+
     Ok(())
 }
 

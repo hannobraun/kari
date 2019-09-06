@@ -1,5 +1,5 @@
 [ [ fail ] [ not ] if ] :assert define
 
-[ map eval ] :fold define
+[ map eval unwrap ] :fold define
 
 [ print "\n" print ] :println define
