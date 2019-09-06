@@ -1,5 +1,8 @@
 "std" import
 
+[ 1 2 + ] eval
+3 = assert
+
 [ 1 2 3 ] [ dup * ] map
 [ 1 4 9 ] = assert
 
