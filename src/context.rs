@@ -88,28 +88,38 @@ impl Error {
     pub fn write_hint(&self, stderr: &mut dyn io::Write) -> io::Result<()> {
         match self {
             Error::FunctionNotFound { stack, candidates, .. } => {
-                write!(
-                    stderr,
-                    "{}Values on stack:{}\n",
-                    color::Fg(color::Cyan),
-                    color::Fg(color::Reset),
-                )?;
-                write!(
-                    stderr,
-                    "    {}{}{}{}{}\n\n",
-                    style::Bold, color::Fg(color::LightWhite),
-                    stack,
-                    color::Fg(color::Reset), style::Reset,
-                )?;
+                if candidates.len() > 0 {
+                    write!(
+                        stderr,
+                        "{}Values on stack:{}\n",
+                        color::Fg(color::Cyan),
+                        color::Fg(color::Reset),
+                    )?;
+                    write!(
+                        stderr,
+                        "    {}{}{}{}{}\n\n",
+                        style::Bold, color::Fg(color::LightWhite),
+                        stack,
+                        color::Fg(color::Reset), style::Reset,
+                    )?;
 
-                write!(
-                    stderr,
-                    "{}Candidate functions:{}\n",
-                    color::Fg(color::Cyan),
-                    color::Fg(color::Reset),
-                )?;
-                for candidate in candidates {
-                    write!(stderr, "    {:?}\n", candidate)?;
+                    write!(
+                        stderr,
+                        "{}Candidate functions:{}\n",
+                        color::Fg(color::Cyan),
+                        color::Fg(color::Reset),
+                    )?;
+                    for candidate in candidates {
+                        write!(stderr, "    {:?}\n", candidate)?;
+                    }
+                }
+                else {
+                    write!(
+                        stderr,
+                        "{}No functions of that name found in scope.{}\n",
+                        color::Fg(color::Cyan),
+                        color::Fg(color::Reset),
+                    )?;
                 }
 
                 Ok(())
