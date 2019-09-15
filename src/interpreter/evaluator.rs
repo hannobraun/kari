@@ -116,8 +116,8 @@ impl<H> Evaluator<H> {
     }
 
     fn evaluate_expressions<Parser>(&mut self,
-        mut parser: Parser,
-            scope:  &mut Functions<Function<H>>,
+        mut parser:    Parser,
+            functions: &mut Functions<Function<H>>,
     )
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=expr::Any, Error=parser::Error>
@@ -141,7 +141,7 @@ impl<H> Evaluator<H> {
             };
 
             let result = self.evaluate_expr(
-                scope,
+                functions,
                 None,
                 expression,
             );
