@@ -32,8 +32,8 @@ use crate::{
     scope::{
         self,
         Function,
+        Functions,
         Host,
-        Scope,
     },
 };
 
@@ -71,7 +71,7 @@ impl<H> Evaluator<H> {
             name:    Cow<str>,
         mut prelude: Box<dyn Stream>,
         mut program: Box<dyn Stream>,
-        mut scope:   Scope<Function<H>>,
+        mut scope:   Functions<Function<H>>,
     )
         -> bool
     {
@@ -117,7 +117,7 @@ impl<H> Evaluator<H> {
 
     fn evaluate_expressions<Parser>(&mut self,
         mut parser: Parser,
-            scope:  &mut Scope<Function<H>>,
+            scope:  &mut Functions<Function<H>>,
     )
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=expr::Any, Error=parser::Error>
@@ -197,7 +197,7 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_expr(&mut self,
-        scope:    &mut Scope<Function<H>>,
+        scope:    &mut Functions<Function<H>>,
         operator: Option<Span>,
         expr:     expr::Any,
     )
@@ -245,7 +245,7 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_list(&mut self,
-        scope:    &mut Scope<Function<H>>,
+        scope:    &mut Functions<Function<H>>,
         operator: Option<Span>,
         list:     expr::List,
     )

@@ -15,7 +15,7 @@ use crate::{
     scope::{
         Function,
         Host,
-        Scope,
+        Functions,
     },
 };
 
@@ -25,7 +25,7 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
-        pub fn builtins<H>(builtins: &mut Scope<Function<H>>) {
+        pub fn builtins<H>(builtins: &mut Functions<Function<H>>) {
             builtins
                 $(
                     .define(
@@ -75,7 +75,7 @@ builtins!(
 fn print<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -89,7 +89,7 @@ fn print<H>(
 fn define<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    scope:    &mut Scope<Function<H>>,
+    scope:    &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -105,7 +105,7 @@ fn define<H>(
 fn fail<H>(
     _:        Host<H>,
     _:        &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -116,7 +116,7 @@ fn fail<H>(
 fn eval<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    scope:    &mut Scope<Function<H>>,
+    scope:    &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -143,7 +143,7 @@ fn eval<H>(
 fn load<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -158,7 +158,7 @@ fn load<H>(
 fn to_list<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -179,7 +179,7 @@ fn to_list<H>(
 fn drop<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -191,7 +191,7 @@ fn drop<H>(
 fn dup<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -208,7 +208,7 @@ fn dup<H>(
 fn swap<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -223,7 +223,7 @@ fn swap<H>(
 fn r#if<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    scope:    &mut Scope<Function<H>>,
+    scope:    &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -250,7 +250,7 @@ fn r#if<H>(
 fn map<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    scope:    &mut Scope<Function<H>>,
+    scope:    &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -283,7 +283,7 @@ fn map<H>(
 fn wrap<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -301,7 +301,7 @@ fn wrap<H>(
 fn unwrap<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -318,7 +318,7 @@ fn unwrap<H>(
 fn prepend<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -337,7 +337,7 @@ fn prepend<H>(
 fn add_n<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -354,7 +354,7 @@ fn add_n<H>(
 fn mul_n<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -371,7 +371,7 @@ fn mul_n<H>(
 fn div_n<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -388,7 +388,7 @@ fn div_n<H>(
 fn gt_n<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -406,7 +406,7 @@ fn gt_n<H>(
 fn add_f<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -423,7 +423,7 @@ fn add_f<H>(
 fn mul_f<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -440,7 +440,7 @@ fn mul_f<H>(
 fn gt_f<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -458,7 +458,7 @@ fn gt_f<H>(
 fn eq<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result
@@ -475,7 +475,7 @@ fn eq<H>(
 fn not<H>(
     _:        Host<H>,
     context:  &mut dyn Context<H>,
-    _:        &mut Scope<Function<H>>,
+    _:        &mut Functions<Function<H>>,
     operator: Span,
 )
     -> Result

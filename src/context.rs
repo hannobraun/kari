@@ -25,7 +25,7 @@ use crate::{
     scope::{
         self,
         Function,
-        Scope,
+        Functions,
     },
 };
 
@@ -39,14 +39,14 @@ pub trait Context<H> {
         -> Result<expr::List, Error>;
 
     fn evaluate_expr(&mut self,
-        scope:    &mut Scope<Function<H>>,
+        scope:    &mut Functions<Function<H>>,
         operator: Option<Span>,
         expr:     expr::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
-        scope:    &mut Scope<Function<H>>,
+        scope:    &mut Functions<Function<H>>,
         operator: Option<Span>,
         list:     expr::List,
     )

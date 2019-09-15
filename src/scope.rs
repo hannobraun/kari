@@ -22,11 +22,11 @@ use crate::{
 };
 
 
-pub struct Scope<T> {
+pub struct Functions<T> {
     functions: HashMap<String, Node<T>>,
 }
 
-impl<T> Scope<T>
+impl<T> Functions<T>
     where T: Clone
 {
     pub fn root() -> Self {
@@ -152,7 +152,7 @@ impl<H> Clone for Function<H> {
 pub type Host<H> = Rc<RefCell<H>>;
 
 pub type Builtin<H> =
-    fn(Host<H>, &mut dyn Context<H>, &mut Scope<Function<H>>, Span)
+    fn(Host<H>, &mut dyn Context<H>, &mut Functions<Function<H>>, Span)
         -> Result<(), context::Error>;
 
 
@@ -241,7 +241,7 @@ mod tests {
 
     use super::{
         DefineError,
-        Scope,
+        Functions,
     };
 
 
@@ -250,7 +250,7 @@ mod tests {
 
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
-        let scope = Scope::<()>::root();
+        let scope = Functions::<()>::root();
         let stack = Stack::new();
 
         let result = scope.get("a", &stack);
@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
         let mut stack = Stack::new();
 
         scope
@@ -279,7 +279,7 @@ mod tests {
     fn it_should_return_the_function_that_matches_the_types_on_the_stack()
         -> Result
     {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
         let mut stack = Stack::new();
 
         scope
@@ -297,7 +297,7 @@ mod tests {
 
     #[test]
     fn it_should_return_function_without_args_regardless_of_stack() -> Result {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
         let mut stack = Stack::new();
 
         scope
@@ -316,7 +316,7 @@ mod tests {
     fn it_should_return_list_of_candidates_if_function_doesnt_match_stack()
         -> Result
     {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
         let mut stack = Stack::new();
 
         scope
@@ -343,7 +343,7 @@ mod tests {
 
     #[test]
     fn it_should_reject_functions_that_are_already_defined() -> Result {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
 
         let result = scope
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -357,7 +357,7 @@ mod tests {
     fn it_should_reject_functions_more_specific_than_a_defined_function()
         -> Result
     {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
 
         let result = scope
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -373,7 +373,7 @@ mod tests {
         // arguments are specially handled in the code, so we also need a
         // special test for them.
 
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
 
         let result = scope
             .define("a", &[&t::Number], 1)?
@@ -387,7 +387,7 @@ mod tests {
     fn it_should_reject_functions_less_specific_than_a_defined_function()
         -> Result
     {
-        let mut scope = Scope::root();
+        let mut scope = Functions::root();
 
         let result = scope
             .define("a", &[&t::Number], 1)?

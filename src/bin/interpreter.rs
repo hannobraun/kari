@@ -17,7 +17,7 @@ use clap::{
 use kari::{
     builtins,
     interpreter::evaluator::Evaluator,
-    scope::Scope,
+    scope::Functions,
 };
 
 
@@ -37,7 +37,7 @@ fn main() {
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
 
-    let mut root_scope = Scope::root();
+    let mut root_scope = Functions::root();
     builtins::builtins(&mut root_scope);
 
     let prelude = kari::prelude()
