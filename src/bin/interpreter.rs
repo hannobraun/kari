@@ -37,8 +37,8 @@ fn main() {
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
 
-    let mut root_scope = Functions::root();
-    builtins::builtins(&mut root_scope);
+    let mut functions = Functions::root();
+    builtins::builtins(&mut functions);
 
     let prelude = kari::prelude()
         .unwrap_or_else(|error| {
@@ -61,13 +61,13 @@ fn main() {
                 });
 
             Evaluator::new(stdout, stderr, ())
-                .run(path.into(), prelude, Box::new(file), root_scope);
+                .run(path.into(), prelude, Box::new(file), functions);
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
             Evaluator::new(stdout, stderr, ())
-                .run("<stdin>".into(), prelude, stdin, root_scope);
+                .run("<stdin>".into(), prelude, stdin, functions);
         }
     }
 }
