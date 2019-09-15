@@ -97,7 +97,7 @@ fn define<H>(
     let (body, name) = context.stack()
         .pop((&t::List, &t::Symbol), &operator)?;
 
-    scope.define(name.inner, &[], Function::UserDefined(body))?;
+    scope.define(name.inner, &[], Function::UserDefined { body })?;
 
     Ok(())
 }

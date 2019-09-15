@@ -216,8 +216,8 @@ impl<H> Context<H> for Evaluator<H> {
                         Function::Builtin(f) => {
                             f(self.host.clone(), self, scope, expr.span)?;
                         }
-                        Function::UserDefined(f) => {
-                            self.evaluate_list(scope, Some(expr.span), f)?;
+                        Function::UserDefined { body } => {
+                            self.evaluate_list(scope, Some(expr.span), body)?;
                         }
                     }
                 }

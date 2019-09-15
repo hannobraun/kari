@@ -143,14 +143,22 @@ pub struct GetError {
 
 pub enum Function<H> {
     Builtin(Builtin<H>),
-    UserDefined(expr::List),
+    UserDefined {
+        body: expr::List,
+    }
 }
 
 impl<H> Clone for Function<H> {
     fn clone(&self) -> Self {
         match self {
-            Function::Builtin(f)     => Function::Builtin(f.clone()),
-            Function::UserDefined(f) => Function::UserDefined(f.clone()),
+            Function::Builtin(f) => {
+                Function::Builtin(f.clone())
+            }
+            Function::UserDefined { body } => {
+                Function::UserDefined {
+                    body: body.clone(),
+                }
+            }
         }
     }
 }
