@@ -68,10 +68,10 @@ impl<H> Evaluator<H> {
     }
 
     pub fn run(mut self,
-            name:    Cow<str>,
-        mut prelude: Box<dyn Stream>,
-        mut program: Box<dyn Stream>,
-        mut scope:   Functions<Function<H>>,
+            name:      Cow<str>,
+        mut prelude:   Box<dyn Stream>,
+        mut program:   Box<dyn Stream>,
+        mut functions: Functions<Function<H>>,
     )
         -> bool
     {
@@ -81,7 +81,7 @@ impl<H> Evaluator<H> {
             prelude_name.into(),
             &mut prelude,
         );
-        self.evaluate_expressions(prelude_pipeline, &mut scope)
+        self.evaluate_expressions(prelude_pipeline, &mut functions)
             .expect("Error while evaluating prelude");
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -97,7 +97,7 @@ impl<H> Evaluator<H> {
             &mut program,
         );
 
-        let result = self.evaluate_expressions(pipeline, &mut scope);
+        let result = self.evaluate_expressions(pipeline, &mut functions);
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
