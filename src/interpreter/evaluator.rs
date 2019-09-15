@@ -254,14 +254,14 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_list(&mut self,
-        scope:    &mut Functions<Function<H>>,
-        operator: Option<Span>,
-        list:     expr::List,
+        functions: &mut Functions<Function<H>>,
+        operator:  Option<Span>,
+        list:      expr::List,
     )
         -> Result<(), context::Error>
     {
         for expr in list {
-            self.evaluate_expr(scope, operator.clone(), expr)?;
+            self.evaluate_expr(functions, operator.clone(), expr)?;
         }
 
         Ok(())
