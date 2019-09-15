@@ -250,26 +250,26 @@ mod tests {
 
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
-        let scope = Functions::<()>::root();
-        let stack = Stack::new();
+        let functions = Functions::<()>::root();
+        let stack     = Stack::new();
 
-        let result = scope.get("a", &stack);
+        let result = functions.get("a", &stack);
 
         assert!(result.is_err());
     }
 
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result {
-        let mut scope = Functions::root();
-        let mut stack = Stack::new();
+        let mut functions = Functions::root();
+        let mut stack     = Stack::new();
 
-        scope
+        functions
             .define("a", &[&t::Number, &t::Float], 1)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = scope.get("a", &stack);
+        let result = functions.get("a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -279,17 +279,17 @@ mod tests {
     fn it_should_return_the_function_that_matches_the_types_on_the_stack()
         -> Result
     {
-        let mut scope = Functions::root();
-        let mut stack = Stack::new();
+        let mut functions = Functions::root();
+        let mut stack     = Stack::new();
 
-        scope
+        functions
             .define("a", &[&t::Number, &t::Float ], 1)?
             .define("a", &[&t::Number, &t::Number], 2)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = scope.get("a", &stack);
+        let result = functions.get("a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -297,16 +297,16 @@ mod tests {
 
     #[test]
     fn it_should_return_function_without_args_regardless_of_stack() -> Result {
-        let mut scope = Functions::root();
-        let mut stack = Stack::new();
+        let mut functions = Functions::root();
+        let mut stack     = Stack::new();
 
-        scope
+        functions
             .define("a", &[], 1)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = scope.get("a", &stack);
+        let result = functions.get("a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -316,17 +316,17 @@ mod tests {
     fn it_should_return_list_of_candidates_if_function_doesnt_match_stack()
         -> Result
     {
-        let mut scope = Functions::root();
-        let mut stack = Stack::new();
+        let mut functions = Functions::root();
+        let mut stack     = Stack::new();
 
-        scope
+        functions
             .define("a", &[&t::Number, &t::Float], 1)?
             .define("a", &[&t::Float, &t::Float],  2)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Number::new(0, Span::default()));
 
-        let error = match scope.get("a", &stack) {
+        let error = match functions.get("a", &stack) {
             Ok(_)      => panic!("Expected error"),
             Err(error) => error,
         };
@@ -343,9 +343,9 @@ mod tests {
 
     #[test]
     fn it_should_reject_functions_that_are_already_defined() -> Result {
-        let mut scope = Functions::root();
+        let mut functions = Functions::root();
 
-        let result = scope
+        let result = functions
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
@@ -357,9 +357,9 @@ mod tests {
     fn it_should_reject_functions_more_specific_than_a_defined_function()
         -> Result
     {
-        let mut scope = Functions::root();
+        let mut functions = Functions::root();
 
-        let result = scope
+        let result = functions
             .define("a", &[&t::Number, &t::Number], 1)?
             .define("a", &[&t::Number], 2);
 
@@ -373,9 +373,9 @@ mod tests {
         // arguments are specially handled in the code, so we also need a
         // special test for them.
 
-        let mut scope = Functions::root();
+        let mut functions = Functions::root();
 
-        let result = scope
+        let result = functions
             .define("a", &[&t::Number], 1)?
             .define("a", &[], 2);
 
@@ -387,9 +387,9 @@ mod tests {
     fn it_should_reject_functions_less_specific_than_a_defined_function()
         -> Result
     {
-        let mut scope = Functions::root();
+        let mut functions = Functions::root();
 
-        let result = scope
+        let result = functions
             .define("a", &[&t::Number], 1)?
             .define("a", &[&t::Number, &t::Number], 2);
 
