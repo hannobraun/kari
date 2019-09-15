@@ -56,6 +56,7 @@ pub trait Context<H> {
 
 #[derive(Debug)]
 pub enum Error {
+    DefineFunction(functions::DefineError),
     Failure { operator: Span },
     FunctionNotFound {
         name:       String,
@@ -65,7 +66,6 @@ pub enum Error {
     },
     Io(io::Error),
     Parser(parser::Error),
-    Scope(functions::DefineError),
     Stack(stack::Error),
     Type(TypeError),
 }
@@ -73,6 +73,7 @@ pub enum Error {
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
+            Error::DefineFunction(_)             => (),
             Error::Failure { operator }          => spans.push(operator),
             Error::FunctionNotFound { span, .. } => spans.push(span),
 
@@ -80,7 +81,6 @@ impl Error {
             Error::Stack(error)  => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
 
-            Error::Scope(_) => (),
             Error::Io(_)    => (),
         }
     }
@@ -151,7 +151,7 @@ impl From<parser::Error> for Error {
 
 impl From<functions::DefineError> for Error {
     fn from(from: functions::DefineError) -> Self {
-        Error::Scope(from)
+        Error::DefineFunction(from)
     }
 }
 
@@ -164,6 +164,9 @@ impl From<stack::Error> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Error::DefineFunction(error) => {
+                error.fmt(f)
+            }
             Error::Failure { .. } => {
                 write!(f, "Explicit failure")
             }
@@ -174,7 +177,6 @@ impl fmt::Display for Error {
                 write!(f, "Error loading stream: {}", error)
             }
 
-            Error::Scope(error)  => error.fmt(f),
             Error::Parser(error) => error.fmt(f),
             Error::Stack(error)  => error.fmt(f),
             Error::Type(error)   => error.fmt(f),
