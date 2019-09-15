@@ -39,16 +39,16 @@ pub trait Context<H> {
         -> Result<expr::List, Error>;
 
     fn evaluate_expr(&mut self,
-        scope:    &mut Functions<Function<H>>,
-        operator: Option<Span>,
-        expr:     expr::Any,
+        functions: &mut Functions<Function<H>>,
+        operator:  Option<Span>,
+        expr:      expr::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
-        scope:    &mut Functions<Function<H>>,
-        operator: Option<Span>,
-        list:     expr::List,
+        functions: &mut Functions<Function<H>>,
+        operator:  Option<Span>,
+        list:      expr::List,
     )
         -> Result<(), Error>;
 }
