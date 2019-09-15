@@ -87,17 +87,17 @@ fn print<H>(
 }
 
 fn define<H>(
-    _:        Host<H>,
-    context:  &mut dyn Context<H>,
-    scope:    &mut Functions<Function<H>>,
-    operator: Span,
+    _:         Host<H>,
+    context:   &mut dyn Context<H>,
+    functions: &mut Functions<Function<H>>,
+    operator:  Span,
 )
     -> Result
 {
     let (body, name) = context.stack()
         .pop((&t::List, &t::Symbol), &operator)?;
 
-    scope.define(name.inner, &[], Function::UserDefined { body })?;
+    functions.define(name.inner, &[], Function::UserDefined { body })?;
 
     Ok(())
 }
@@ -115,9 +115,9 @@ fn fail<H>(
 
 fn eval<H>(
     _:        Host<H>,
-    context:  &mut dyn Context<H>,
-    scope:    &mut Functions<Function<H>>,
-    operator: Span,
+    context:   &mut dyn Context<H>,
+    functions: &mut Functions<Function<H>>,
+    operator:  Span,
 )
     -> Result
 {
@@ -127,7 +127,7 @@ fn eval<H>(
     context.stack().create_substack();
 
     context.evaluate_list(
-        scope,
+        functions,
         Some(operator),
         list,
     )?;
@@ -221,23 +221,23 @@ fn swap<H>(
 
 
 fn r#if<H>(
-    _:        Host<H>,
-    context:  &mut dyn Context<H>,
-    scope:    &mut Functions<Function<H>>,
-    operator: Span,
+    _:         Host<H>,
+    context:   &mut dyn Context<H>,
+    functions: &mut Functions<Function<H>>,
+    operator:  Span,
 )
     -> Result
 {
     let (function, condition)  =context.stack()
         .pop((&t::List, &t::List), &operator)?;
 
-    context.evaluate_list(scope, Some(operator.clone()), condition)?;
+    context.evaluate_list(functions, Some(operator.clone()), condition)?;
 
     let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
 
     if evaluated_condition.inner {
         context.evaluate_list(
-            scope,
+            functions,
             Some(operator),
             function,
         )?;
@@ -248,10 +248,10 @@ fn r#if<H>(
 
 
 fn map<H>(
-    _:        Host<H>,
-    context:  &mut dyn Context<H>,
-    scope:    &mut Functions<Function<H>>,
-    operator: Span,
+    _:         Host<H>,
+    context:   &mut dyn Context<H>,
+    functions: &mut Functions<Function<H>>,
+    operator:  Span,
 )
     -> Result
 {
@@ -263,7 +263,7 @@ fn map<H>(
     for item in list.inner {
         context.stack().push(item);
         context.evaluate_list(
-            scope,
+            functions,
             Some(operator.clone()),
             function.clone(),
         )?;
