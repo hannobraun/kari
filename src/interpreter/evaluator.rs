@@ -197,9 +197,9 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_expr(&mut self,
-        scope:    &mut Functions<Function<H>>,
-        operator: Option<Span>,
-        expr:     expr::Any,
+        functions: &mut Functions<Function<H>>,
+        operator:  Option<Span>,
+        expr:      expr::Any,
     )
         -> Result<(), context::Error>
     {
@@ -210,14 +210,23 @@ impl<H> Context<H> for Evaluator<H> {
         }
 
         if let expr::Kind::Word(word) = expr.kind {
-            match scope.get(&word, &self.stack) {
+            match functions.get(&word, &self.stack) {
                 Ok(f) => {
                     match f {
                         Function::Builtin(f) => {
-                            f(self.host.clone(), self, scope, expr.span)?;
+                            f(
+                                self.host.clone(),
+                                self,
+                                functions,
+                                expr.span,
+                            )?;
                         }
                         Function::UserDefined { body } => {
-                            self.evaluate_list(scope, Some(expr.span), body)?;
+                            self.evaluate_list(
+                                functions,
+                                Some(expr.span),
+                                body,
+                            )?;
                         }
                     }
                 }
