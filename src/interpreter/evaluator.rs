@@ -20,6 +20,12 @@ use crate::{
         span::Span,
         stack::Stack,
     },
+    functions::{
+        self,
+        Function,
+        Functions,
+        Host,
+    },
     interpreter::{
         error::Error,
         stream::Stream,
@@ -28,12 +34,6 @@ use crate::{
         self,
         Stage as _,
         parser,
-    },
-    scope::{
-        self,
-        Function,
-        Functions,
-        Host,
     },
 };
 
@@ -221,7 +221,7 @@ impl<H> Context<H> for Evaluator<H> {
                         }
                     }
                 }
-                Err(scope::GetError { candidates }) => {
+                Err(functions::GetError { candidates }) => {
                     return Err(
                         context::Error::FunctionNotFound {
                             name:  word,

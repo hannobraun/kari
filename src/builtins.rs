@@ -12,7 +12,7 @@ use crate::{
         span::Span,
         types as t,
     },
-    scope::{
+    functions::{
         Function,
         Host,
         Functions,

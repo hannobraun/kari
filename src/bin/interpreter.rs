@@ -16,8 +16,8 @@ use clap::{
 
 use kari::{
     builtins,
+    functions::Functions,
     interpreter::evaluator::Evaluator,
-    scope::Functions,
 };
 
 

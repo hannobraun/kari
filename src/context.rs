@@ -21,12 +21,12 @@ use crate::{
             TypeError,
         },
     },
-    pipeline::parser,
-    scope::{
+    functions::{
         self,
         Function,
         Functions,
     },
+    pipeline::parser,
 };
 
 
@@ -65,7 +65,7 @@ pub enum Error {
     },
     Io(io::Error),
     Parser(parser::Error),
-    Scope(scope::DefineError),
+    Scope(functions::DefineError),
     Stack(stack::Error),
     Type(TypeError),
 }
@@ -149,8 +149,8 @@ impl From<parser::Error> for Error {
     }
 }
 
-impl From<scope::DefineError> for Error {
-    fn from(from: scope::DefineError) -> Self {
+impl From<functions::DefineError> for Error {
+    fn from(from: functions::DefineError) -> Self {
         Error::Scope(from)
     }
 }
