@@ -35,10 +35,13 @@ impl Any {
             expression::Kind::Bool(inner)   => Kind::Bool(inner),
             expression::Kind::Float(inner)  => Kind::Float(inner),
             expression::Kind::Number(inner) => Kind::Number(inner),
-            expression::Kind::List(inner)   => Kind::List(ListInner { items: inner.into_iter().map(|e| Self::from_expression(e)).collect() }),
             expression::Kind::String(inner) => Kind::String(inner),
             expression::Kind::Symbol(inner) => Kind::Symbol(inner),
             expression::Kind::Word(inner)   => Kind::Word(inner),
+
+            expression::Kind::List(inner) => {
+                Kind::List(ListInner::from_expressions(inner))
+            }
         };
 
         Self {
@@ -186,6 +189,19 @@ impl fmt::Display for Kind {
 #[derive(Clone, Debug)]
 pub struct ListInner {
     pub items: Vec<Any>,
+}
+
+impl ListInner {
+    pub fn from_expressions(expressions: Vec<Expression>) -> Self {
+        let items = expressions
+            .into_iter()
+            .map(|e| Any::from_expression(e))
+            .collect();
+
+        Self {
+            items,
+        }
+    }
 }
 
 

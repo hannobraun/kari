@@ -175,13 +175,13 @@ impl<H> Context<H> for Evaluator<H> {
         let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;
 
-        let mut parser = pipeline::new(path.clone(), &mut stream);
-        let mut values = Vec::new();
+        let mut parser      = pipeline::new(path.clone(), &mut stream);
+        let mut expressions = Vec::new();
 
         loop {
             match parser.next() {
-                Ok(value) => {
-                    values.push(value::Any::from_expression(value));
+                Ok(expression) => {
+                    expressions.push(expression);
                 }
                 Err(parser::Error::EndOfStream) => {
                     break;
@@ -194,16 +194,21 @@ impl<H> Context<H> for Evaluator<H> {
 
         self.streams.insert(path, Box::new(stream));
 
-        let start = values
+        let start = expressions
             .first()
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
-        let end = values
+        let end = expressions
             .last()
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
 
-        Ok(value::List::new(value::ListInner { items: values }, start.merge(&end)))
+        Ok(
+            value::List::new(
+                value::ListInner::from_expressions(expressions),
+                start.merge(&end),
+            )
+        )
     }
 
     fn evaluate_value(&mut self,
