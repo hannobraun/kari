@@ -198,9 +198,7 @@ impl ListInner {
             .map(|e| Any::from_expression(e))
             .collect();
 
-        Self {
-            items,
-        }
+        Self::from_values(items)
     }
 
     pub fn from_values(values: Vec<Any>) -> Self {
