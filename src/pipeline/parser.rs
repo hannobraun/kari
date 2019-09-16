@@ -2,12 +2,15 @@ use std::fmt;
 
 use crate::{
     data::{
+        expression::{
+            self,
+            Expression,
+        },
         span::Span,
         token::{
             self,
             Token,
         },
-        value,
     },
     pipeline::{
         self,
@@ -31,7 +34,7 @@ impl<Tokenizer> Parser<Tokenizer> {
 impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    type Item  = value::Any;
+    type Item  = Expression;
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
@@ -45,7 +48,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
                 return Err(Error::UnexpectedToken(token));
             }
             _ => {
-                value::Any::from_token(token)
+                Expression::from_token(token)
             }
         };
 
@@ -56,7 +59,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self, mut list_span: Span) -> Result<value::Any, Error> {
+    fn parse_list(&mut self, mut list_span: Span) -> Result<Expression, Error> {
         let mut expressions = Vec::new();
 
         loop {
@@ -70,14 +73,14 @@ impl<Tokenizer> Parser<Tokenizer>
                 }
                 token::Kind::ListClose => {
                     return Ok(
-                        value::Any {
-                            kind: value::Kind::List(expressions),
+                        Expression {
+                            kind: expression::Kind::List(expressions),
                             span: list_span,
                         }
                     );
                 }
                 _ => {
-                    value::Any::from_token(token)
+                    Expression::from_token(token)
                 }
             };
 

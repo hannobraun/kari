@@ -13,6 +13,7 @@ use crate::{
         Context,
     },
     data::{
+        expression::Expression,
         functions::{
             self,
             Functions,
@@ -122,7 +123,7 @@ impl<H> Evaluator<H> {
             functions: &mut Functions<Function<H>>,
     )
         -> Result<(), Error>
-        where Parser: pipeline::Stage<Item=value::Any, Error=parser::Error>
+        where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
     {
         loop {
             let expression = match parser.next() {
@@ -145,7 +146,7 @@ impl<H> Evaluator<H> {
             let result = self.evaluate_value(
                 functions,
                 None,
-                expression,
+                value::Any::from_expression(expression),
             );
             if let Err(error) = result {
                 return Err(
@@ -180,7 +181,7 @@ impl<H> Context<H> for Evaluator<H> {
         loop {
             match parser.next() {
                 Ok(value) => {
-                    values.push(value);
+                    values.push(value::Any::from_expression(value));
                 }
                 Err(parser::Error::EndOfStream) => {
                     break;

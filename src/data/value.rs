@@ -5,11 +5,11 @@ use std::{
 };
 
 use crate::data::{
-    span::Span,
-    token::{
+    expression::{
         self,
-        Token,
+        Expression,
     },
+    span::Span,
 };
 
 
@@ -30,21 +30,20 @@ pub struct Any {
 }
 
 impl Any {
-    pub fn from_token(token: Token) -> Self {
-        let kind = match token.kind {
-            token::Kind::Bool(value)   => Kind::Bool(value),
-            token::Kind::Float(value)  => Kind::Float(value),
-            token::Kind::Number(value) => Kind::Number(value),
-            token::Kind::String(value) => Kind::String(value),
-            token::Kind::Symbol(value) => Kind::Symbol(value),
-            token::Kind::Word(value)   => Kind::Word(value),
-
-            kind => panic!("Can convert {} to value", kind),
+    pub fn from_expression(expression: Expression) -> Self {
+        let kind = match expression.kind {
+            expression::Kind::Bool(inner)   => Kind::Bool(inner),
+            expression::Kind::Float(inner)  => Kind::Float(inner),
+            expression::Kind::Number(inner) => Kind::Number(inner),
+            expression::Kind::List(inner)   => Kind::List(inner.into_iter().map(|e| Self::from_expression(e)).collect()),
+            expression::Kind::String(inner) => Kind::String(inner),
+            expression::Kind::Symbol(inner) => Kind::Symbol(inner),
+            expression::Kind::Word(inner)   => Kind::Word(inner),
         };
 
         Self {
             kind,
-            span: token.span,
+            span: expression.span,
         }
     }
 }
