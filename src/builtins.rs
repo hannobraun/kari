@@ -26,9 +26,12 @@ pub type Result  = std::result::Result<(), context::Error>;
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
         pub fn builtins<H>(builtins: &mut Functions<Function<H>>) {
+            let scope = builtins.root_scope();
+
             builtins
                 $(
                     .define(
+                        scope,
                         String::from($name),
                         &[$(&$arg,)*],
                         Function::Builtin($fn),
@@ -97,7 +100,12 @@ fn define<H>(
     let (body, name) = context.stack()
         .pop((&t::List, &t::Symbol), &operator)?;
 
-    functions.define(name.inner, &[], Function::UserDefined { body })?;
+    functions.define(
+        functions.root_scope(),
+        name.inner,
+        &[],
+        Function::UserDefined { body },
+    )?;
 
     Ok(())
 }

@@ -36,6 +36,7 @@ impl<T> Functions<T>
     }
 
     pub fn define<S>(&mut self,
+        _:    Scope,
         name: S,
         args: &[&'static dyn Type],
         f:    T,
@@ -107,7 +108,15 @@ impl<T> Functions<T>
 
         candidates
     }
+
+    pub fn root_scope(&self) -> Scope {
+        Scope
+    }
 }
+
+
+#[derive(Clone, Copy)]
+pub struct Scope;
 
 
 pub enum Function<H> {
@@ -261,10 +270,11 @@ mod tests {
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
         let mut stack     = Stack::new();
 
         functions
-            .define("a", &[&t::Number, &t::Float], 1)?;
+            .define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
@@ -280,11 +290,12 @@ mod tests {
         -> Result
     {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
         let mut stack     = Stack::new();
 
         functions
-            .define("a", &[&t::Number, &t::Float ], 1)?
-            .define("a", &[&t::Number, &t::Number], 2)?;
+            .define(scope, "a", &[&t::Number, &t::Float ], 1)?
+            .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
@@ -298,10 +309,11 @@ mod tests {
     #[test]
     fn it_should_return_function_without_args_regardless_of_stack() -> Result {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
         let mut stack     = Stack::new();
 
         functions
-            .define("a", &[], 1)?;
+            .define(scope, "a", &[], 1)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
@@ -317,11 +329,12 @@ mod tests {
         -> Result
     {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
         let mut stack     = Stack::new();
 
         functions
-            .define("a", &[&t::Number, &t::Float], 1)?
-            .define("a", &[&t::Float, &t::Float],  2)?;
+            .define(scope, "a", &[&t::Number, &t::Float], 1)?
+            .define(scope, "a", &[&t::Float, &t::Float],  2)?;
         stack
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Number::new(0, Span::default()));
@@ -344,10 +357,11 @@ mod tests {
     #[test]
     fn it_should_reject_functions_that_are_already_defined() -> Result {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
 
         let result = functions
-            .define("a", &[&t::Number, &t::Number], 1)?
-            .define("a", &[&t::Number, &t::Number], 2);
+            .define(scope, "a", &[&t::Number, &t::Number], 1)?
+            .define(scope, "a", &[&t::Number, &t::Number], 2);
 
         assert!(result.is_err());
         Ok(())
@@ -358,10 +372,11 @@ mod tests {
         -> Result
     {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
 
         let result = functions
-            .define("a", &[&t::Number, &t::Number], 1)?
-            .define("a", &[&t::Number], 2);
+            .define(scope, "a", &[&t::Number, &t::Number], 1)?
+            .define(scope, "a", &[&t::Number], 2);
 
         assert!(result.is_err());
         Ok(())
@@ -374,10 +389,11 @@ mod tests {
         // special test for them.
 
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
 
         let result = functions
-            .define("a", &[&t::Number], 1)?
-            .define("a", &[], 2);
+            .define(scope, "a", &[&t::Number], 1)?
+            .define(scope, "a", &[], 2);
 
         assert!(result.is_err());
         Ok(())
@@ -388,10 +404,11 @@ mod tests {
         -> Result
     {
         let mut functions = Functions::new();
+        let     scope     = functions.root_scope();
 
         let result = functions
-            .define("a", &[&t::Number], 1)?
-            .define("a", &[&t::Number, &t::Number], 2);
+            .define(scope, "a", &[&t::Number], 1)?
+            .define(scope, "a", &[&t::Number, &t::Number], 2);
 
         assert!(result.is_err());
         Ok(())
