@@ -17,16 +17,16 @@ use crate::{
             self,
             Expr as _,
         },
+        functions::{
+            self,
+            Functions,
+        },
         span::Span,
         stack::Stack,
     },
     function::{
         Function,
         Host,
-    },
-    functions::{
-        self,
-        Functions,
     },
     interpreter::{
         error::Error,

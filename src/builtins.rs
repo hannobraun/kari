@@ -9,6 +9,7 @@ use crate::{
             Compute as _,
             Expr as _,
         },
+        functions::Functions,
         span::Span,
         types as t,
     },
@@ -16,7 +17,6 @@ use crate::{
         Function,
         Host,
     },
-    functions::Functions,
 };
 
 

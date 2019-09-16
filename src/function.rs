@@ -10,9 +10,9 @@ use crate::{
     },
     data::{
         expr,
+        functions::Functions,
         span::Span,
     },
-    functions::Functions,
 };
 
 

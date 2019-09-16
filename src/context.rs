@@ -11,6 +11,10 @@ use termion::{
 use crate::{
     data::{
         expr,
+        functions::{
+            self,
+            Functions,
+        },
         span::Span,
         stack::{
             self,
@@ -22,10 +26,6 @@ use crate::{
         },
     },
     function::Function,
-    functions::{
-        self,
-        Functions,
-    },
     pipeline::parser,
 };
 

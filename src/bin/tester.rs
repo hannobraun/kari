@@ -15,7 +15,7 @@ use walkdir::WalkDir;
 
 use kari::{
     builtins,
-    functions::Functions,
+    data::functions::Functions,
     interpreter::evaluator::Evaluator,
 };
 
