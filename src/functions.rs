@@ -76,7 +76,9 @@ impl<T> Functions<T>
     fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
         let mut node = self.functions.get(name)
             .ok_or_else(||
-                GetError { candidates: self.candidates_for(name) }
+                GetError {
+                    candidates: self.candidates_for(name),
+                }
             )?;
 
         for expr in stack.peek() {
@@ -87,13 +89,19 @@ impl<T> Functions<T>
 
             node = map.get(expr.get_type())
                 .ok_or_else(||
-                    GetError { candidates: self.candidates_for(name) }
+                    GetError {
+                        candidates: self.candidates_for(name),
+                    }
                 )?;
         }
 
         match node {
             Node::Type(_) => {
-                Err(GetError { candidates: self.candidates_for(name) })
+                Err(
+                    GetError {
+                        candidates: self.candidates_for(name),
+                    }
+                )
             }
             Node::Function(f) => {
                 Ok(f.clone())
