@@ -34,3 +34,9 @@ Add a REPL. As far as debugging tools go, this is probably the most bang for the
 Could it even be possible to emulate some debugging features by implementing a `step` builtin, which evaluates the first word of a list, but leaves the rest of the list?
 
 Over time, it might be possible to make the language so powerful, that a debugger can just be implemented as a library that is used with the REPL.
+
+### Pipeline
+
+Extend the pipeline with more stages. Add a stage that converts expressions to values. Not sure if that's possible without full evaluation, as that stage would have to keep track of scopes, but it seems to be worth a try.
+
+Maybe more features of the evaluator can be split out into simple pipeline stages.
