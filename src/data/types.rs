@@ -8,7 +8,10 @@ use std::{
 
 use crate::data::{
     span::Span,
-    value,
+    value::{
+        self,
+        Value,
+    },
 };
 
 
@@ -40,7 +43,7 @@ impl Hash for dyn Type {
 
 
 pub trait Downcast : Type {
-    type Value: value::Value;
+    type Value: Value;
 
     fn downcast_raw(&self, _: value::Any) -> Result<Self::Value, value::Any>;
 
@@ -105,7 +108,7 @@ macro_rules! impl_type {
                 {
                     match any.kind {
                         value::Kind::$ty(value) => {
-                            Ok(value::Value::new(value, any.span))
+                            Ok(Value::new(value, any.span))
                         }
                         _ => {
                             Err(any)
