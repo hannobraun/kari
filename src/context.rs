@@ -41,7 +41,7 @@ pub trait Context<H> {
     fn evaluate_value(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        expr:      value::Any,
+        value:     value::Any,
     )
         -> Result<(), Error>;
 
