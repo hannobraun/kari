@@ -142,7 +142,7 @@ impl<H> Evaluator<H> {
                 }
             };
 
-            let result = self.evaluate_expr(
+            let result = self.evaluate_value(
                 functions,
                 None,
                 expression,
@@ -205,7 +205,7 @@ impl<H> Context<H> for Evaluator<H> {
         Ok(value::List::new(values, start.merge(&end)))
     }
 
-    fn evaluate_expr(&mut self,
+    fn evaluate_value(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
         expr:      value::Any,
@@ -270,7 +270,7 @@ impl<H> Context<H> for Evaluator<H> {
         -> Result<(), context::Error>
     {
         for expr in list {
-            self.evaluate_expr(functions, operator.clone(), expr)?;
+            self.evaluate_value(functions, operator.clone(), expr)?;
         }
 
         Ok(())

@@ -38,7 +38,7 @@ pub trait Context<H> {
     fn load(&mut self, name: value::String)
         -> Result<value::List, Error>;
 
-    fn evaluate_expr(&mut self,
+    fn evaluate_value(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
         expr:      value::Any,
