@@ -24,17 +24,21 @@ use crate::{
 
 pub struct Functions<T> {
     scopes: HashMap<Scope, HashMap<String, Node<T>>>,
+    root:   Scope,
 }
 
 impl<T> Functions<T>
     where T: Clone
 {
     pub fn new() -> Self {
+        let root = Scope;
+
         let mut scopes = HashMap::new();
-        scopes.insert(Scope, HashMap::new());
+        scopes.insert(root, HashMap::new());
 
         Self {
             scopes,
+            root,
         }
     }
 
@@ -133,7 +137,7 @@ impl<T> Functions<T>
     }
 
     pub fn root_scope(&self) -> Scope {
-        Scope
+        self.root
     }
 }
 
