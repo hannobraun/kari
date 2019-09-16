@@ -210,7 +210,7 @@ impl<H> Context<H> for Evaluator<H> {
         }
 
         if let expr::Kind::Word(word) = expr.kind {
-            match functions.get(&word, &self.stack) {
+            match functions.get(functions.root_scope(), &word, &self.stack) {
                 Ok(f) => {
                     match f {
                         Function::Builtin(f) => {

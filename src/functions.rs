@@ -67,7 +67,9 @@ impl<T> Functions<T>
         Ok(self)
     }
 
-    pub fn get(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
+    pub fn get(&self, _: Scope, name: &str, stack: &Stack)
+        -> Result<T, GetError>
+    {
         self.get_inner(name, stack)
     }
 
@@ -260,9 +262,10 @@ mod tests {
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
         let functions = Functions::<()>::new();
+        let scope     = functions.root_scope();
         let stack     = Stack::new();
 
-        let result = functions.get("a", &stack);
+        let result = functions.get(scope, "a", &stack);
 
         assert!(result.is_err());
     }
@@ -279,7 +282,7 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = functions.get("a", &stack);
+        let result = functions.get(scope, "a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -300,7 +303,7 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = functions.get("a", &stack);
+        let result = functions.get(scope, "a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -318,7 +321,7 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Float::new(0.0, Span::default()));
 
-        let result = functions.get("a", &stack);
+        let result = functions.get(scope, "a", &stack);
 
         assert_eq!(result, Ok(1));
         Ok(())
@@ -339,7 +342,7 @@ mod tests {
             .push(expr::Number::new(0, Span::default()))
             .push(expr::Number::new(0, Span::default()));
 
-        let error = match functions.get("a", &stack) {
+        let error = match functions.get(scope, "a", &stack) {
             Ok(_)      => panic!("Expected error"),
             Err(error) => error,
         };
