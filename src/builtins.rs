@@ -25,10 +25,10 @@ pub type Result  = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
-        pub fn builtins<H>(builtins: &mut Functions<Function<H>>) {
-            let scope = builtins.root_scope();
+        pub fn builtins<H>(functions: &mut Functions<Function<H>>) {
+            let scope = functions.root_scope();
 
-            builtins
+            functions
                 $(
                     .define(
                         scope,
