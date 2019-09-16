@@ -31,7 +31,7 @@ impl<T> Functions<T>
     where T: Clone
 {
     pub fn new() -> Self {
-        let root = Scope;
+        let root = Scope(0);
 
         let mut scopes = HashMap::new();
         scopes.insert(root, HashMap::new());
@@ -143,7 +143,7 @@ impl<T> Functions<T>
 
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
-pub struct Scope;
+pub struct Scope(u64);
 
 
 pub enum Function<H> {
