@@ -117,7 +117,7 @@ impl<T> Functions<T>
 }
 
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Scope;
 
 
