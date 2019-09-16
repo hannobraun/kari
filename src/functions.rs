@@ -29,7 +29,7 @@ pub struct Functions<T> {
 impl<T> Functions<T>
     where T: Clone
 {
-    pub fn root() -> Self {
+    pub fn new() -> Self {
         Self {
             functions: HashMap::new(),
         }
@@ -250,7 +250,7 @@ mod tests {
 
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
-        let functions = Functions::<()>::root();
+        let functions = Functions::<()>::new();
         let stack     = Stack::new();
 
         let result = functions.get("a", &stack);
@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
         let mut stack     = Stack::new();
 
         functions
@@ -279,7 +279,7 @@ mod tests {
     fn it_should_return_the_function_that_matches_the_types_on_the_stack()
         -> Result
     {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
         let mut stack     = Stack::new();
 
         functions
@@ -297,7 +297,7 @@ mod tests {
 
     #[test]
     fn it_should_return_function_without_args_regardless_of_stack() -> Result {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
         let mut stack     = Stack::new();
 
         functions
@@ -316,7 +316,7 @@ mod tests {
     fn it_should_return_list_of_candidates_if_function_doesnt_match_stack()
         -> Result
     {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
         let mut stack     = Stack::new();
 
         functions
@@ -343,7 +343,7 @@ mod tests {
 
     #[test]
     fn it_should_reject_functions_that_are_already_defined() -> Result {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
 
         let result = functions
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -357,7 +357,7 @@ mod tests {
     fn it_should_reject_functions_more_specific_than_a_defined_function()
         -> Result
     {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
 
         let result = functions
             .define("a", &[&t::Number, &t::Number], 1)?
@@ -373,7 +373,7 @@ mod tests {
         // arguments are specially handled in the code, so we also need a
         // special test for them.
 
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
 
         let result = functions
             .define("a", &[&t::Number], 1)?
@@ -387,7 +387,7 @@ mod tests {
     fn it_should_reject_functions_less_specific_than_a_defined_function()
         -> Result
     {
-        let mut functions = Functions::root();
+        let mut functions = Functions::new();
 
         let result = functions
             .define("a", &[&t::Number], 1)?

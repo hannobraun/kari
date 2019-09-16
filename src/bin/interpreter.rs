@@ -37,7 +37,7 @@ fn main() {
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
 
-    let mut functions = Functions::root();
+    let mut functions = Functions::new();
     builtins::builtins(&mut functions);
 
     let prelude = kari::prelude()
