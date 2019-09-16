@@ -23,8 +23,10 @@ use crate::{
 
 
 pub struct Functions<T> {
-    scopes: HashMap<Scope, HashMap<String, Node<T>>>,
-    root:   Scope,
+    scopes:        HashMap<Scope, HashMap<String, Node<T>>>,
+    root:          Scope,
+    parents:       HashMap<Scope, Scope>,
+    next_scope_id: u64,
 }
 
 impl<T> Functions<T>
@@ -39,6 +41,8 @@ impl<T> Functions<T>
         Self {
             scopes,
             root,
+            parents:       HashMap::new(),
+            next_scope_id: 1,
         }
     }
 
@@ -80,7 +84,20 @@ impl<T> Functions<T>
     pub fn get(&self, scope: Scope, name: &str, stack: &Stack)
         -> Result<T, GetError>
     {
-        self.get_inner(scope, name, stack)
+        let mut scope = scope;
+
+        loop {
+            match self.get_inner(scope, name, stack) {
+                Ok(function) => return Ok(function),
+
+                Err(error) => {
+                    match self.parents.get(&scope) {
+                        Some(parent) => scope = *parent,
+                        None         => return Err(error),
+                    }
+                }
+            }
+        }
     }
 
     fn get_inner(&self, scope: Scope, name: &str, stack: &Stack)
@@ -138,6 +155,19 @@ impl<T> Functions<T>
 
     pub fn root_scope(&self) -> Scope {
         self.root
+    }
+
+    pub fn new_scope(&mut self, parent: Scope) -> Scope {
+        assert!(self.next_scope_id < u64::max_value());
+
+        let id = self.next_scope_id;
+        self.next_scope_id += 1;
+
+        let scope = Scope(id);
+        self.scopes.insert(scope, HashMap::new());
+        self.parents.insert(scope, parent);
+
+        scope
     }
 }
 
@@ -437,6 +467,44 @@ mod tests {
         let result = functions
             .define(scope, "a", &[&t::Number], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2);
+
+        assert!(result.is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn it_should_find_function_defined_in_parent_scope()
+        -> Result
+    {
+        let mut functions = Functions::new();
+        let     stack     = Stack::new();
+
+        let parent_scope = functions.root_scope();
+        let child_scope  = functions.new_scope(parent_scope);
+
+        functions
+            .define(parent_scope, "a", &[], 1)?;
+
+        let result = functions.get(child_scope, "a", &stack);
+
+        assert_eq!(result, Ok(1));
+        Ok(())
+    }
+
+    #[test]
+    fn it_should_not_find_function_defined_in_child_scope()
+        -> Result
+    {
+        let mut functions = Functions::new();
+        let     stack     = Stack::new();
+
+        let parent_scope = functions.root_scope();
+        let child_scope  = functions.new_scope(parent_scope);
+
+        functions
+            .define(child_scope, "a", &[], 1)?;
+
+        let result = functions.get(parent_scope, "a", &stack);
 
         assert!(result.is_err());
         Ok(())
