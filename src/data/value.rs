@@ -39,7 +39,7 @@ impl Any {
             token::Kind::Symbol(value) => Kind::Symbol(value),
             token::Kind::Word(value)   => Kind::Word(value),
 
-            kind => panic!("Can convert {} to expression", kind),
+            kind => panic!("Can convert {} to value", kind),
         };
 
         Self {
