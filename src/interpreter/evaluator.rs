@@ -20,11 +20,13 @@ use crate::{
         span::Span,
         stack::Stack,
     },
+    function::{
+        Function,
+        Host,
+    },
     functions::{
         self,
-        Function,
         Functions,
-        Host,
     },
     interpreter::{
         error::Error,

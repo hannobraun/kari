@@ -1,23 +1,13 @@
 use std::{
-    cell::RefCell,
     collections::HashMap,
     fmt,
-    rc::Rc,
 };
 
-use crate::{
-    context::{
-        self,
-        Context,
-    },
-    data::{
-        expr,
-        span::Span,
-        stack::Stack,
-        types::{
-            Type,
-            Typed,
-        },
+use crate::data::{
+    stack::Stack,
+    types::{
+        Type,
+        Typed,
     },
 };
 
@@ -174,36 +164,6 @@ impl<T> Functions<T>
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Scope(u64);
-
-
-pub enum Function<H> {
-    Builtin(Builtin<H>),
-    UserDefined {
-        body: expr::List,
-    }
-}
-
-impl<H> Clone for Function<H> {
-    fn clone(&self) -> Self {
-        match self {
-            Function::Builtin(f) => {
-                Function::Builtin(f.clone())
-            }
-            Function::UserDefined { body } => {
-                Function::UserDefined {
-                    body: body.clone(),
-                }
-            }
-        }
-    }
-}
-
-
-pub type Host<H> = Rc<RefCell<H>>;
-
-pub type Builtin<H> =
-    fn(Host<H>, &mut dyn Context<H>, &mut Functions<Function<H>>, Span)
-        -> Result<(), context::Error>;
 
 
 enum Node<T> {

@@ -21,9 +21,9 @@ use crate::{
             TypeError,
         },
     },
+    function::Function,
     functions::{
         self,
-        Function,
         Functions,
     },
     pipeline::parser,

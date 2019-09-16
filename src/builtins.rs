@@ -12,11 +12,11 @@ use crate::{
         span::Span,
         types as t,
     },
-    functions::{
+    function::{
         Function,
         Host,
-        Functions,
     },
+    functions::Functions,
 };
 
 
