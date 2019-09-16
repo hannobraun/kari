@@ -178,9 +178,15 @@ impl<H> Context<H> for Evaluator<H> {
         let mut values = Vec::new();
         loop {
             match parser.next() {
-                Ok(value)                       => values.push(value),
-                Err(parser::Error::EndOfStream) => break,
-                Err(error)                      => return Err(error.into()),
+                Ok(value) => {
+                    values.push(value);
+                }
+                Err(parser::Error::EndOfStream) => {
+                    break;
+                }
+                Err(error) => {
+                    return Err(error.into());
+                }
             }
         }
 
