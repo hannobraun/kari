@@ -110,22 +110,6 @@ impl<T> Functions<T>
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
-pub struct DefineError;
-
-impl fmt::Display for DefineError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Conflicting function definition found")
-    }
-}
-
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct GetError {
-    pub candidates: Vec<Vec<&'static dyn Type>>,
-}
-
-
 pub enum Function<H> {
     Builtin(Builtin<H>),
     UserDefined {
@@ -221,6 +205,22 @@ impl<T> Node<T> {
             }
         }
     }
+}
+
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct DefineError;
+
+impl fmt::Display for DefineError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Conflicting function definition found")
+    }
+}
+
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct GetError {
+    pub candidates: Vec<Vec<&'static dyn Type>>,
 }
 
 
