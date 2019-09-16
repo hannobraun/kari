@@ -180,15 +180,9 @@ impl<H> Context<H> for Evaluator<H> {
 
         loop {
             match parser.next() {
-                Ok(expression) => {
-                    expressions.push(expression);
-                }
-                Err(parser::Error::EndOfStream) => {
-                    break;
-                }
-                Err(error) => {
-                    return Err(error.into());
-                }
+                Ok(expression)                  => expressions.push(expression),
+                Err(parser::Error::EndOfStream) => break,
+                Err(error)                      => return Err(error.into()),
             }
         }
 
