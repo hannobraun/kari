@@ -23,42 +23,48 @@ use crate::{
 
 
 pub struct Functions<T> {
-    functions: HashMap<String, Node<T>>,
+    scopes: HashMap<Scope, HashMap<String, Node<T>>>,
 }
 
 impl<T> Functions<T>
     where T: Clone
 {
     pub fn new() -> Self {
+        let mut scopes = HashMap::new();
+        scopes.insert(Scope, HashMap::new());
+
         Self {
-            functions: HashMap::new(),
+            scopes,
         }
     }
 
     pub fn define<S>(&mut self,
-        _:    Scope,
-        name: S,
-        args: &[&'static dyn Type],
-        f:    T,
+        scope: Scope,
+        name:  S,
+        args:  &[&'static dyn Type],
+        f:     T,
     )
         -> Result<&mut Self, DefineError>
         where S: Into<String>
     {
         let name = name.into();
 
+        let functions = self.scopes.get_mut(&scope)
+            .expect("Scope not found");
+
         if args.len() == 0 {
-            if self.functions.contains_key(&name) {
+            if functions.contains_key(&name) {
                 return Err(DefineError);
             }
 
-            self.functions.insert(
+            functions.insert(
                 name,
                 Node::Function(f),
             );
             return Ok(self);
         }
 
-        let node = self.functions
+        let node = functions
             .entry(name)
             .or_insert(Node::Type(HashMap::new()));
 
@@ -67,17 +73,22 @@ impl<T> Functions<T>
         Ok(self)
     }
 
-    pub fn get(&self, _: Scope, name: &str, stack: &Stack)
+    pub fn get(&self, scope: Scope, name: &str, stack: &Stack)
         -> Result<T, GetError>
     {
-        self.get_inner(name, stack)
+        self.get_inner(scope, name, stack)
     }
 
-    fn get_inner(&self, name: &str, stack: &Stack) -> Result<T, GetError> {
-        let mut node = self.functions.get(name)
+    fn get_inner(&self, scope: Scope, name: &str, stack: &Stack)
+        -> Result<T, GetError>
+    {
+        let functions = self.scopes.get(&scope)
+            .expect("Scope not found");
+
+        let mut node = functions.get(name)
             .ok_or_else(||
                 GetError {
-                    candidates: self.candidates_for(name),
+                    candidates: self.candidates_for(&functions, name),
                 }
             )?;
 
@@ -90,7 +101,7 @@ impl<T> Functions<T>
             node = map.get(expr.get_type())
                 .ok_or_else(||
                     GetError {
-                        candidates: self.candidates_for(name),
+                        candidates: self.candidates_for(functions, name),
                     }
                 )?;
         }
@@ -99,7 +110,7 @@ impl<T> Functions<T>
             Node::Type(_) => {
                 Err(
                     GetError {
-                        candidates: self.candidates_for(name),
+                        candidates: self.candidates_for(functions, name),
                     }
                 )
             }
@@ -109,10 +120,12 @@ impl<T> Functions<T>
         }
     }
 
-    fn candidates_for(&self, name: &str) -> Vec<Vec<&'static dyn Type>> {
+    fn candidates_for(&self, functions: &HashMap<String, Node<T>>, name: &str)
+        -> Vec<Vec<&'static dyn Type>>
+    {
         let mut candidates = Vec::new();
 
-        if let Some(node) = self.functions.get(name) {
+        if let Some(node) = functions.get(name) {
             node.all_paths(Vec::new(), &mut candidates);
         }
 
