@@ -325,8 +325,8 @@ fn unwrap<H>(
 {
     let list = context.stack().pop(&t::List, &operator)?;
 
-    for expr in list.inner.items {
-        context.stack().push(expr);
+    for value in list.inner.items {
+        context.stack().push(value);
     }
 
     Ok(())
