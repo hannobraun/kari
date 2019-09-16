@@ -203,7 +203,7 @@ impl<H> Context<H> for Evaluator<H> {
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
 
-        Ok(value::List::new(values, start.merge(&end)))
+        Ok(value::List::new(value::ListInner { items: values }, start.merge(&end)))
     }
 
     fn evaluate_value(&mut self,

@@ -142,7 +142,7 @@ fn eval<H>(
 
     let items = context.stack().destroy_substack();
 
-    let list = value::List::new(items, span);
+    let list = value::List::new(value::ListInner { items }, span);
     context.stack().push(list);
 
     Ok(())
@@ -177,7 +177,10 @@ fn to_list<H>(
     let list_span    = operator.merge(&span);
     let word         = value::Any::new(value::Kind::Word(word), span);
 
-    let list = value::List::new(vec![word], list_span);
+    let list = value::List::new(
+        value::ListInner { items: vec![word] },
+        list_span,
+    );
     context.stack().push(list);
 
     Ok(())
@@ -268,7 +271,7 @@ fn map<H>(
 
     context.stack().create_substack();
 
-    for item in list.inner {
+    for item in list.inner.items {
         context.stack().push(item);
         context.evaluate_list(
             functions,
@@ -280,7 +283,7 @@ fn map<H>(
     let result = context.stack().destroy_substack();
 
     let data = value::List::new(
-        result,
+        value::ListInner { items: result },
         operator.merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
@@ -299,7 +302,7 @@ fn wrap<H>(
     let arg = context.stack().pop(&t::Any, &operator)?;
 
     let span = operator.merge(&arg.span);
-    let list = value::List::new(vec![arg], span);
+    let list = value::List::new(value::ListInner { items: vec![arg] }, span);
 
     context.stack().push(list);
 
@@ -316,7 +319,7 @@ fn unwrap<H>(
 {
     let list = context.stack().pop(&t::List, &operator)?;
 
-    for expr in list.inner {
+    for expr in list.inner.items {
         context.stack().push(expr);
     }
 
@@ -334,7 +337,7 @@ fn prepend<H>(
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any), &operator)?;
 
     list.span = operator.merge(&list.span).merge(&arg.span);
-    list.inner.insert(0, arg);
+    list.inner.items.insert(0, arg);
 
     context.stack().push(list);
 

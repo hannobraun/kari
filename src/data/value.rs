@@ -35,7 +35,7 @@ impl Any {
             expression::Kind::Bool(inner)   => Kind::Bool(inner),
             expression::Kind::Float(inner)  => Kind::Float(inner),
             expression::Kind::Number(inner) => Kind::Number(inner),
-            expression::Kind::List(inner)   => Kind::List(inner.into_iter().map(|e| Self::from_expression(e)).collect()),
+            expression::Kind::List(inner)   => Kind::List(ListInner { items: inner.into_iter().map(|e| Self::from_expression(e)).collect() }),
             expression::Kind::String(inner) => Kind::String(inner),
             expression::Kind::Symbol(inner) => Kind::Symbol(inner),
             expression::Kind::Word(inner)   => Kind::Word(inner),
@@ -117,7 +117,7 @@ kinds!(
     Bool,   bool;
     Float,  f32;
     Number, u32;
-    List,   Vec<Any>;
+    List,   ListInner;
     String, StdString;
     Symbol, StdString;
     Word,   StdString;
@@ -136,11 +136,11 @@ impl PartialEq for Kind {
             (Kind::Word(a),   Kind::Word(b))   => return a == b,
 
             (Kind::List(a), Kind::List(b)) => {
-                if a.len() != b.len() {
+                if a.items.len() != b.items.len() {
                     return false;
                 }
 
-                for (a, b) in a.iter().zip(b.iter()) {
+                for (a, b) in a.items.iter().zip(b.items.iter()) {
                     if a.kind != b.kind {
                         return false;
                     }
@@ -174,7 +174,7 @@ impl fmt::Display for Kind {
             Kind::Bool(value)   => value.fmt(f),
             Kind::Float(value)  => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
-            Kind::List(value)   => fmt_list(value, f),
+            Kind::List(value)   => fmt_list(&value.items, f),
             Kind::String(value) => value.fmt(f),
             Kind::Symbol(value) => write!(f, ":{}", value),
             Kind::Word(value)   => value.fmt(f),
@@ -183,18 +183,24 @@ impl fmt::Display for Kind {
 }
 
 
+#[derive(Clone, Debug)]
+pub struct ListInner {
+    pub items: Vec<Any>,
+}
+
+
 impl IntoIterator for List {
     type Item     = <Vec<Any> as IntoIterator>::Item;
     type IntoIter = <Vec<Any> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.inner.into_iter()
+        self.inner.items.into_iter()
     }
 }
 
 impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt_list(&self.inner, f)
+        fmt_list(&self.inner.items, f)
     }
 }
 
