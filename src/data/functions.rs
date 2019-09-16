@@ -261,7 +261,7 @@ mod tests {
         },
         value::{
             self,
-            Expr as _,
+            Value as _,
         },
     };
 

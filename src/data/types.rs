@@ -40,7 +40,7 @@ impl Hash for dyn Type {
 
 
 pub trait Downcast : Type {
-    type Value: value::Expr;
+    type Value: value::Value;
 
     fn downcast_raw(&self, _: value::Any) -> Result<Self::Value, value::Any>;
 
@@ -105,7 +105,7 @@ macro_rules! impl_type {
                 {
                     match any.kind {
                         value::Kind::$ty(value) => {
-                            Ok(value::Expr::new(value, any.span))
+                            Ok(value::Value::new(value, any.span))
                         }
                         _ => {
                             Err(any)

@@ -9,7 +9,7 @@ use crate::data::{
     },
     value::{
         self,
-        Expr,
+        Value,
     },
 };
 
@@ -89,7 +89,7 @@ pub trait Push {
 
 impl<T> Push for T
     where
-        T: Expr,
+        T: Value,
 {
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.into_any())

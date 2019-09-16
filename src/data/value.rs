@@ -13,7 +13,7 @@ use crate::data::{
 };
 
 
-pub trait Expr : Sized {
+pub trait Value : Sized {
     type Inner;
 
     fn new(_: Self::Inner, _: Span) -> Self;
@@ -49,7 +49,7 @@ impl Any {
     }
 }
 
-impl Expr for Any {
+impl Value for Any {
     type Inner = Kind;
 
     fn new(kind: Self::Inner, span: Span) -> Self {
@@ -89,7 +89,7 @@ macro_rules! kinds {
                 pub span:  Span,
             }
 
-            impl Expr for $ty {
+            impl Value for $ty {
                 type Inner = $inner;
 
                 fn new(inner: $inner, span: Span) -> Self {
@@ -216,16 +216,16 @@ pub trait Compute {
 
     fn compute<Out, F, R>(self, f: F) -> Out
         where
-            Out: Expr<Inner=R>,
+            Out: Value<Inner=R>,
             F:   Fn(Self::In) -> R;
 }
 
-impl<T> Compute for T where T: Expr {
+impl<T> Compute for T where T: Value {
     type In = T::Inner;
 
     fn compute<Out, F, R>(self, f: F) -> Out
         where
-            Out: Expr<Inner=R>,
+            Out: Value<Inner=R>,
             F:   Fn(Self::In) -> R,
     {
         let (inner, span) = self.open();
@@ -238,14 +238,14 @@ impl<T> Compute for T where T: Expr {
 
 impl<A, B> Compute for (A, B)
     where
-        A: Expr,
-        B: Expr,
+        A: Value,
+        B: Value,
 {
     type In = (A::Inner, B::Inner);
 
     fn compute<Out, F, R>(self, f: F) -> Out
         where
-            Out: Expr<Inner=R>,
+            Out: Value<Inner=R>,
             F:   Fn(Self::In) -> R,
     {
         let (a_inner, a_span) = self.0.open();
