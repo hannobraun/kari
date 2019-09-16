@@ -208,7 +208,7 @@ impl<H> Context<H> for Evaluator<H> {
     fn evaluate_value(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        expr:      value::Any,
+        value:     value::Any,
     )
         -> Result<(), context::Error>
     {
@@ -218,7 +218,7 @@ impl<H> Context<H> for Evaluator<H> {
             pop_operator = true;
         }
 
-        if let value::Kind::Word(word) = expr.kind {
+        if let value::Kind::Word(word) = value.kind {
             match functions.get(functions.root_scope(), &word, &self.stack) {
                 Ok(f) => {
                     match f {
@@ -227,13 +227,13 @@ impl<H> Context<H> for Evaluator<H> {
                                 self.host.clone(),
                                 self,
                                 functions,
-                                expr.span,
+                                value.span,
                             )?;
                         }
                         Function::UserDefined { body } => {
                             self.evaluate_list(
                                 functions,
-                                Some(expr.span),
+                                Some(value.span),
                                 body,
                             )?;
                         }
@@ -243,7 +243,7 @@ impl<H> Context<H> for Evaluator<H> {
                     return Err(
                         context::Error::FunctionNotFound {
                             name:  word,
-                            span:  expr.span,
+                            span:  value.span,
                             stack: self.stack.clone(),
                             candidates,
                         }
@@ -252,7 +252,7 @@ impl<H> Context<H> for Evaluator<H> {
             }
         }
         else {
-            self.stack.push::<value::Any>(expr);
+            self.stack.push::<value::Any>(value);
         }
 
         if pop_operator {
