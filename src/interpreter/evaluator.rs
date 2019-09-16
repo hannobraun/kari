@@ -176,6 +176,7 @@ impl<H> Context<H> for Evaluator<H> {
 
         let mut parser = pipeline::new(path.clone(), &mut stream);
         let mut values = Vec::new();
+
         loop {
             match parser.next() {
                 Ok(value) => {
