@@ -142,7 +142,10 @@ fn eval<H>(
 
     let items = context.stack().destroy_substack();
 
-    let list = value::List::new(value::ListInner { items }, span);
+    let list = value::List::new(
+        value::ListInner::from_values(items),
+        span,
+    );
     context.stack().push(list);
 
     Ok(())
@@ -178,7 +181,7 @@ fn to_list<H>(
     let word         = value::Any::new(value::Kind::Word(word), span);
 
     let list = value::List::new(
-        value::ListInner { items: vec![word] },
+        value::ListInner::from_values(vec![word]),
         list_span,
     );
     context.stack().push(list);
@@ -283,7 +286,7 @@ fn map<H>(
     let result = context.stack().destroy_substack();
 
     let data = value::List::new(
-        value::ListInner { items: result },
+        value::ListInner::from_values(result),
         operator.merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
@@ -302,7 +305,10 @@ fn wrap<H>(
     let arg = context.stack().pop(&t::Any, &operator)?;
 
     let span = operator.merge(&arg.span);
-    let list = value::List::new(value::ListInner { items: vec![arg] }, span);
+    let list = value::List::new(
+        value::ListInner::from_values(vec![arg]),
+        span,
+    );
 
     context.stack().push(list);
 

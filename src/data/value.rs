@@ -202,6 +202,12 @@ impl ListInner {
             items,
         }
     }
+
+    pub fn from_values(values: Vec<Any>) -> Self {
+        Self {
+            items: values,
+        }
+    }
 }
 
 
