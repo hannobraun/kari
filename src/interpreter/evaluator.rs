@@ -13,16 +13,16 @@ use crate::{
         Context,
     },
     data::{
-        expr::{
-            self,
-            Expr as _,
-        },
         functions::{
             self,
             Functions,
         },
         span::Span,
         stack::Stack,
+        value::{
+            self,
+            Expr as _,
+        },
     },
     function::{
         Function,
@@ -122,7 +122,7 @@ impl<H> Evaluator<H> {
             functions: &mut Functions<Function<H>>,
     )
         -> Result<(), Error>
-        where Parser: pipeline::Stage<Item=expr::Any, Error=parser::Error>
+        where Parser: pipeline::Stage<Item=value::Any, Error=parser::Error>
     {
         loop {
             let expression = match parser.next() {
@@ -168,8 +168,8 @@ impl<H> Context<H> for Evaluator<H> {
         &mut self.stdout
     }
 
-    fn load(&mut self, name: expr::String)
-        -> Result<expr::List, context::Error>
+    fn load(&mut self, name: value::String)
+        -> Result<value::List, context::Error>
     {
         let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;
@@ -195,13 +195,13 @@ impl<H> Context<H> for Evaluator<H> {
             .map(|expression| expression.span.clone())
             .unwrap_or(Span::default());
 
-        Ok(expr::List::new(expressions, start.merge(&end)))
+        Ok(value::List::new(expressions, start.merge(&end)))
     }
 
     fn evaluate_expr(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        expr:      expr::Any,
+        expr:      value::Any,
     )
         -> Result<(), context::Error>
     {
@@ -211,7 +211,7 @@ impl<H> Context<H> for Evaluator<H> {
             pop_operator = true;
         }
 
-        if let expr::Kind::Word(word) = expr.kind {
+        if let value::Kind::Word(word) = expr.kind {
             match functions.get(functions.root_scope(), &word, &self.stack) {
                 Ok(f) => {
                     match f {
@@ -245,7 +245,7 @@ impl<H> Context<H> for Evaluator<H> {
             }
         }
         else {
-            self.stack.push::<expr::Any>(expr);
+            self.stack.push::<value::Any>(expr);
         }
 
         if pop_operator {
@@ -258,7 +258,7 @@ impl<H> Context<H> for Evaluator<H> {
     fn evaluate_list(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        list:      expr::List,
+        list:      value::List,
     )
         -> Result<(), context::Error>
     {

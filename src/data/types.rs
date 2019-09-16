@@ -7,8 +7,8 @@ use std::{
 };
 
 use crate::data::{
-    expr,
     span::Span,
+    value,
 };
 
 
@@ -40,11 +40,11 @@ impl Hash for dyn Type {
 
 
 pub trait Downcast : Type {
-    type Value: expr::Expr;
+    type Value: value::Expr;
 
-    fn downcast_raw(&self, _: expr::Any) -> Result<Self::Value, expr::Any>;
+    fn downcast_raw(&self, _: value::Any) -> Result<Self::Value, value::Any>;
 
-    fn downcast(&self, any: expr::Any) -> Result<Self::Value, TypeError> {
+    fn downcast(&self, any: value::Any) -> Result<Self::Value, TypeError> {
         self.downcast_raw(any)
             .map_err(|any|
                 TypeError {
@@ -64,9 +64,9 @@ impl Type for Any {
 }
 
 impl Downcast for Any {
-    type Value = expr::Any;
+    type Value = value::Any;
 
-    fn downcast_raw(&self, any: expr::Any) -> Result<Self::Value, expr::Any> {
+    fn downcast_raw(&self, any: value::Any) -> Result<Self::Value, value::Any> {
         Ok(any)
     }
 }
@@ -81,10 +81,10 @@ macro_rules! impl_type {
     )
         =>
     {
-        impl Typed for expr::Any {
+        impl Typed for value::Any {
             fn get_type(&self) -> &'static dyn Type {
                 match self.kind {
-                    $(expr::Kind::$ty(_) => &$ty,)*
+                    $(value::Kind::$ty(_) => &$ty,)*
                 }
             }
         }
@@ -98,14 +98,14 @@ macro_rules! impl_type {
             }
 
             impl Downcast for $ty {
-                type Value = expr::$ty;
+                type Value = value::$ty;
 
-                fn downcast_raw(&self, any: expr::Any)
-                    -> Result<Self::Value, expr::Any>
+                fn downcast_raw(&self, any: value::Any)
+                    -> Result<Self::Value, value::Any>
                 {
                     match any.kind {
-                        expr::Kind::$ty(value) => {
-                            Ok(expr::Expr::new(value, any.span))
+                        value::Kind::$ty(value) => {
+                            Ok(value::Expr::new(value, any.span))
                         }
                         _ => {
                             Err(any)
@@ -131,7 +131,7 @@ impl_type!(
 #[derive(Debug)]
 pub struct TypeError {
     pub expected: &'static str,
-    pub actual:   expr::Any,
+    pub actual:   value::Any,
 }
 
 impl TypeError {

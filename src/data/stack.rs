@@ -1,22 +1,22 @@
 use std::fmt;
 
 use crate::data::{
-    expr::{
-        self,
-        Expr,
-    },
     span::Span,
     types::{
         self,
         Type,
         TypeError,
     },
+    value::{
+        self,
+        Expr,
+    },
 };
 
 
 #[derive(Clone, Debug)]
 pub struct Stack {
-    substacks: Vec<Vec<expr::Any>>,
+    substacks: Vec<Vec<value::Any>>,
 }
 
 impl Stack {
@@ -37,16 +37,16 @@ impl Stack {
         ty.pop(self, operator)
     }
 
-    pub fn peek(&self) -> impl Iterator<Item=&expr::Any> + '_ {
+    pub fn peek(&self) -> impl Iterator<Item=&value::Any> + '_ {
         self.substacks.iter().flatten().rev()
     }
 
-    pub fn push_raw(&mut self, value: expr::Any) {
+    pub fn push_raw(&mut self, value: value::Any) {
         let stack = self.substacks.last_mut().unwrap();
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self, operator: &Span) -> Result<expr::Any, Error> {
+    pub fn pop_raw(&mut self, operator: &Span) -> Result<value::Any, Error> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
                 return Ok(value)
@@ -65,7 +65,7 @@ impl Stack {
         self.substacks.push(Vec::new());
     }
 
-    pub fn destroy_substack(&mut self) -> Vec<expr::Any> {
+    pub fn destroy_substack(&mut self) -> Vec<value::Any> {
         self.substacks.pop().unwrap()
     }
 }

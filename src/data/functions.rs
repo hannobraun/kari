@@ -253,15 +253,15 @@ pub struct GetError {
 #[cfg(test)]
 mod tests {
     use crate::data::{
-        expr::{
-            self,
-            Expr as _,
-        },
         span::Span,
         stack::Stack,
         types::{
             self as t,
             Type,
+        },
+        value::{
+            self,
+            Expr as _,
         },
     };
 
@@ -294,8 +294,8 @@ mod tests {
         functions
             .define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
-            .push(expr::Number::new(0, Span::default()))
-            .push(expr::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Span::default()))
+            .push(value::Float::new(0.0, Span::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -315,8 +315,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float ], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
-            .push(expr::Number::new(0, Span::default()))
-            .push(expr::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Span::default()))
+            .push(value::Float::new(0.0, Span::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -333,8 +333,8 @@ mod tests {
         functions
             .define(scope, "a", &[], 1)?;
         stack
-            .push(expr::Number::new(0, Span::default()))
-            .push(expr::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Span::default()))
+            .push(value::Float::new(0.0, Span::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -354,8 +354,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Float, &t::Float],  2)?;
         stack
-            .push(expr::Number::new(0, Span::default()))
-            .push(expr::Number::new(0, Span::default()));
+            .push(value::Number::new(0, Span::default()))
+            .push(value::Number::new(0, Span::default()));
 
         let error = match functions.get(scope, "a", &stack) {
             Ok(_)      => panic!("Expected error"),

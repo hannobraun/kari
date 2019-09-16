@@ -9,9 +9,9 @@ use crate::{
         Context,
     },
     data::{
-        expr,
         functions::Functions,
         span::Span,
+        value,
     },
 };
 
@@ -19,7 +19,7 @@ use crate::{
 pub enum Function<H> {
     Builtin(Builtin<H>),
     UserDefined {
-        body: expr::List,
+        body: value::List,
     }
 }
 

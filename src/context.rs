@@ -10,7 +10,6 @@ use termion::{
 
 use crate::{
     data::{
-        expr,
         functions::{
             self,
             Functions,
@@ -24,6 +23,7 @@ use crate::{
             Type,
             TypeError,
         },
+        value,
     },
     function::Function,
     pipeline::parser,
@@ -35,20 +35,20 @@ pub trait Context<H> {
 
     fn output(&mut self) -> &mut dyn io::Write;
 
-    fn load(&mut self, name: expr::String)
-        -> Result<expr::List, Error>;
+    fn load(&mut self, name: value::String)
+        -> Result<value::List, Error>;
 
     fn evaluate_expr(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        expr:      expr::Any,
+        expr:      value::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
         functions: &mut Functions<Function<H>>,
         operator:  Option<Span>,
-        list:      expr::List,
+        list:      value::List,
     )
         -> Result<(), Error>;
 }

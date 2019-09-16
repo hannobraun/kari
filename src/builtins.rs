@@ -4,14 +4,14 @@ use crate::{
         Context,
     },
     data::{
-        expr::{
+        functions::Functions,
+        span::Span,
+        types as t,
+        value::{
             self,
             Compute as _,
             Expr as _,
         },
-        functions::Functions,
-        span::Span,
-        types as t,
     },
     function::{
         Function,
@@ -142,7 +142,7 @@ fn eval<H>(
 
     let items = context.stack().destroy_substack();
 
-    let list = expr::List::new(items, span);
+    let list = value::List::new(items, span);
     context.stack().push(list);
 
     Ok(())
@@ -175,9 +175,9 @@ fn to_list<H>(
 
     let (word, span) = symbol.open();
     let list_span    = operator.merge(&span);
-    let word         = expr::Any::new(expr::Kind::Word(word), span);
+    let word         = value::Any::new(value::Kind::Word(word), span);
 
-    let list = expr::List::new(vec![word], list_span);
+    let list = value::List::new(vec![word], list_span);
     context.stack().push(list);
 
     Ok(())
@@ -279,7 +279,7 @@ fn map<H>(
 
     let result = context.stack().destroy_substack();
 
-    let data = expr::List::new(
+    let data = value::List::new(
         result,
         operator.merge(&list.span).merge(&function.span),
     );
@@ -299,7 +299,7 @@ fn wrap<H>(
     let arg = context.stack().pop(&t::Any, &operator)?;
 
     let span = operator.merge(&arg.span);
-    let list = expr::List::new(vec![arg], span);
+    let list = value::List::new(vec![arg], span);
 
     context.stack().push(list);
 
@@ -352,7 +352,7 @@ fn add_n<H>(
 {
     let sum = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
-        .compute::<expr::Number, _, _>(|(a, b)| a + b);
+        .compute::<value::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
 
@@ -369,7 +369,7 @@ fn mul_n<H>(
 {
     let product = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
-        .compute::<expr::Number, _, _>(|(a, b)| a * b);
+        .compute::<value::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
 
@@ -386,7 +386,7 @@ fn div_n<H>(
 {
     let quotient = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
-        .compute::<expr::Number, _, _>(|(a, b)| a / b);
+        .compute::<value::Number, _, _>(|(a, b)| a / b);
 
     context.stack().push(quotient);
 
@@ -403,7 +403,7 @@ fn gt_n<H>(
 {
     let is_greater = context.stack()
         .pop((&t::Number, &t::Number), &operator)?
-        .compute::<expr::Bool, _, _>(|(a, b)| a > b);
+        .compute::<value::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
 
@@ -421,7 +421,7 @@ fn add_f<H>(
 {
     let sum = context.stack()
         .pop((&t::Float, &t::Float), &operator)?
-        .compute::<expr::Float, _, _>(|(a, b)| a + b);
+        .compute::<value::Float, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
 
@@ -438,7 +438,7 @@ fn mul_f<H>(
 {
     let product = context.stack()
         .pop((&t::Float, &t::Float), &operator)?
-        .compute::<expr::Float, _, _>(|(a, b)| a * b);
+        .compute::<value::Float, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
 
@@ -455,7 +455,7 @@ fn gt_f<H>(
 {
     let is_greater = context.stack()
         .pop((&t::Float, &t::Float), &operator)?
-        .compute::<expr::Bool, _, _>(|(a, b)| a > b);
+        .compute::<value::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
 
@@ -473,7 +473,7 @@ fn eq<H>(
 {
     let is_equal = context.stack()
         .pop((&t::Any, &t::Any), &operator)?
-        .compute::<expr::Bool, _, _>(|(a, b)| a == b);
+        .compute::<value::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
 
@@ -490,7 +490,7 @@ fn not<H>(
 {
     let inverted = context.stack()
         .pop(&t::Bool, &operator)?
-        .compute::<expr::Bool, _, _>(|b| !b);
+        .compute::<value::Bool, _, _>(|b| !b);
 
     context.stack().push(inverted);
 
