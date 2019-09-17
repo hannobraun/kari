@@ -12,6 +12,11 @@ pub struct Span {
 
 impl Span {
     pub fn merge(mut self, other: &Self) -> Self {
+        // The following code obviously assumes something like the this
+        // assertion, but uncommenting the assertion will result in panics. This
+        // has been documented in the BUGS file.
+        // assert_eq!(self.stream, other.stream);
+
         if self.start > other.start {
             self.start = other.start;
         }
