@@ -14,10 +14,7 @@ use clap::{
     Arg,
 };
 
-use kari::{
-    data::functions::Functions,
-    interpreter::evaluator::Evaluator,
-};
+use kari::interpreter::evaluator::Evaluator;
 
 
 fn main() {
@@ -35,8 +32,6 @@ fn main() {
 
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
-
-    let functions = Functions::new();
 
     let prelude = kari::prelude()
         .unwrap_or_else(|error| {
@@ -58,13 +53,13 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::new(stdout, stderr, (), functions)
+            Evaluator::new(stdout, stderr, ())
                 .run(path.into(), prelude, Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            Evaluator::new(stdout, stderr, (), functions)
+            Evaluator::new(stdout, stderr, ())
                 .run("<stdin>".into(), prelude, stdin);
         }
     }

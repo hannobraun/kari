@@ -55,14 +55,13 @@ pub struct Evaluator<H> {
 
 impl<H> Evaluator<H> {
     pub fn new(
-        stdout:    Box<dyn io::Write>,
-        stderr:    Box<dyn io::Write>,
-        host:      H,
-        functions: Functions<Function<H>>,
+        stdout: Box<dyn io::Write>,
+        stderr: Box<dyn io::Write>,
+        host:   H,
     )
         -> Self
     {
-        let mut functions = functions;
+        let mut functions = Functions::new();
         builtins(&mut functions);
 
         Self {
