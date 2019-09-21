@@ -9,7 +9,6 @@ use crate::{
         Context,
     },
     data::{
-        functions::Functions,
         span::Span,
         value,
     },
@@ -42,5 +41,4 @@ impl<H> Clone for Function<H> {
 pub type Host<H> = Rc<RefCell<H>>;
 
 pub type Builtin<H> =
-    fn(Host<H>, &mut dyn Context<H>, &mut Functions<Function<H>>, Span)
-        -> Result<(), context::Error>;
+    fn(Host<H>, &mut dyn Context<H>, Span) -> Result<(), context::Error>;

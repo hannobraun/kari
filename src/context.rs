@@ -31,6 +31,8 @@ use crate::{
 
 
 pub trait Context<H> {
+    fn functions(&mut self) -> &mut Functions<Function<H>>;
+
     fn stack(&mut self) -> &mut Stack;
 
     fn output(&mut self) -> &mut dyn io::Write;
@@ -39,16 +41,14 @@ pub trait Context<H> {
         -> Result<value::List, Error>;
 
     fn evaluate_value(&mut self,
-        functions: &mut Functions<Function<H>>,
-        operator:  Option<Span>,
-        value:     value::Any,
+        operator: Option<Span>,
+        value:    value::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
-        functions: &mut Functions<Function<H>>,
-        operator:  Option<Span>,
-        list:      value::List,
+        operator: Option<Span>,
+        list:     value::List,
     )
         -> Result<(), Error>;
 }

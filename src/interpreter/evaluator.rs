@@ -47,15 +47,17 @@ pub struct Evaluator<H> {
     stderr:  Box<dyn io::Write>,
 
     host:        Host<H>,
+    functions:   Functions<Function<H>>,
     stack:       Stack,
     stack_trace: Vec<Span>,
 }
 
 impl<H> Evaluator<H> {
     pub fn new(
-        stdout: Box<dyn io::Write>,
-        stderr: Box<dyn io::Write>,
-        host:   H,
+        stdout:    Box<dyn io::Write>,
+        stderr:    Box<dyn io::Write>,
+        host:      H,
+        functions: Functions<Function<H>>,
     )
         -> Self
     {
@@ -65,6 +67,7 @@ impl<H> Evaluator<H> {
             stderr,
 
             host:        Rc::new(RefCell::new(host)),
+            functions,
             stack:       Stack::new(),
             stack_trace: Vec::new(),
         }
@@ -74,7 +77,6 @@ impl<H> Evaluator<H> {
             name:      Cow<str>,
         mut prelude:   Box<dyn Stream>,
         mut program:   Box<dyn Stream>,
-        mut functions: Functions<Function<H>>,
     )
         -> bool
     {
@@ -84,7 +86,8 @@ impl<H> Evaluator<H> {
             prelude_name.into(),
             &mut prelude,
         );
-        self.evaluate_expressions(prelude_pipeline, &mut functions)
+
+        self.evaluate_expressions(prelude_pipeline)
             .expect("Error while evaluating prelude");
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -100,7 +103,7 @@ impl<H> Evaluator<H> {
             &mut program,
         );
 
-        let result = self.evaluate_expressions(pipeline, &mut functions);
+        let result = self.evaluate_expressions(pipeline);
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
@@ -118,10 +121,7 @@ impl<H> Evaluator<H> {
         true
     }
 
-    fn evaluate_expressions<Parser>(&mut self,
-        mut parser:    Parser,
-            functions: &mut Functions<Function<H>>,
-    )
+    fn evaluate_expressions<Parser>(&mut self, mut parser: Parser)
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
     {
@@ -144,7 +144,6 @@ impl<H> Evaluator<H> {
             };
 
             let result = self.evaluate_value(
-                functions,
                 None,
                 value::Any::from_expression(expression),
             );
@@ -161,6 +160,10 @@ impl<H> Evaluator<H> {
 }
 
 impl<H> Context<H> for Evaluator<H> {
+    fn functions(&mut self) -> &mut Functions<Function<H>> {
+        &mut self.functions
+    }
+
     fn stack(&mut self) -> &mut Stack {
         &mut self.stack
     }
@@ -206,9 +209,8 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_value(&mut self,
-        functions: &mut Functions<Function<H>>,
-        operator:  Option<Span>,
-        value:     value::Any,
+        operator: Option<Span>,
+        value:    value::Any,
     )
         -> Result<(), context::Error>
     {
@@ -219,20 +221,18 @@ impl<H> Context<H> for Evaluator<H> {
         }
 
         if let value::Kind::Word(word) = value.kind {
-            match functions.get(functions.root_scope(), &word, &self.stack) {
+            match self.functions.get(self.functions.root_scope(), &word, &self.stack) {
                 Ok(f) => {
                     match f {
                         Function::Builtin(f) => {
                             f(
                                 self.host.clone(),
                                 self,
-                                functions,
                                 value.span,
                             )?;
                         }
                         Function::UserDefined { body } => {
                             self.evaluate_list(
-                                functions,
                                 Some(value.span),
                                 body,
                             )?;
@@ -263,14 +263,13 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_list(&mut self,
-        functions: &mut Functions<Function<H>>,
-        operator:  Option<Span>,
-        list:      value::List,
+        operator: Option<Span>,
+        list:     value::List,
     )
         -> Result<(), context::Error>
     {
         for expr in list {
-            self.evaluate_value(functions, operator.clone(), expr)?;
+            self.evaluate_value(operator.clone(), expr)?;
         }
 
         Ok(())
