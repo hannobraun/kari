@@ -30,8 +30,8 @@ use crate::{
 };
 
 
-pub trait Context<H> {
-    fn functions(&mut self) -> &mut Functions<Function<H>>;
+pub trait Context<Host> {
+    fn functions(&mut self) -> &mut Functions<Function<Host>>;
 
     fn stack(&mut self) -> &mut Stack;
 
@@ -41,14 +41,14 @@ pub trait Context<H> {
         -> Result<value::List, Error>;
 
     fn evaluate_value(&mut self,
-        host:     &mut H,
+        host:     &mut Host,
         operator: Option<Span>,
         value:    value::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
-        host:     &mut H,
+        host:     &mut Host,
         operator: Option<Span>,
         list:     value::List,
     )
