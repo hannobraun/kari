@@ -37,12 +37,12 @@ use crate::{
 };
 
 
-pub struct Evaluator<H> {
+pub struct Evaluator<Host> {
     streams: HashMap<String, Box<dyn Stream>>,
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
-    functions:   Functions<Function<H>>,
+    functions:   Functions<Function<Host>>,
     stack:       Stack,
     stack_trace: Vec<Span>,
 }
