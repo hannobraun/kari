@@ -16,6 +16,7 @@ use crate::{
         functions::{
             self,
             Functions,
+            Scope,
         },
         span::Span,
         stack::Stack,
@@ -172,7 +173,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
         &mut self.stdout
     }
 
-    fn load(&mut self, name: value::String)
+    fn load(&mut self, name: value::String, _: Scope)
         -> Result<value::List, context::Error>
     {
         let     path   = format!("kr/src/{}.kr", name.inner);

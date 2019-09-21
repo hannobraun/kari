@@ -13,6 +13,7 @@ use crate::{
         functions::{
             self,
             Functions,
+            Scope,
         },
         span::Span,
         stack::{
@@ -37,7 +38,7 @@ pub trait Context<Host> {
 
     fn output(&mut self) -> &mut dyn io::Write;
 
-    fn load(&mut self, name: value::String)
+    fn load(&mut self, name: value::String, scope: Scope)
         -> Result<value::List, Error>;
 
     fn evaluate_value(&mut self,

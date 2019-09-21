@@ -156,14 +156,14 @@ fn eval<Host>(
 fn load<Host>(
     _:        &mut Host,
     context:  &mut dyn Context<Host>,
-    _:        Scope,
+    scope:    Scope,
     operator: Span,
 )
     -> Result
 {
     let path = context.stack().pop(&t::String, &operator)?;
 
-    let list = context.load(path)?;
+    let list = context.load(path, scope)?;
     context.stack().push(list);
     Ok(())
 }
