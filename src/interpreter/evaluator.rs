@@ -1,10 +1,8 @@
 use std::{
     borrow::Cow,
-    cell::RefCell,
     collections::HashMap,
     fs::File,
     io,
-    rc::Rc,
 };
 
 use crate::{
@@ -26,10 +24,7 @@ use crate::{
             Value as _,
         },
     },
-    function::{
-        Function,
-        Host,
-    },
+    function::Function,
     interpreter::{
         error::Error,
         stream::Stream,
@@ -47,7 +42,6 @@ pub struct Evaluator<H> {
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
-    host:        Host<H>,
     functions:   Functions<Function<H>>,
     stack:       Stack,
     stack_trace: Vec<Span>,
@@ -57,7 +51,6 @@ impl<H> Evaluator<H> {
     pub fn new(
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
-        host:   H,
     )
         -> Self
     {
@@ -69,7 +62,6 @@ impl<H> Evaluator<H> {
             stdout,
             stderr,
 
-            host:        Rc::new(RefCell::new(host)),
             functions,
             stack:       Stack::new(),
             stack_trace: Vec::new(),
@@ -77,6 +69,7 @@ impl<H> Evaluator<H> {
     }
 
     pub fn run(mut self,
+            host:      &mut H,
             name:      Cow<str>,
         mut prelude:   Box<dyn Stream>,
         mut program:   Box<dyn Stream>,
@@ -90,7 +83,7 @@ impl<H> Evaluator<H> {
             &mut prelude,
         );
 
-        self.evaluate_expressions(prelude_pipeline)
+        self.evaluate_expressions(host, prelude_pipeline)
             .expect("Error while evaluating prelude");
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -106,7 +99,7 @@ impl<H> Evaluator<H> {
             &mut program,
         );
 
-        let result = self.evaluate_expressions(pipeline);
+        let result = self.evaluate_expressions(host, pipeline);
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
@@ -124,7 +117,10 @@ impl<H> Evaluator<H> {
         true
     }
 
-    fn evaluate_expressions<Parser>(&mut self, mut parser: Parser)
+    fn evaluate_expressions<Parser>(&mut self,
+            host:   &mut H,
+        mut parser: Parser,
+    )
         -> Result<(), Error>
         where Parser: pipeline::Stage<Item=Expression, Error=parser::Error>
     {
@@ -147,6 +143,7 @@ impl<H> Evaluator<H> {
             };
 
             let result = self.evaluate_value(
+                host,
                 None,
                 value::Any::from_expression(expression),
             );
@@ -212,6 +209,7 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_value(&mut self,
+        host:     &mut H,
         operator: Option<Span>,
         value:    value::Any,
     )
@@ -229,13 +227,14 @@ impl<H> Context<H> for Evaluator<H> {
                     match f {
                         Function::Builtin(f) => {
                             f(
-                                self.host.clone(),
+                                host,
                                 self,
                                 value.span,
                             )?;
                         }
                         Function::UserDefined { body } => {
                             self.evaluate_list(
+                                host,
                                 Some(value.span),
                                 body,
                             )?;
@@ -266,13 +265,14 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_list(&mut self,
+        host:     &mut H,
         operator: Option<Span>,
         list:     value::List,
     )
         -> Result<(), context::Error>
     {
         for expr in list {
-            self.evaluate_value(operator.clone(), expr)?;
+            self.evaluate_value(host, operator.clone(), expr)?;
         }
 
         Ok(())

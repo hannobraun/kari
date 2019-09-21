@@ -41,12 +41,14 @@ pub trait Context<H> {
         -> Result<value::List, Error>;
 
     fn evaluate_value(&mut self,
+        host:     &mut H,
         operator: Option<Span>,
         value:    value::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
+        host:     &mut H,
         operator: Option<Span>,
         list:     value::List,
     )

@@ -53,14 +53,14 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::new(stdout, stderr, ())
-                .run(path.into(), prelude, Box::new(file));
+            Evaluator::new(stdout, stderr)
+                .run(&mut (), path.into(), prelude, Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            Evaluator::new(stdout, stderr, ())
-                .run("<stdin>".into(), prelude, stdin);
+            Evaluator::new(stdout, stderr)
+                .run(&mut (), "<stdin>".into(), prelude, stdin);
         }
     }
 }

@@ -1,8 +1,3 @@
-use std::{
-    cell::RefCell,
-    rc::Rc,
-};
-
 use crate::{
     context::{
         self,
@@ -38,7 +33,5 @@ impl<H> Clone for Function<H> {
 }
 
 
-pub type Host<H> = Rc<RefCell<H>>;
-
-pub type Builtin<H> =
-    fn(Host<H>, &mut dyn Context<H>, Span) -> Result<(), context::Error>;
+pub type Builtin<Host> =
+    fn(&mut Host, &mut dyn Context<Host>, Span) -> Result<(), context::Error>;

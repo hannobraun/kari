@@ -64,8 +64,8 @@ fn main() {
                 exit(1);
             });
 
-        let success = Evaluator::new(stdout, stderr, ())
-            .run(path.into(), prelude, Box::new(file));
+        let success = Evaluator::new(stdout, stderr)
+            .run(&mut (), path.into(), prelude, Box::new(file));
 
         if success {
             print!("    {}{}OK{}{} {}\n",
