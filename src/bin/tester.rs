@@ -14,7 +14,6 @@ use termion::{
 use walkdir::WalkDir;
 
 use kari::{
-    builtins,
     data::functions::Functions,
     interpreter::evaluator::Evaluator,
 };
@@ -62,8 +61,7 @@ fn main() {
         let stdout = Box::new(stdout());
         let stderr = Box::new(stderr());
 
-        let mut functions = Functions::new();
-        builtins::builtins(&mut functions);
+        let functions = Functions::new();
 
         let prelude = kari::prelude()
             .unwrap_or_else(|error| {

@@ -8,6 +8,7 @@ use std::{
 };
 
 use crate::{
+    builtins::builtins,
     context::{
         self,
         Context,
@@ -61,6 +62,9 @@ impl<H> Evaluator<H> {
     )
         -> Self
     {
+        let mut functions = functions;
+        builtins(&mut functions);
+
         Self {
             streams: HashMap::new(),
             stdout,
