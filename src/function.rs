@@ -4,6 +4,7 @@ use crate::{
         Context,
     },
     data::{
+        functions::Scope,
         span::Span,
         value,
     },
@@ -34,4 +35,5 @@ impl<H> Clone for Function<H> {
 
 
 pub type Builtin<Host> =
-    fn(&mut Host, &mut dyn Context<Host>, Span) -> Result<(), context::Error>;
+    fn(&mut Host, &mut dyn Context<Host>, Scope, Span)
+        -> Result<(), context::Error>;

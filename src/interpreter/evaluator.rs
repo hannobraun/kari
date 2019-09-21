@@ -224,11 +224,14 @@ impl<Host> Context<Host> for Evaluator<Host> {
         if let value::Kind::Word(word) = value.kind {
             match self.functions.get(self.functions.root_scope(), &word, &self.stack) {
                 Ok(f) => {
+                    let scope = self.functions.root_scope();
+
                     match f {
                         Function::Builtin(f) => {
                             f(
                                 host,
                                 self,
+                                scope,
                                 value.span,
                             )?;
                         }
