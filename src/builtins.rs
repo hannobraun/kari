@@ -118,9 +118,9 @@ fn fail<Host>(
 }
 
 fn eval<Host>(
-    host:      &mut Host,
-    context:   &mut dyn Context<Host>,
-    operator:  Span,
+    host:     &mut Host,
+    context:  &mut dyn Context<Host>,
+    operator: Span,
 )
     -> Result
 {
