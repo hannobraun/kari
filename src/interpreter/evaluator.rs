@@ -47,7 +47,7 @@ pub struct Evaluator<H> {
     stack_trace: Vec<Span>,
 }
 
-impl<H> Evaluator<H> {
+impl<Host> Evaluator<Host> {
     pub fn new(
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
@@ -69,7 +69,7 @@ impl<H> Evaluator<H> {
     }
 
     pub fn run(mut self,
-            host:      &mut H,
+            host:      &mut Host,
             name:      Cow<str>,
         mut prelude:   Box<dyn Stream>,
         mut program:   Box<dyn Stream>,
@@ -118,7 +118,7 @@ impl<H> Evaluator<H> {
     }
 
     fn evaluate_expressions<Parser>(&mut self,
-            host:   &mut H,
+            host:   &mut Host,
         mut parser: Parser,
     )
         -> Result<(), Error>
