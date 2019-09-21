@@ -143,10 +143,16 @@ impl<Host> Evaluator<Host> {
                 }
             };
 
+            let root_scope = self.functions.root_scope();
+            let scope      = self.functions.new_scope(root_scope);
+
             let result = self.evaluate_value(
                 host,
                 None,
-                value::Any::from_expression(expression),
+                value::Any::from_expression(
+                    expression,
+                    scope,
+                ),
             );
             if let Err(error) = result {
                 return Err(
@@ -173,9 +179,11 @@ impl<Host> Context<Host> for Evaluator<Host> {
         &mut self.stdout
     }
 
-    fn load(&mut self, name: value::String, _: Scope)
+    fn load(&mut self, name: value::String, scope: Scope)
         -> Result<value::List, context::Error>
     {
+        let module_scope = self.functions.new_scope(scope);
+
         let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;
 
@@ -203,7 +211,10 @@ impl<Host> Context<Host> for Evaluator<Host> {
 
         Ok(
             value::List::new(
-                value::ListInner::from_expressions(expressions),
+                value::ListInner::from_expressions(
+                    expressions,
+                    module_scope,
+                ),
                 start.merge(&end),
             )
         )

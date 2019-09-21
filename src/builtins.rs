@@ -126,7 +126,7 @@ fn fail<Host>(
 fn eval<Host>(
     host:     &mut Host,
     context:  &mut dyn Context<Host>,
-    _:        Scope,
+    scope:    Scope,
     operator: Span,
 )
     -> Result
@@ -145,7 +145,10 @@ fn eval<Host>(
     let items = context.stack().destroy_substack();
 
     let list = value::List::new(
-        value::ListInner::from_values(items),
+        value::ListInner::from_values(
+            items,
+            context.functions().new_scope(scope),
+        ),
         span,
     );
     context.stack().push(list);
@@ -171,7 +174,7 @@ fn load<Host>(
 fn to_list<Host>(
     _:        &mut Host,
     context:  &mut dyn Context<Host>,
-    _:        Scope,
+    scope:    Scope,
     operator: Span,
 )
     -> Result
@@ -183,7 +186,10 @@ fn to_list<Host>(
     let word         = value::Any::new(value::Kind::Word(word), span);
 
     let list = value::List::new(
-        value::ListInner::from_values(vec![word]),
+        value::ListInner::from_values(
+            vec![word],
+            context.functions().new_scope(scope),
+        ),
         list_span,
     );
     context.stack().push(list);
@@ -288,7 +294,10 @@ fn map<Host>(
     let result = context.stack().destroy_substack();
 
     let data = value::List::new(
-        value::ListInner::from_values(result),
+        value::ListInner::from_values(
+            result,
+            context.functions().new_scope(list.inner.scope),
+        ),
         operator.merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
@@ -299,7 +308,7 @@ fn map<Host>(
 fn wrap<Host>(
     _:        &mut Host,
     context:  &mut dyn Context<Host>,
-    _:        Scope,
+    scope:    Scope,
     operator: Span,
 )
     -> Result
@@ -308,7 +317,10 @@ fn wrap<Host>(
 
     let span = operator.merge(&arg.span);
     let list = value::List::new(
-        value::ListInner::from_values(vec![arg]),
+        value::ListInner::from_values(
+            vec![arg],
+            context.functions().new_scope(scope),
+        ),
         span,
     );
 
