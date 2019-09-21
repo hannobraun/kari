@@ -159,8 +159,8 @@ impl<Host> Evaluator<Host> {
     }
 }
 
-impl<H> Context<H> for Evaluator<H> {
-    fn functions(&mut self) -> &mut Functions<Function<H>> {
+impl<Host> Context<Host> for Evaluator<Host> {
+    fn functions(&mut self) -> &mut Functions<Function<Host>> {
         &mut self.functions
     }
 
@@ -209,7 +209,7 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_value(&mut self,
-        host:     &mut H,
+        host:     &mut Host,
         operator: Option<Span>,
         value:    value::Any,
     )
@@ -265,7 +265,7 @@ impl<H> Context<H> for Evaluator<H> {
     }
 
     fn evaluate_list(&mut self,
-        host:     &mut H,
+        host:     &mut Host,
         operator: Option<Span>,
         list:     value::List,
     )
