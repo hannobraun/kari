@@ -58,6 +58,7 @@ impl<T> Functions<T>
 
                 return Err(
                     DefineError {
+                        name,
                         conflicting,
                     }
                 );
@@ -71,12 +72,13 @@ impl<T> Functions<T>
         }
 
         let node = functions
-            .entry(name)
+            .entry(name.clone())
             .or_insert(Node::Type(HashMap::new()));
 
         node.insert(args, f)
             .map_err(|conflicting|
                 DefineError {
+                    name,
                     conflicting,
                 }
             )?;
@@ -270,6 +272,7 @@ impl<T> Node<T> {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct DefineError {
+    pub name:        String,
     pub conflicting: Signatures,
 }
 
@@ -436,6 +439,7 @@ mod tests {
             .define(scope, "a", &[&t::Number], 2)
             .unwrap_err();
 
+        assert_eq!(err.name, String::from("a"));
         assert_eq!(err.conflicting.len(), 1);
         assert!(err.conflicting.contains(&vec![&t::Number, &t::Number]));
 
@@ -456,6 +460,7 @@ mod tests {
             .define(scope, "a", &[], 2)
             .unwrap_err();
 
+        assert_eq!(err.name, String::from("a"));
         assert_eq!(err.conflicting.len(), 1);
         assert!(err.conflicting.contains(&vec![&t::Number]));
 
@@ -474,6 +479,7 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Number], 2)
             .unwrap_err();
 
+        assert_eq!(err.name, String::from("a"));
         assert_eq!(err.conflicting.len(), 1);
         assert!(err.conflicting.contains(&vec![&t::Number]));
 
