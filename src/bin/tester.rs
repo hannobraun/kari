@@ -74,8 +74,15 @@ fn main() {
 
     for (success, path) in results {
         if success {
-            print!("    {}{}OK{}{} {}\n",
+            print!("       {}{}OK{}{} {}\n",
                 style::Bold, color::Fg(color::LightGreen),
+                color::Fg(color::Reset), style::Reset,
+                path,
+            );
+        }
+        else {
+            print!("    {}{}ERROR{}{} {}\n",
+                style::Bold, color::Fg(color::Red),
                 color::Fg(color::Reset), style::Reset,
                 path,
             );
