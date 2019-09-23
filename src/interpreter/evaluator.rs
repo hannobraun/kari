@@ -144,14 +144,14 @@ impl<Host> Evaluator<Host> {
             };
 
             let root_scope = self.functions.root_scope();
-            let scope      = self.functions.new_scope(root_scope);
+            let list_scope = self.functions.new_scope(root_scope);
 
             let result = self.evaluate_value(
                 host,
                 None,
                 value::Any::from_expression(
                     expression,
-                    scope,
+                    list_scope,
                 ),
             );
             if let Err(error) = result {
