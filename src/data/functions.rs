@@ -222,8 +222,8 @@ impl<T> Node<T> {
         if let Some(node) = map.get_mut(t) {
             return node.insert(args, f)
                 .map_err(|mut conflicting| {
-                    for conflicting in &mut conflicting {
-                        conflicting.insert(0, t);
+                    for signature in &mut conflicting {
+                        signature.insert(0, t);
                     }
                     conflicting
                 });
