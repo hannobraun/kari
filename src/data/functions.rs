@@ -62,6 +62,7 @@ impl<T> Functions<T>
                     DefineError {
                         name,
                         conflicting,
+                        scope_id: scope.id,
                     }
                 );
             }
@@ -82,6 +83,7 @@ impl<T> Functions<T>
                 DefineError {
                     name,
                     conflicting,
+                    scope_id: scope.id,
                 }
             )?;
 
@@ -280,6 +282,7 @@ impl<T> Node<T> {
 pub struct DefineError {
     pub name:        String,
     pub conflicting: Signatures,
+    pub scope_id:    u64,
 }
 
 impl fmt::Display for DefineError {
