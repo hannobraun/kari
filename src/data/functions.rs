@@ -74,7 +74,12 @@ impl<T> Functions<T>
             .entry(name)
             .or_insert(Node::Type(HashMap::new()));
 
-        node.insert(args, f)?;
+        node.insert(args, f)
+            .map_err(|conflicting|
+                DefineError {
+                    conflicting,
+                }
+            )?;
 
         Ok(self)
     }
@@ -182,7 +187,7 @@ enum Node<T> {
 
 impl<T> Node<T> {
     fn insert(&mut self, args: &[&'static dyn Type], f: T)
-        -> Result<(), DefineError>
+        -> Result<(), Signatures>
     {
         let map = match self {
             Node::Type(map) => {
@@ -190,13 +195,11 @@ impl<T> Node<T> {
             }
             Node::Function(_) => {
                 return Err(
-                    DefineError {
-                        // We know there is one conflicting function, because we
-                        // just loaded it from the map. We need to add an empty
-                        // `Vec` for it to `conflicting`. Its type will be
-                        // backfilled when the recursive `insert` calls return.
-                        conflicting: vec![Vec::new()],
-                    }
+                    // We know there is one conflicting function, because we
+                    // just loaded it from the map. We need to add an empty
+                    // `Vec` for it to `conflicting`. Its type will be
+                    // backfilled when the recursive `insert` calls return.
+                    vec![Vec::new()],
                 )
             }
         };
@@ -212,21 +215,17 @@ impl<T> Node<T> {
                 let mut conflicting = Vec::new();
                 self.all_paths(Vec::new(), &mut conflicting);
 
-                return Err(
-                    DefineError {
-                        conflicting,
-                    }
-                );
+                return Err(conflicting);
             }
         };
 
         if let Some(node) = map.get_mut(t) {
             return node.insert(args, f)
-                .map_err(|mut err| {
-                    for conflicting in &mut err.conflicting {
+                .map_err(|mut conflicting| {
+                    for conflicting in &mut conflicting {
                         conflicting.insert(0, t);
                     }
-                    err
+                    conflicting
                 });
         }
 
