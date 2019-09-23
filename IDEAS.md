@@ -8,6 +8,29 @@
 - Since each list must be defined in another list (except the top-level module, which is the implicit root list), lists, and therefore scopes, form a hierarchy. If a function is not found in a given scope, it should be searched for in the parent scope, and so on.
 - It must be possible to export functions from a module. This could be done by explicitely pushing a list of list/symbol pairs to the stack at the end of a module. The list would then be `eval`uated item by item when loading the list. This could all be implemented in Kari.
 
+### Assert Stack Types
+
+I've found that more complicated code benefits from comments that explicitely point out which types are currently at the top of the stack. But of course, such comments can go out of date, or be wrong in the first place.
+
+There should be a builtin that takes a list of types and fails, if those are not the types currently on the stack. So something like this:
+```
+# on stack: symbol
+dup          # => symbol symbol
+to_list      # => symbol [ word ]
+swap wrap    # => [ word ] [ symbol ]
+swap prepend # => [ [ word ] symbol ]
+```
+
+Would become something like this:
+```
+# on stack: symbol
+[ symbol ] on_stack
+dup          [ symbol symbol ] on_stack
+to_list      [ symbol [ word ] ] on_stack
+swap wrap    [ [ word ] [ symbol ] ] on_stack
+swap prepend [ [ [ word ] symbol ] ] on_stack
+```
+
 
 ## Implementation
 
