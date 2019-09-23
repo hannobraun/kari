@@ -12,6 +12,7 @@ use crate::data::{
 };
 
 
+#[derive(Debug)]
 pub struct Functions<T> {
     scopes:        HashMap<Scope, HashMap<String, Node<T>>>,
     root:          Scope,
@@ -166,6 +167,7 @@ impl<T> Functions<T>
 pub struct Scope(u64);
 
 
+#[derive(Debug)]
 enum Node<T> {
     Type(HashMap<&'static dyn Type, Node<T>>),
     Function(T),
