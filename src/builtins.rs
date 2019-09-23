@@ -92,15 +92,13 @@ fn print<Host>(
 fn define<Host>(
     _:        &mut Host,
     context:  &mut dyn Context<Host>,
-    _:        Scope,
+    scope:    Scope,
     operator: Span,
 )
     -> Result
 {
     let (body, name) = context.stack()
         .pop((&t::List, &t::Symbol), &operator)?;
-
-    let scope = context.functions().root_scope();
 
     context.functions().define(
         scope,
