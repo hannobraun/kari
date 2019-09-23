@@ -278,7 +278,13 @@ pub struct DefineError {
 
 impl fmt::Display for DefineError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Conflicting function definition found")
+        write!(f,"Conflicting function found defining `{}`:\n", self.name)?;
+
+        for conflicting in &self.conflicting {
+            write!(f, "{:?}\n", conflicting)?;
+        }
+
+        Ok(())
     }
 }
 
