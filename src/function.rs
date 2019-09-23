@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{
     context::{
         self,
@@ -29,6 +31,15 @@ impl<H> Clone for Function<H> {
                     body: body.clone(),
                 }
             }
+        }
+    }
+}
+
+impl<H> fmt::Debug for Function<H> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Function::Builtin(_)           => write!(f, "builtin"),
+            Function::UserDefined { body } => write!(f, "{:?}", body),
         }
     }
 }
