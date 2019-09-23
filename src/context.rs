@@ -66,6 +66,7 @@ pub enum Error {
         span:       Span,
         stack:      Stack,
         candidates: Vec<Vec<&'static dyn Type>>,
+        scope:      String,
     },
     Io(io::Error),
     Parser(parser::Error),
@@ -90,7 +91,7 @@ impl Error {
 
     pub fn write_hint(&self, stderr: &mut dyn io::Write) -> io::Result<()> {
         match self {
-            Error::FunctionNotFound { stack, candidates, .. } => {
+            Error::FunctionNotFound { stack, candidates, scope, .. } => {
                 if candidates.len() > 0 {
                     write!(
                         stderr,
@@ -119,11 +120,23 @@ impl Error {
                 else {
                     write!(
                         stderr,
-                        "{}No functions of that name found in scope.{}\n",
+                        "{}No functions of that name found.{}\n",
                         color::Fg(color::Cyan),
                         color::Fg(color::Reset),
                     )?;
                 }
+
+                write!(
+                    stderr,
+                    "{}Scope: {}{}{}`{}`{}{}\n",
+                    color::Fg(color::Cyan),
+                    color::Fg(color::Reset),
+                    style::Bold,
+                    color::Fg(color::LightWhite),
+                    scope,
+                    color::Fg(color::Reset),
+                    style::Reset,
+                )?;
 
                 Ok(())
             },

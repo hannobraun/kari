@@ -256,13 +256,14 @@ impl<Host> Context<Host> for Evaluator<Host> {
                         }
                     }
                 }
-                Err(functions::GetError { candidates, .. }) => {
+                Err(functions::GetError { candidates, scope, .. }) => {
                     return Err(
                         context::Error::FunctionNotFound {
                             name:  word,
                             span:  value.span,
                             stack: self.stack.clone(),
                             candidates,
+                            scope: scope,
                         }
                     );
                 }
