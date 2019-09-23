@@ -256,7 +256,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
                         }
                     }
                 }
-                Err(functions::GetError { candidates }) => {
+                Err(functions::GetError { candidates, .. }) => {
                     return Err(
                         context::Error::FunctionNotFound {
                             name:  word,

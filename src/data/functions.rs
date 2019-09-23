@@ -124,6 +124,7 @@ impl<T> Functions<T>
             .ok_or_else(||
                 GetError {
                     candidates: self.candidates_for(&functions, name),
+                    scope:      self.scope_name(scope),
                 }
             )?;
 
@@ -137,6 +138,7 @@ impl<T> Functions<T>
                 .ok_or_else(||
                     GetError {
                         candidates: self.candidates_for(functions, name),
+                        scope:      self.scope_name(scope),
                     }
                 )?;
         }
@@ -146,6 +148,7 @@ impl<T> Functions<T>
                 Err(
                     GetError {
                         candidates: self.candidates_for(functions, name),
+                        scope:      self.scope_name(scope),
                     }
                 )
             }
@@ -187,6 +190,28 @@ impl<T> Functions<T>
         self.names.insert(scope, name.into());
 
         scope
+    }
+
+    fn scope_name(&self, scope: Scope) -> String {
+        let mut scope = scope;
+
+        let mut name = self.names.get(&scope)
+            // Shouldn't panic. If the scope exists, the name must exist.
+            .unwrap()
+            .clone();
+
+        while let Some(parent) = self.parents.get(&scope) {
+            let parent_name = &self.names.get(&parent)
+                // Shouldn't panic. If the scope exists, the name must exist.
+                .unwrap();
+
+            name.insert_str(0, " -> ");
+            name.insert_str(0, parent_name);
+
+            scope = *parent;
+        }
+
+        name
     }
 }
 
@@ -313,6 +338,7 @@ impl fmt::Display for DefineError {
 #[derive(Debug, Eq, PartialEq)]
 pub struct GetError {
     pub candidates: Signatures,
+    pub scope:      String,
 }
 
 
