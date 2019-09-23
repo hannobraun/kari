@@ -171,7 +171,9 @@ impl<T> Functions<T>
         self.root
     }
 
-    pub fn new_scope(&mut self, parent: Scope, name: impl Into<String>) -> Scope {
+    pub fn new_scope(&mut self, parent: Scope, name: impl Into<String>)
+        -> Scope
+    {
         assert!(self.next_scope_id < u64::max_value());
 
         let id = self.next_scope_id;
