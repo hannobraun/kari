@@ -144,7 +144,7 @@ impl<Host> Evaluator<Host> {
             };
 
             let root_scope = self.functions.root_scope();
-            let list_scope = self.functions.new_scope(root_scope);
+            let list_scope = self.functions.new_scope(root_scope, "list");
 
             let result = self.evaluate_value(
                 host,
@@ -182,7 +182,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
     fn load(&mut self, name: value::String, scope: Scope)
         -> Result<value::List, context::Error>
     {
-        let module_scope = self.functions.new_scope(scope);
+        let module_scope = self.functions.new_scope(scope, name.inner.clone());
 
         let     path   = format!("kr/src/{}.kr", name.inner);
         let mut stream = File::open(&path)?;

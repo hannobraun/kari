@@ -145,7 +145,7 @@ fn eval<Host>(
     let list = value::List::new(
         value::ListInner::from_values(
             items,
-            context.functions().new_scope(scope),
+            context.functions().new_scope(scope, "list"),
         ),
         span,
     );
@@ -186,7 +186,7 @@ fn to_list<Host>(
     let list = value::List::new(
         value::ListInner::from_values(
             vec![word],
-            context.functions().new_scope(scope),
+            context.functions().new_scope(scope, "list"),
         ),
         list_span,
     );
@@ -294,7 +294,7 @@ fn map<Host>(
     let data = value::List::new(
         value::ListInner::from_values(
             result,
-            context.functions().new_scope(list.inner.scope),
+            context.functions().new_scope(list.inner.scope, "list"),
         ),
         operator.merge(&list.span).merge(&function.span),
     );
@@ -317,7 +317,7 @@ fn wrap<Host>(
     let list = value::List::new(
         value::ListInner::from_values(
             vec![arg],
-            context.functions().new_scope(scope),
+            context.functions().new_scope(scope, "list"),
         ),
         span,
     );

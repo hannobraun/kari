@@ -17,6 +17,7 @@ pub struct Functions<T> {
     scopes:        HashMap<Scope, HashMap<String, Node<T>>>,
     root:          Scope,
     parents:       HashMap<Scope, Scope>,
+    names:         HashMap<Scope, String>,
     next_scope_id: u64,
 }
 
@@ -31,10 +32,14 @@ impl<T> Functions<T>
         let mut scopes = HashMap::new();
         scopes.insert(root, HashMap::new());
 
+        let mut names = HashMap::new();
+        names.insert(root, "<root>".into());
+
         Self {
             scopes,
             root,
             parents:       HashMap::new(),
+            names,
             next_scope_id: 1,
         }
     }
@@ -166,7 +171,7 @@ impl<T> Functions<T>
         self.root
     }
 
-    pub fn new_scope(&mut self, parent: Scope) -> Scope {
+    pub fn new_scope(&mut self, parent: Scope, name: impl Into<String>) -> Scope {
         assert!(self.next_scope_id < u64::max_value());
 
         let id = self.next_scope_id;
@@ -177,6 +182,7 @@ impl<T> Functions<T>
         };
         self.scopes.insert(scope, HashMap::new());
         self.parents.insert(scope, parent);
+        self.names.insert(scope, name.into());
 
         scope
     }
@@ -513,7 +519,7 @@ mod tests {
         let     stack     = Stack::new();
 
         let parent_scope = functions.root_scope();
-        let child_scope  = functions.new_scope(parent_scope);
+        let child_scope  = functions.new_scope(parent_scope, "child");
 
         functions
             .define(parent_scope, "a", &[], 1)?;
@@ -532,7 +538,7 @@ mod tests {
         let     stack     = Stack::new();
 
         let parent_scope = functions.root_scope();
-        let child_scope  = functions.new_scope(parent_scope);
+        let child_scope  = functions.new_scope(parent_scope, "child");
 
         functions
             .define(child_scope, "a", &[], 1)?;
