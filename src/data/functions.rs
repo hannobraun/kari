@@ -140,7 +140,7 @@ impl<T> Functions<T>
     }
 
     fn candidates_for(&self, functions: &HashMap<String, Node<T>>, name: &str)
-        -> Vec<Vec<&'static dyn Type>>
+        -> Signatures
     {
         let mut candidates = Vec::new();
 
@@ -251,7 +251,7 @@ impl<T> Node<T> {
 
     fn all_paths(&self,
         current_path: Vec<&'static dyn Type>,
-        paths:        &mut Vec<Vec<&'static dyn Type>>,
+        paths:        &mut Signatures,
     ) {
         match self {
             Node::Type(map) => {
@@ -271,7 +271,7 @@ impl<T> Node<T> {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct DefineError {
-    pub conflicting: Vec<Vec<&'static dyn Type>>,
+    pub conflicting: Signatures,
 }
 
 impl fmt::Display for DefineError {
@@ -283,8 +283,11 @@ impl fmt::Display for DefineError {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct GetError {
-    pub candidates: Vec<Vec<&'static dyn Type>>,
+    pub candidates: Signatures,
 }
+
+
+pub type Signatures = Vec<Vec<&'static dyn Type>>;
 
 
 #[cfg(test)]
