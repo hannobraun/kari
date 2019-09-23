@@ -112,6 +112,7 @@ impl<Host> Evaluator<Host> {
             {
                 print!("Error printing error: {}\n", error)
             }
+
             return false;
         }
 
