@@ -52,8 +52,15 @@ impl<T> Functions<T>
             .expect("Scope not found");
 
         if args.len() == 0 {
-            if functions.contains_key(&name) {
-                return Err(DefineError);
+            if let Some(node) = functions.get(&name) {
+                let mut conflicting = Vec::new();
+                node.all_paths(Vec::new(), &mut conflicting);
+
+                return Err(
+                    DefineError {
+                        conflicting,
+                    }
+                );
             }
 
             functions.insert(
@@ -178,8 +185,20 @@ impl<T> Node<T> {
         -> Result<(), DefineError>
     {
         let map = match self {
-            Node::Type(map)   => map,
-            Node::Function(_) => return Err(DefineError),
+            Node::Type(map) => {
+                map
+            }
+            Node::Function(_) => {
+                return Err(
+                    DefineError {
+                        // We know there is one conflicting function, because we
+                        // just loaded it from the map. We need to add an empty
+                        // `Vec` for it to `conflicting`. Its type will be
+                        // backfilled when the recursive `insert` calls return.
+                        conflicting: vec![Vec::new()],
+                    }
+                )
+            }
         };
 
         let (&t, args) = match args.split_last() {
@@ -189,12 +208,26 @@ impl<T> Node<T> {
                 // We've run out of arguments to look at while unpacking the
                 // already existing nodes on the path to our functions. This
                 // means that a less specific function is already defined.
-                return Err(DefineError);
+
+                let mut conflicting = Vec::new();
+                self.all_paths(Vec::new(), &mut conflicting);
+
+                return Err(
+                    DefineError {
+                        conflicting,
+                    }
+                );
             }
         };
 
         if let Some(node) = map.get_mut(t) {
-            return node.insert(args, f);
+            return node.insert(args, f)
+                .map_err(|mut err| {
+                    for conflicting in &mut err.conflicting {
+                        conflicting.insert(0, t);
+                    }
+                    err
+                });
         }
 
         let mut node = Node::Function(f);
@@ -237,7 +270,9 @@ impl<T> Node<T> {
 
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct DefineError;
+pub struct DefineError {
+    pub conflicting: Vec<Vec<&'static dyn Type>>,
+}
 
 impl fmt::Display for DefineError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -394,11 +429,14 @@ mod tests {
         let mut functions = Functions::new();
         let     scope     = functions.root_scope();
 
-        let result = functions
+        let err = functions
             .define(scope, "a", &[&t::Number, &t::Number], 1)?
-            .define(scope, "a", &[&t::Number], 2);
+            .define(scope, "a", &[&t::Number], 2)
+            .unwrap_err();
 
-        assert!(result.is_err());
+        assert_eq!(err.conflicting.len(), 1);
+        assert!(err.conflicting.contains(&vec![&t::Number, &t::Number]));
+
         Ok(())
     }
 
@@ -411,11 +449,14 @@ mod tests {
         let mut functions = Functions::new();
         let     scope     = functions.root_scope();
 
-        let result = functions
+        let err = functions
             .define(scope, "a", &[&t::Number], 1)?
-            .define(scope, "a", &[], 2);
+            .define(scope, "a", &[], 2)
+            .unwrap_err();
 
-        assert!(result.is_err());
+        assert_eq!(err.conflicting.len(), 1);
+        assert!(err.conflicting.contains(&vec![&t::Number]));
+
         Ok(())
     }
 
@@ -426,11 +467,14 @@ mod tests {
         let mut functions = Functions::new();
         let     scope     = functions.root_scope();
 
-        let result = functions
+        let err = functions
             .define(scope, "a", &[&t::Number], 1)?
-            .define(scope, "a", &[&t::Number, &t::Number], 2);
+            .define(scope, "a", &[&t::Number, &t::Number], 2)
+            .unwrap_err();
 
-        assert!(result.is_err());
+        assert_eq!(err.conflicting.len(), 1);
+        assert!(err.conflicting.contains(&vec![&t::Number]));
+
         Ok(())
     }
 
