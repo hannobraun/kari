@@ -19,6 +19,8 @@ use kari::interpreter::evaluator::Evaluator;
 fn main() {
     print!("\n");
 
+    let mut results = Vec::new();
+
     for result in WalkDir::new("kr/tests") {
         let entry = result.unwrap_or_else(|error| {
             print!(
@@ -67,6 +69,10 @@ fn main() {
         let success = Evaluator::new(stdout, stderr)
             .run(&mut (), path.into(), prelude, Box::new(file));
 
+        results.push((success, path.to_owned()));
+    }
+
+    for (success, path) in results {
         if success {
             print!("    {}{}OK{}{} {}\n",
                 style::Bold, color::Fg(color::LightGreen),
