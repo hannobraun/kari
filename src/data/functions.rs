@@ -24,7 +24,9 @@ impl<T> Functions<T>
     where T: Clone
 {
     pub fn new() -> Self {
-        let root = Scope(0);
+        let root = Scope {
+            id: 0,
+        };
 
         let mut scopes = HashMap::new();
         scopes.insert(root, HashMap::new());
@@ -168,7 +170,9 @@ impl<T> Functions<T>
         let id = self.next_scope_id;
         self.next_scope_id += 1;
 
-        let scope = Scope(id);
+        let scope = Scope {
+            id
+        };
         self.scopes.insert(scope, HashMap::new());
         self.parents.insert(scope, parent);
 
@@ -178,7 +182,9 @@ impl<T> Functions<T>
 
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub struct Scope(u64);
+pub struct Scope {
+    id: u64,
+}
 
 
 #[derive(Debug)]
