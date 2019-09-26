@@ -69,7 +69,7 @@ impl<Host> Evaluator<Host> {
 
             functions,
             stack:      Stack::new(),
-            call_stack: Vec::new(),
+            call_stack: CallStack::new(),
         }
     }
 
@@ -242,7 +242,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
         -> Result<(), context::Error>
     {
         if let value::Kind::Word(word) = value.kind {
-            self.call_stack.push(
+            self.call_stack.frames.push(
                 StackFrame {
                     span: value.span.clone(),
                 }
@@ -279,7 +279,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
                 }
             }
 
-            self.call_stack.pop();
+            self.call_stack.frames.pop();
         }
         else {
             self.stack.push::<value::Any>(value);

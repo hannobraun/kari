@@ -58,7 +58,7 @@ impl Error {
 
         self.kind.write_hint(stderr)?;
 
-        for stack_frame in self.call_stack.into_iter().rev() {
+        for stack_frame in self.call_stack.frames.into_iter().rev() {
             write!(
                 stderr,
                 "\n{}Called by:{}\n",
