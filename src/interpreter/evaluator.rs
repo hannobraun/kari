@@ -248,7 +248,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
         if let value::Kind::Word(word) = value.kind {
             self.call_stack.frames.push(
                 StackFrame {
-                    span: value.span.clone(),
+                    span: value.span,
                 }
             );
 
