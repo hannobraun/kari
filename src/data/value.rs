@@ -122,6 +122,7 @@ kinds!(
     Float,  f32;
     Number, u32;
     List,   ListInner;
+    Scope,  Scope_;
     String, String_;
     Symbol, String_;
     Word,   String_;
@@ -179,6 +180,7 @@ impl fmt::Display for Kind {
             Kind::Float(value)  => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
             Kind::List(value)   => fmt_list(&value.items, f),
+            Kind::Scope(value)  => write!(f, "{:?}", value),
             Kind::String(value) => value.fmt(f),
             Kind::Symbol(value) => write!(f, ":{}", value),
             Kind::Word(value)   => value.fmt(f),

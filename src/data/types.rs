@@ -125,6 +125,7 @@ impl_type!(
     Float,  "float";
     Number, "number";
     List,   "list";
+    Scope,  "scope";
     String, "string";
     Symbol, "symbol";
     Word,   "word";
