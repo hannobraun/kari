@@ -51,6 +51,9 @@ pub trait Context<Host> {
 }
 
 
+pub type CallStack = Vec<Span>;
+
+
 #[derive(Debug)]
 pub enum Error {
     DefineFunction(functions::DefineError),

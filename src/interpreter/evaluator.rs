@@ -9,6 +9,7 @@ use crate::{
     builtins::builtins,
     context::{
         self,
+        CallStack,
         Context,
     },
     data::{
@@ -45,7 +46,7 @@ pub struct Evaluator<Host> {
 
     functions:  Functions<Function<Host>>,
     stack:      Stack,
-    call_stack: Vec<Span>,
+    call_stack: CallStack,
 }
 
 impl<Host> Evaluator<Host> {
