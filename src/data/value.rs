@@ -1,7 +1,7 @@
 use std::{
     fmt,
     mem::discriminant,
-    string::String as StdString,
+    string::String as String_,
 };
 
 use crate::data::{
@@ -122,9 +122,9 @@ kinds!(
     Float,  f32;
     Number, u32;
     List,   ListInner;
-    String, StdString;
-    Symbol, StdString;
-    Word,   StdString;
+    String, String_;
+    Symbol, String_;
+    Word,   String_;
 );
 
 
