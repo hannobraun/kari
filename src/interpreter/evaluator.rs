@@ -159,7 +159,6 @@ impl<Host> Evaluator<Host> {
             let result = self.evaluate_value(
                 host,
                 scope,
-                None,
                 value::Any::from_expression(
                     expression,
                     list_scope,
@@ -232,20 +231,15 @@ impl<Host> Context<Host> for Evaluator<Host> {
     }
 
     fn evaluate_value(&mut self,
-        host:     &mut Host,
-        scope:    Scope,
-        operator: Option<Span>,
-        value:    value::Any,
+        host:  &mut Host,
+        scope: Scope,
+        value: value::Any,
     )
         -> Result<(), context::Error>
     {
-        let mut pop_operator = false;
-        if let Some(operator) = operator {
-            self.call_stack.push(operator);
-            pop_operator = true;
-        }
-
         if let value::Kind::Word(word) = value.kind {
+            self.call_stack.push(value.span.clone());
+
             match self.functions.get(scope, &word, &self.stack) {
                 Ok(f) => {
                     match f {
@@ -260,7 +254,6 @@ impl<Host> Context<Host> for Evaluator<Host> {
                         Function::UserDefined { body } => {
                             self.evaluate_list(
                                 host,
-                                Some(value.span),
                                 body,
                             )?;
                         }
@@ -278,22 +271,19 @@ impl<Host> Context<Host> for Evaluator<Host> {
                     );
                 }
             }
+
+            self.call_stack.pop();
         }
         else {
             self.stack.push::<value::Any>(value);
-        }
-
-        if pop_operator {
-            self.call_stack.pop();
         }
 
         Ok(())
     }
 
     fn evaluate_list(&mut self,
-        host:     &mut Host,
-        operator: Option<Span>,
-        list:     value::List,
+        host: &mut Host,
+        list: value::List,
     )
         -> Result<(), context::Error>
     {
@@ -303,7 +293,6 @@ impl<Host> Context<Host> for Evaluator<Host> {
             self.evaluate_value(
                 host,
                 scope,
-                operator.clone(),
                 expr,
             )?;
         }

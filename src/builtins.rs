@@ -136,7 +136,6 @@ fn eval<Host>(
 
     context.evaluate_list(
         host,
-        Some(operator),
         list,
     )?;
 
@@ -251,14 +250,13 @@ fn r#if<Host>(
     let (function, condition)  =context.stack()
         .pop((&t::List, &t::List), &operator)?;
 
-    context.evaluate_list(host, Some(operator.clone()), condition)?;
+    context.evaluate_list(host, condition)?;
 
     let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
 
     if evaluated_condition.inner {
         context.evaluate_list(
             host,
-            Some(operator),
             function,
         )?;
     }
@@ -284,7 +282,6 @@ fn map<Host>(
         context.stack().push(item);
         context.evaluate_list(
             host,
-            Some(operator.clone()),
             function.clone(),
         )?;
     }

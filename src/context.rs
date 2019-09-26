@@ -40,17 +40,15 @@ pub trait Context<Host> {
         -> Result<value::List, Error>;
 
     fn evaluate_value(&mut self,
-        host:     &mut Host,
-        scope:    Scope,
-        operator: Option<Span>,
-        value:    value::Any,
+        host:  &mut Host,
+        scope: Scope,
+        value: value::Any,
     )
         -> Result<(), Error>;
 
     fn evaluate_list(&mut self,
-        host:     &mut Host,
-        operator: Option<Span>,
-        list:     value::List,
+        host: &mut Host,
+        list: value::List,
     )
         -> Result<(), Error>;
 }
