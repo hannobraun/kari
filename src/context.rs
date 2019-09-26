@@ -60,7 +60,6 @@ pub enum Error {
     Failure,
     FunctionNotFound {
         name:       String,
-        span:       Span,
         stack:      Stack,
         candidates: Signatures,
         scope:      String,
@@ -74,9 +73,9 @@ pub enum Error {
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            Error::DefineFunction(_)             => (),
-            Error::Failure                       => (),
-            Error::FunctionNotFound { span, .. } => spans.push(span),
+            Error::DefineFunction(_)       => (),
+            Error::Failure                 => (),
+            Error::FunctionNotFound { .. } => (),
 
             Error::Parser(error) => error.spans(spans),
             Error::Stack(error)  => error.spans(spans),

@@ -263,7 +263,6 @@ impl<Host> Context<Host> for Evaluator<Host> {
                     return Err(
                         context::Error::FunctionNotFound {
                             name:  word,
-                            span:  value.span,
                             stack: self.stack.clone(),
                             candidates,
                             scope: scope,
