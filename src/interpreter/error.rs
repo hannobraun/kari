@@ -15,10 +15,8 @@ use termion::{
 };
 
 use crate::{
-    context::{
-        self,
-        CallStack,
-    },
+    call_stack::CallStack,
+    context,
     data::span::Span,
     interpreter::stream::Stream,
     pipeline::parser,

@@ -51,14 +51,6 @@ pub trait Context<Host> {
 }
 
 
-pub type CallStack = Vec<StackFrame>;
-
-#[derive(Clone, Debug)]
-pub struct StackFrame {
-    pub span: Span,
-}
-
-
 #[derive(Debug)]
 pub enum Error {
     DefineFunction(functions::DefineError),
