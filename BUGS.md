@@ -1,5 +1,9 @@
 # Bugs
 
+## Errors look weird
+
+Many of them don't have any spans any more, except those from the call stack. This leads to the information being presented in a weird way, even though all the information is there.
+
 ## Spans from multiple files are merged regularly
 
 The code that merges spans is obviously made with the intent of supporting merges between spans in the same file, but it is regularly called with spans from different files. The effect of this are likely to be incorrect error messages for code involving such spans.
