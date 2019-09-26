@@ -41,6 +41,7 @@ pub trait Context<Host> {
 
     fn evaluate_value(&mut self,
         host:     &mut Host,
+        scope:    Scope,
         operator: Option<Span>,
         value:    value::Any,
     )

@@ -149,6 +149,7 @@ impl<Host> Evaluator<Host> {
 
             let result = self.evaluate_value(
                 host,
+                root_scope,
                 None,
                 value::Any::from_expression(
                     expression,
@@ -223,6 +224,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
 
     fn evaluate_value(&mut self,
         host:     &mut Host,
+        scope:    Scope,
         operator: Option<Span>,
         value:    value::Any,
     )
@@ -235,10 +237,8 @@ impl<Host> Context<Host> for Evaluator<Host> {
         }
 
         if let value::Kind::Word(word) = value.kind {
-            match self.functions.get(self.functions.root_scope(), &word, &self.stack) {
+            match self.functions.get(scope, &word, &self.stack) {
                 Ok(f) => {
-                    let scope = self.functions.root_scope();
-
                     match f {
                         Function::Builtin(f) => {
                             f(
@@ -288,8 +288,10 @@ impl<Host> Context<Host> for Evaluator<Host> {
     )
         -> Result<(), context::Error>
     {
+        let scope = self.functions().root_scope();
+
         for expr in list {
-            self.evaluate_value(host, operator.clone(), expr)?;
+            self.evaluate_value(host, scope, operator.clone(), expr)?;
         }
 
         Ok(())
