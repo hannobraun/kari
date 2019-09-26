@@ -15,7 +15,10 @@ use termion::{
 };
 
 use crate::{
-    context,
+    context::{
+        self,
+        CallStack,
+    },
     data::span::Span,
     interpreter::stream::Stream,
     pipeline::parser,
@@ -25,7 +28,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Error {
     pub kind:       ErrorKind,
-    pub call_stack: Vec<Span>,
+    pub call_stack: CallStack,
 }
 
 impl Error {
