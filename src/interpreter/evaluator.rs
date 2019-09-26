@@ -260,7 +260,6 @@ impl<Host> Context<Host> for Evaluator<Host> {
                                 host,
                                 self,
                                 scope,
-                                value.span,
                             )?;
                         }
                         Function::UserDefined { body } => {

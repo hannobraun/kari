@@ -7,7 +7,6 @@ use crate::{
     },
     data::{
         functions::Scope,
-        span::Span,
         value,
     },
 };
@@ -46,5 +45,5 @@ impl<H> fmt::Debug for Function<H> {
 
 
 pub type Builtin<Host> =
-    fn(&mut Host, &mut dyn Context<Host>, Scope, Span)
+    fn(&mut Host, &mut dyn Context<Host>, Scope)
         -> Result<(), context::Error>;

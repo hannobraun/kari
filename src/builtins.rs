@@ -8,7 +8,6 @@ use crate::{
             Functions,
             Scope,
         },
-        span::Span,
         types as t,
         value::{
             self,
@@ -79,7 +78,6 @@ fn print<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -93,7 +91,6 @@ fn define<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     scope:   Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -114,7 +111,6 @@ fn fail<Host>(
     _: &mut Host,
     _: &mut dyn Context<Host>,
     _: Scope,
-    _: Span,
 )
     -> Result
 {
@@ -125,7 +121,6 @@ fn eval<Host>(
     host:    &mut Host,
     context: &mut dyn Context<Host>,
     scope:   Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -157,7 +152,6 @@ fn load<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     scope:   Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -172,7 +166,6 @@ fn to_list<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     scope:   Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -199,7 +192,6 @@ fn drop<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -211,7 +203,6 @@ fn dup<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -228,7 +219,6 @@ fn swap<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -243,7 +233,6 @@ fn r#if<Host>(
     host:    &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -269,7 +258,6 @@ fn map<Host>(
     host:    &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -304,7 +292,6 @@ fn wrap<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     scope:   Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -328,7 +315,6 @@ fn unwrap<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -345,7 +331,6 @@ fn prepend<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -364,7 +349,6 @@ fn add_n<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -381,7 +365,6 @@ fn mul_n<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -398,7 +381,6 @@ fn div_n<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -415,7 +397,6 @@ fn gt_n<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -433,7 +414,6 @@ fn add_f<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -450,7 +430,6 @@ fn mul_f<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -467,7 +446,6 @@ fn gt_f<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -485,7 +463,6 @@ fn eq<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
@@ -502,7 +479,6 @@ fn not<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
-    _:       Span,
 )
     -> Result
 {
