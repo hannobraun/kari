@@ -291,7 +291,12 @@ impl<Host> Context<Host> for Evaluator<Host> {
         let scope = self.functions().root_scope();
 
         for expr in list {
-            self.evaluate_value(host, scope, operator.clone(), expr)?;
+            self.evaluate_value(
+                host,
+                scope,
+                operator.clone(),
+                expr,
+            )?;
         }
 
         Ok(())
