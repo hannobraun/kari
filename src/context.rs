@@ -17,10 +17,7 @@ use crate::{
             Signatures,
         },
         span::Span,
-        stack::{
-            self,
-            Stack,
-        },
+        stack::Stack,
         types::TypeError,
         value,
     },
@@ -66,7 +63,6 @@ pub enum Error {
     },
     Io(io::Error),
     Parser(parser::Error),
-    Stack(stack::Error),
     Type(TypeError),
 }
 
@@ -78,7 +74,6 @@ impl Error {
             Error::FunctionNotFound { .. } => (),
 
             Error::Parser(error) => error.spans(spans),
-            Error::Stack(error)  => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
 
             Error::Io(_)    => (),
@@ -167,12 +162,6 @@ impl From<functions::DefineError> for Error {
     }
 }
 
-impl From<stack::Error> for Error {
-    fn from(from: stack::Error) -> Self {
-        Error::Stack(from)
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -190,7 +179,6 @@ impl fmt::Display for Error {
             }
 
             Error::Parser(error) => error.fmt(f),
-            Error::Stack(error)  => error.fmt(f),
             Error::Type(error)   => error.fmt(f),
         }
     }

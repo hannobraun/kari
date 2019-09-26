@@ -1,11 +1,7 @@
 use std::fmt;
 
 use crate::data::{
-    span::Span,
-    types::{
-        self,
-        TypeError,
-    },
+    types,
     value::{
         self,
         Value,
@@ -132,37 +128,5 @@ impl<A, B> Pop for (A, B)
         let b = stack.pop(self.1);
         let a = stack.pop(self.0);
         (a, b)
-    }
-}
-
-
-#[derive(Debug)]
-pub enum Error {
-    Type(TypeError),
-}
-
-impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
-        match self {
-            Error::Type(error) => error.spans(spans),
-        }
-    }
-}
-
-impl From<TypeError> for Error {
-    fn from(from: TypeError) -> Self {
-        Error::Type(from)
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Error::Type(error) => {
-                error.fmt(f)?;
-            }
-        }
-
-        Ok(())
     }
 }
