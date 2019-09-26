@@ -43,9 +43,9 @@ pub struct Evaluator<Host> {
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
 
-    functions:   Functions<Function<Host>>,
-    stack:       Stack,
-    stack_trace: Vec<Span>,
+    functions:  Functions<Function<Host>>,
+    stack:      Stack,
+    call_stack: Vec<Span>,
 }
 
 impl<Host> Evaluator<Host> {
@@ -64,8 +64,8 @@ impl<Host> Evaluator<Host> {
             stderr,
 
             functions,
-            stack:       Stack::new(),
-            stack_trace: Vec::new(),
+            stack:      Stack::new(),
+            call_stack: Vec::new(),
         }
     }
 
@@ -148,7 +148,7 @@ impl<Host> Evaluator<Host> {
                     return Err(
                         Error {
                             kind:        error.into(),
-                            stack_trace: self.stack_trace.clone(),
+                            stack_trace: self.call_stack.clone(),
                         }
                     );
                 }
@@ -169,7 +169,7 @@ impl<Host> Evaluator<Host> {
                 return Err(
                     Error {
                         kind:        error.into(),
-                        stack_trace: self.stack_trace.clone(),
+                        stack_trace: self.call_stack.clone(),
                     }
                 );
             }
@@ -241,7 +241,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
     {
         let mut pop_operator = false;
         if let Some(operator) = operator {
-            self.stack_trace.push(operator);
+            self.call_stack.push(operator);
             pop_operator = true;
         }
 
@@ -284,7 +284,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
         }
 
         if pop_operator {
-            self.stack_trace.pop();
+            self.call_stack.pop();
         }
 
         Ok(())
