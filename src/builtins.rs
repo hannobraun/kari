@@ -111,14 +111,14 @@ fn define<Host>(
 }
 
 fn fail<Host>(
-    _:        &mut Host,
-    _:        &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _: &mut Host,
+    _: &mut dyn Context<Host>,
+    _: Scope,
+    _: Span,
 )
     -> Result
 {
-    Err(context::Error::Failure { operator })
+    Err(context::Error::Failure)
 }
 
 fn eval<Host>(

@@ -57,7 +57,7 @@ pub trait Context<Host> {
 #[derive(Debug)]
 pub enum Error {
     DefineFunction(functions::DefineError),
-    Failure { operator: Span },
+    Failure,
     FunctionNotFound {
         name:       String,
         span:       Span,
@@ -75,7 +75,7 @@ impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
             Error::DefineFunction(_)             => (),
-            Error::Failure { operator }          => spans.push(operator),
+            Error::Failure                       => (),
             Error::FunctionNotFound { span, .. } => spans.push(span),
 
             Error::Parser(error) => error.spans(spans),
