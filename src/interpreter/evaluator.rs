@@ -84,7 +84,12 @@ impl<Host> Evaluator<Host> {
             &mut prelude,
         );
 
-        self.evaluate_expressions(host, prelude_pipeline)
+        self
+            .evaluate_expressions(
+                host,
+                self.functions.root_scope(),
+                prelude_pipeline,
+            )
             .expect("Error while evaluating prelude");
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -100,7 +105,11 @@ impl<Host> Evaluator<Host> {
             &mut program,
         );
 
-        let result = self.evaluate_expressions(host, pipeline);
+        let result = self.evaluate_expressions(
+            host,
+            self.functions.root_scope(),
+            pipeline,
+        );
         if let Err(error) = result {
             self.streams.insert(
                 name.into_owned(),
@@ -121,6 +130,7 @@ impl<Host> Evaluator<Host> {
 
     fn evaluate_expressions<Parser>(&mut self,
             host:   &mut Host,
+            scope:  Scope,
         mut parser: Parser,
     )
         -> Result<(), Error>
@@ -144,12 +154,11 @@ impl<Host> Evaluator<Host> {
                 }
             };
 
-            let root_scope = self.functions.root_scope();
-            let list_scope = self.functions.new_scope(root_scope, "list");
+            let list_scope = self.functions.new_scope(scope, "list");
 
             let result = self.evaluate_value(
                 host,
-                root_scope,
+                scope,
                 None,
                 value::Any::from_expression(
                     expression,
