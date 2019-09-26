@@ -148,8 +148,8 @@ impl<Host> Evaluator<Host> {
                 Err(error) => {
                     return Err(
                         Error {
-                            kind:        error.into(),
-                            stack_trace: self.call_stack.clone(),
+                            kind:       error.into(),
+                            call_stack: self.call_stack.clone(),
                         }
                     );
                 }
@@ -168,8 +168,8 @@ impl<Host> Evaluator<Host> {
             if let Err(error) = result {
                 return Err(
                     Error {
-                        kind:        error.into(),
-                        stack_trace: self.call_stack.clone(),
+                        kind:       error.into(),
+                        call_stack: self.call_stack.clone(),
                     }
                 );
             }

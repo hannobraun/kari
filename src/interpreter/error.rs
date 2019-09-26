@@ -24,8 +24,8 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Error {
-    pub kind:        ErrorKind,
-    pub stack_trace: Vec<Span>,
+    pub kind:       ErrorKind,
+    pub call_stack: Vec<Span>,
 }
 
 impl Error {
@@ -57,7 +57,7 @@ impl Error {
 
         self.kind.write_hint(stderr)?;
 
-        for span in self.stack_trace.into_iter().rev() {
+        for span in self.call_stack.into_iter().rev() {
             write!(
                 stderr,
                 "\n{}Called by:{}\n",
