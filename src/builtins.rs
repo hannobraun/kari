@@ -76,29 +76,29 @@ builtins!(
 
 
 fn print<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
-    let expression = context.stack().pop(&t::Any, &operator)?;
+    let expression = context.stack().pop(&t::Any)?;
     write!(context.output(), "{}", expression.kind)?;
 
     Ok(())
 }
 
 fn define<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    scope:    Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+    _:       Span,
 )
     -> Result
 {
     let (body, name) = context.stack()
-        .pop((&t::List, &t::Symbol), &operator)?;
+        .pop((&t::List, &t::Symbol))?;
 
     context.functions().define(
         scope,
@@ -129,7 +129,7 @@ fn eval<Host>(
 )
     -> Result
 {
-    let list = context.stack().pop(&t::List, &operator)?;
+    let list = context.stack().pop(&t::List)?;
     let span = operator.clone().merge(&list.span);
 
     context.stack().create_substack();
@@ -154,14 +154,14 @@ fn eval<Host>(
 }
 
 fn load<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    scope:    Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+    _:       Span,
 )
     -> Result
 {
-    let path = context.stack().pop(&t::String, &operator)?;
+    let path = context.stack().pop(&t::String)?;
 
     let list = context.load(path, scope)?;
     context.stack().push(list);
@@ -176,7 +176,7 @@ fn to_list<Host>(
 )
     -> Result
 {
-    let symbol = context.stack().pop(&t::Symbol, &operator)?;
+    let symbol = context.stack().pop(&t::Symbol)?;
 
     let (word, span) = symbol.open();
     let list_span    = operator.merge(&span);
@@ -196,14 +196,14 @@ fn to_list<Host>(
 
 
 fn drop<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
-    context.stack().pop(&t::Any, &operator)?;
+    context.stack().pop(&t::Any)?;
     Ok(())
 }
 
@@ -215,7 +215,7 @@ fn dup<Host>(
 )
     -> Result
 {
-    let mut expression = context.stack().pop(&t::Any, &operator)?;
+    let mut expression = context.stack().pop(&t::Any)?;
 
     expression.span = operator.merge(&expression.span);
 
@@ -225,14 +225,14 @@ fn dup<Host>(
 }
 
 fn swap<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
-    let (a, b) = context.stack().pop((&t::Any, &t::Any), &operator)?;
+    let (a, b) = context.stack().pop((&t::Any, &t::Any))?;
     context.stack().push((b, a));
 
     Ok(())
@@ -240,19 +240,19 @@ fn swap<Host>(
 
 
 fn r#if<Host>(
-    host:     &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    host:    &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let (function, condition)  =context.stack()
-        .pop((&t::List, &t::List), &operator)?;
+        .pop((&t::List, &t::List))?;
 
     context.evaluate_list(host, condition)?;
 
-    let evaluated_condition = context.stack().pop(&t::Bool, &operator)?;
+    let evaluated_condition = context.stack().pop(&t::Bool)?;
 
     if evaluated_condition.inner {
         context.evaluate_list(
@@ -274,7 +274,7 @@ fn map<Host>(
     -> Result
 {
     let (list, function) = context.stack()
-        .pop((&t::List, &t::List), &operator)?;
+        .pop((&t::List, &t::List))?;
 
     context.stack().create_substack();
 
@@ -308,7 +308,7 @@ fn wrap<Host>(
 )
     -> Result
 {
-    let arg = context.stack().pop(&t::Any, &operator)?;
+    let arg = context.stack().pop(&t::Any)?;
 
     let span = operator.merge(&arg.span);
     let list = value::List::new(
@@ -325,14 +325,14 @@ fn wrap<Host>(
 }
 
 fn unwrap<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
-    let list = context.stack().pop(&t::List, &operator)?;
+    let list = context.stack().pop(&t::List)?;
 
     for value in list.inner.items {
         context.stack().push(value);
@@ -349,7 +349,7 @@ fn prepend<Host>(
 )
     -> Result
 {
-    let (mut list, arg) = context.stack().pop((&t::List, &t::Any), &operator)?;
+    let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
 
     list.span = operator.merge(&list.span).merge(&arg.span);
     list.inner.items.insert(0, arg);
@@ -361,15 +361,15 @@ fn prepend<Host>(
 
 
 fn add_n<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let sum = context.stack()
-        .pop((&t::Number, &t::Number), &operator)?
+        .pop((&t::Number, &t::Number))?
         .compute::<value::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
@@ -378,15 +378,15 @@ fn add_n<Host>(
 }
 
 fn mul_n<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let product = context.stack()
-        .pop((&t::Number, &t::Number), &operator)?
+        .pop((&t::Number, &t::Number))?
         .compute::<value::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
@@ -395,15 +395,15 @@ fn mul_n<Host>(
 }
 
 fn div_n<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let quotient = context.stack()
-        .pop((&t::Number, &t::Number), &operator)?
+        .pop((&t::Number, &t::Number))?
         .compute::<value::Number, _, _>(|(a, b)| a / b);
 
     context.stack().push(quotient);
@@ -412,15 +412,15 @@ fn div_n<Host>(
 }
 
 fn gt_n<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let is_greater = context.stack()
-        .pop((&t::Number, &t::Number), &operator)?
+        .pop((&t::Number, &t::Number))?
         .compute::<value::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
@@ -430,15 +430,15 @@ fn gt_n<Host>(
 
 
 fn add_f<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let sum = context.stack()
-        .pop((&t::Float, &t::Float), &operator)?
+        .pop((&t::Float, &t::Float))?
         .compute::<value::Float, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
@@ -447,15 +447,15 @@ fn add_f<Host>(
 }
 
 fn mul_f<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let product = context.stack()
-        .pop((&t::Float, &t::Float), &operator)?
+        .pop((&t::Float, &t::Float))?
         .compute::<value::Float, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
@@ -464,15 +464,15 @@ fn mul_f<Host>(
 }
 
 fn gt_f<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let is_greater = context.stack()
-        .pop((&t::Float, &t::Float), &operator)?
+        .pop((&t::Float, &t::Float))?
         .compute::<value::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
@@ -482,15 +482,15 @@ fn gt_f<Host>(
 
 
 fn eq<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let is_equal = context.stack()
-        .pop((&t::Any, &t::Any), &operator)?
+        .pop((&t::Any, &t::Any))?
         .compute::<value::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
@@ -499,15 +499,15 @@ fn eq<Host>(
 }
 
 fn not<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let inverted = context.stack()
-        .pop(&t::Bool, &operator)?
+        .pop(&t::Bool)?
         .compute::<value::Bool, _, _>(|b| !b);
 
     context.stack().push(inverted);

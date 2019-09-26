@@ -31,10 +31,10 @@ impl Stack {
         self
     }
 
-    pub fn pop<T: Pop>(&mut self, ty: T, operator: &Span)
+    pub fn pop<T: Pop>(&mut self, ty: T)
         -> Result<T::Value, Error>
     {
-        ty.pop(self, operator)
+        ty.pop(self)
     }
 
     pub fn peek(&self) -> impl Iterator<Item=&value::Any> + '_ {
@@ -46,7 +46,7 @@ impl Stack {
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self, operator: &Span) -> Result<value::Any, Error> {
+    pub fn pop_raw(&mut self) -> Result<value::Any, Error> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
                 return Ok(value)
@@ -56,7 +56,6 @@ impl Stack {
         Err(
             Error::StackEmpty {
                 expected: types::Any.name(),
-                operator: operator.clone(),
             }
         )
     }
@@ -111,16 +110,16 @@ impl<A, B> Push for (A, B)
 pub trait Pop : Sized {
     type Value;
 
-    fn pop(&self, _: &mut Stack, operator: &Span) -> Result<Self::Value, Error>;
+    fn pop(&self, _: &mut Stack) -> Result<Self::Value, Error>;
 }
 
 impl<T> Pop for &T where T: types::Downcast {
     type Value = T::Value;
 
-    fn pop(&self, stack: &mut Stack, operator: &Span)
+    fn pop(&self, stack: &mut Stack)
         -> Result<Self::Value, Error>
     {
-        let expr = stack.pop_raw(operator)?;
+        let expr = stack.pop_raw()?;
         Ok(self.downcast(expr)?)
     }
 }
@@ -132,11 +131,11 @@ impl<A, B> Pop for (A, B)
 {
     type Value = (A::Value, B::Value);
 
-    fn pop(&self, stack: &mut Stack, operator: &Span)
+    fn pop(&self, stack: &mut Stack)
         -> Result<Self::Value, Error>
     {
-        let b = stack.pop(self.1, operator)?;
-        let a = stack.pop(self.0, operator)?;
+        let b = stack.pop(self.1)?;
+        let a = stack.pop(self.0)?;
         Ok((a, b))
     }
 }
@@ -146,7 +145,6 @@ impl<A, B> Pop for (A, B)
 pub enum Error {
     StackEmpty {
         expected: &'static str,
-        operator: Span,
     },
     Type(TypeError),
 }
@@ -154,8 +152,8 @@ pub enum Error {
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            Error::StackEmpty { operator, .. } => spans.push(&operator),
-            Error::Type(error)                 => error.spans(spans),
+            Error::StackEmpty { .. } => (),
+            Error::Type(error)       => error.spans(spans),
         }
     }
 }
