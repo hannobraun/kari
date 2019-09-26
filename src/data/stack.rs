@@ -4,7 +4,6 @@ use crate::data::{
     span::Span,
     types::{
         self,
-        Type,
         TypeError,
     },
     value::{
@@ -53,11 +52,10 @@ impl Stack {
             }
         }
 
-        Err(
-            Error::StackEmpty {
-                expected: types::Any.name(),
-            }
-        )
+        // This indicates that a builtin is buggy. It shouldn't happen
+        // otherwise, as the stack entries are checked against the builtin's
+        // input type before executing the builtin.
+        panic!("Tried to pop from empty stack.");
     }
 
     pub fn create_substack(&mut self) {
@@ -143,17 +141,13 @@ impl<A, B> Pop for (A, B)
 
 #[derive(Debug)]
 pub enum Error {
-    StackEmpty {
-        expected: &'static str,
-    },
     Type(TypeError),
 }
 
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            Error::StackEmpty { .. } => (),
-            Error::Type(error)       => error.spans(spans),
+            Error::Type(error) => error.spans(spans),
         }
     }
 }
@@ -167,9 +161,6 @@ impl From<TypeError> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::StackEmpty { expected, .. } => {
-                write!(f, "Stack empty: Expected `{}`", expected)?;
-            }
             Error::Type(error) => {
                 error.fmt(f)?;
             }
