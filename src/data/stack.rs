@@ -30,9 +30,7 @@ impl Stack {
         self
     }
 
-    pub fn pop<T: Pop>(&mut self, ty: T)
-        -> Result<T::Value, Error>
-    {
+    pub fn pop<T: Pop>(&mut self, ty: T) -> T::Value {
         ty.pop(self)
     }
 
@@ -108,17 +106,18 @@ impl<A, B> Push for (A, B)
 pub trait Pop : Sized {
     type Value;
 
-    fn pop(&self, _: &mut Stack) -> Result<Self::Value, Error>;
+    fn pop(&self, _: &mut Stack) -> Self::Value;
 }
 
 impl<T> Pop for &T where T: types::Downcast {
     type Value = T::Value;
 
-    fn pop(&self, stack: &mut Stack)
-        -> Result<Self::Value, Error>
-    {
+    fn pop(&self, stack: &mut Stack) -> Self::Value {
         let expr = stack.pop_raw();
-        Ok(self.downcast(expr)?)
+        self.downcast(expr)
+            // This should never happen, unless a builtin is buggy and takes
+            // different types from the stack than are specified as its input.
+            .expect("Failed to downcast value")
     }
 }
 
@@ -129,12 +128,10 @@ impl<A, B> Pop for (A, B)
 {
     type Value = (A::Value, B::Value);
 
-    fn pop(&self, stack: &mut Stack)
-        -> Result<Self::Value, Error>
-    {
-        let b = stack.pop(self.1)?;
-        let a = stack.pop(self.0)?;
-        Ok((a, b))
+    fn pop(&self, stack: &mut Stack) -> Self::Value {
+        let b = stack.pop(self.1);
+        let a = stack.pop(self.0);
+        (a, b)
     }
 }
 
