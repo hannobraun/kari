@@ -45,10 +45,10 @@ impl Stack {
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self) -> Result<value::Any, Error> {
+    pub fn pop_raw(&mut self) -> value::Any {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
-                return Ok(value)
+                return value;
             }
         }
 
@@ -117,7 +117,7 @@ impl<T> Pop for &T where T: types::Downcast {
     fn pop(&self, stack: &mut Stack)
         -> Result<Self::Value, Error>
     {
-        let expr = stack.pop_raw()?;
+        let expr = stack.pop_raw();
         Ok(self.downcast(expr)?)
     }
 }
