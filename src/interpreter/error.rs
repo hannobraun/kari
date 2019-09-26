@@ -60,7 +60,7 @@ impl Error {
 
         self.kind.write_hint(stderr)?;
 
-        for span in self.call_stack.into_iter().rev() {
+        for stack_frame in self.call_stack.into_iter().rev() {
             write!(
                 stderr,
                 "\n{}Called by:{}\n",
@@ -68,7 +68,7 @@ impl Error {
                 color::Fg(color::Reset),
             )?;
             print_span(
-                &span,
+                &stack_frame.span,
                 streams,
                 stderr,
             )?;

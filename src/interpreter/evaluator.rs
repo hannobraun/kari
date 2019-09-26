@@ -11,6 +11,7 @@ use crate::{
         self,
         CallStack,
         Context,
+        StackFrame,
     },
     data::{
         expression::Expression,
@@ -239,7 +240,11 @@ impl<Host> Context<Host> for Evaluator<Host> {
         -> Result<(), context::Error>
     {
         if let value::Kind::Word(word) = value.kind {
-            self.call_stack.push(value.span.clone());
+            self.call_stack.push(
+                StackFrame {
+                    span: value.span.clone(),
+                }
+            );
 
             match self.functions.get(scope, &word, &self.stack) {
                 Ok(f) => {
