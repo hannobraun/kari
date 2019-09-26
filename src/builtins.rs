@@ -122,15 +122,15 @@ fn fail<Host>(
 }
 
 fn eval<Host>(
-    host:     &mut Host,
-    context:  &mut dyn Context<Host>,
-    scope:    Scope,
-    operator: Span,
+    host:    &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+    _:       Span,
 )
     -> Result
 {
     let list = context.stack().pop(&t::List);
-    let span = operator.clone().merge(&list.span);
+    let span = context.call_stack().operator().clone().span.merge(&list.span);
 
     context.stack().create_substack();
 
@@ -169,17 +169,17 @@ fn load<Host>(
 }
 
 fn to_list<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    scope:    Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+    _:       Span,
 )
     -> Result
 {
     let symbol = context.stack().pop(&t::Symbol);
 
     let (word, span) = symbol.open();
-    let list_span    = operator.merge(&span);
+    let list_span    = context.call_stack().operator().span.clone().merge(&span);
     let word         = value::Any::new(value::Kind::Word(word), span);
 
     let list = value::List::new(
@@ -208,16 +208,16 @@ fn drop<Host>(
 }
 
 fn dup<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let mut expression = context.stack().pop(&t::Any);
 
-    expression.span = operator.merge(&expression.span);
+    expression.span = context.call_stack().operator().span.clone().merge(&expression.span);
 
     context.stack().push((expression.clone(), expression));
 
@@ -266,10 +266,10 @@ fn r#if<Host>(
 
 
 fn map<Host>(
-    host:     &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    host:    &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
@@ -293,7 +293,7 @@ fn map<Host>(
             result,
             context.functions().new_scope(list.inner.scope, "list"),
         ),
-        operator.merge(&list.span).merge(&function.span),
+        context.call_stack().operator().span.clone().merge(&list.span).merge(&function.span),
     );
     context.stack().push(data);
 
@@ -301,16 +301,16 @@ fn map<Host>(
 }
 
 fn wrap<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    scope:    Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+    _:       Span,
 )
     -> Result
 {
     let arg = context.stack().pop(&t::Any);
 
-    let span = operator.merge(&arg.span);
+    let span = context.call_stack().operator().span.clone().merge(&arg.span);
     let list = value::List::new(
         value::ListInner::from_values(
             vec![arg],
@@ -342,16 +342,16 @@ fn unwrap<Host>(
 }
 
 fn prepend<Host>(
-    _:        &mut Host,
-    context:  &mut dyn Context<Host>,
-    _:        Scope,
-    operator: Span,
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+    _:       Span,
 )
     -> Result
 {
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any));
 
-    list.span = operator.merge(&list.span).merge(&arg.span);
+    list.span = context.call_stack().operator().span.clone().merge(&list.span).merge(&arg.span);
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);

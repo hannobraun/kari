@@ -12,6 +12,14 @@ impl CallStack {
 			frames: Vec::new(),
 		}
 	}
+
+	pub fn operator(&self) -> &StackFrame {
+		self.frames.last()
+			// This shouldn't generally happen, as this is only called by
+			// builtins, and when a builtin is executed, there must be a frame
+			// on the call stack.
+			.expect("Tried to get operator from empty call stack")
+	}
 }
 
 
