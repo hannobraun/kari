@@ -9,7 +9,7 @@ use crate::data::{
         self,
         Expression,
     },
-    functions::Scope,
+    functions::Scope as Scope_,
     span::Span,
 };
 
@@ -31,7 +31,7 @@ pub struct Any {
 }
 
 impl Any {
-    pub fn from_expression(expression: Expression, scope: Scope) -> Self {
+    pub fn from_expression(expression: Expression, scope: Scope_) -> Self {
         let kind = match expression.kind {
             expression::Kind::Bool(inner)   => Kind::Bool(inner),
             expression::Kind::Float(inner)  => Kind::Float(inner),
@@ -190,11 +190,11 @@ impl fmt::Display for Kind {
 #[derive(Clone, Debug)]
 pub struct ListInner {
     pub items: Vec<Any>,
-    pub scope: Scope,
+    pub scope: Scope_,
 }
 
 impl ListInner {
-    pub fn from_expressions(expressions: Vec<Expression>, scope: Scope)
+    pub fn from_expressions(expressions: Vec<Expression>, scope: Scope_)
         -> Self
     {
         let items = expressions
@@ -205,7 +205,7 @@ impl ListInner {
         Self::from_values(items, scope)
     }
 
-    pub fn from_values(values: Vec<Any>, scope: Scope) -> Self {
+    pub fn from_values(values: Vec<Any>, scope: Scope_) -> Self {
         Self {
             items: values,
             scope,
