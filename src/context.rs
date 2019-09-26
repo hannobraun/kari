@@ -9,6 +9,7 @@ use termion::{
 };
 
 use crate::{
+    call_stack::CallStack,
     data::{
         functions::{
             self,
@@ -30,6 +31,8 @@ pub trait Context<Host> {
     fn functions(&mut self) -> &mut Functions<Function<Host>>;
 
     fn stack(&mut self) -> &mut Stack;
+
+    fn call_stack(&mut self) -> &mut CallStack;
 
     fn output(&mut self) -> &mut dyn io::Write;
 

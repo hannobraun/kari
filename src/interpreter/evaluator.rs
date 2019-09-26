@@ -189,6 +189,10 @@ impl<Host> Context<Host> for Evaluator<Host> {
         &mut self.stack
     }
 
+    fn call_stack(&mut self) -> &mut CallStack {
+        &mut self.call_stack
+    }
+
     fn output(&mut self) -> &mut dyn io::Write {
         &mut self.stdout
     }
