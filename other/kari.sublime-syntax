@@ -1,0 +1,35 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Kari
+file_extensions:
+  - kr
+scope: source.c
+
+contexts:
+  main:
+    - match: \s
+    - match: '"'
+      push: string
+    - match: '#'
+      push: comment
+    - match: \d+(\s|$)
+      scope: constant.numeric.integer.decimal.c
+    - match: true|false
+      scope: constant.language.c
+    - match: (\[|\])
+      scope:
+    - match: \S*
+      scope: keyword.operator.word.c
+
+  string:
+    - meta_scope: string.quoted.double.c
+    # - match: .
+    #   scope: string.quoted.double.c
+    - match: '"'
+      pop: true
+
+  comment:
+    - meta_scope: comment.line.number-sign.c
+    - match: \n
+      pop: true
