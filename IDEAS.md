@@ -63,3 +63,7 @@ Over time, it might be possible to make the language so powerful, that a debugge
 Extend the pipeline with more stages. Add a stage that converts expressions to values. Not sure if that's possible without full evaluation, as that stage would have to keep track of scopes, but it seems to be worth a try.
 
 Maybe more features of the evaluator can be split out into simple pipeline stages.
+
+### Define scope-less `define` in `std`
+
+Once non-builtin functions support overloading, the scope-less `define` can be implemented in terms of the builtin, scope-taking `define`.
