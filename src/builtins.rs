@@ -54,6 +54,7 @@ builtins!(
     "drop", drop, (t::Any,);
     "dup",  dup,  (t::Any,);
     "swap", swap, (t::Any, t::Any,);
+    "dig",  dig,  (t::Any, t::List,);
 
     "if", r#if, (t::List, t::List,);
 
@@ -264,6 +265,19 @@ fn swap<Host>(
     let (a, b) = context.stack().pop((&t::Any, &t::Any));
     context.stack().push((b, a));
 
+    Ok(())
+}
+
+fn dig<Host>(
+    host:    &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let (item, f) = context.stack().pop((&t::Any, &t::List));
+    context.evaluate_list(host, f)?;
+    context.stack().push(item);
     Ok(())
 }
 
