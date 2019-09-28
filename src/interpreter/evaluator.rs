@@ -298,7 +298,7 @@ impl<Host> Context<Host> for Evaluator<Host> {
     )
         -> Result<(), context::Error>
     {
-        let scope = self.functions().root_scope();
+        let scope = list.inner.scope;
 
         for expr in list {
             self.evaluate_value(
