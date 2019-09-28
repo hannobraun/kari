@@ -56,6 +56,7 @@ pub trait Context<Host> {
 
 #[derive(Debug)]
 pub enum Error {
+    Caller,
     DefineFunction(functions::DefineError),
     Failure,
     FunctionNotFound {
@@ -72,6 +73,7 @@ pub enum Error {
 impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
+            Error::Caller                  => (),
             Error::DefineFunction(_)       => (),
             Error::Failure                 => (),
             Error::FunctionNotFound { .. } => (),
@@ -168,6 +170,9 @@ impl From<functions::DefineError> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Error::Caller => {
+                write!(f, "No caller found")
+            }
             Error::DefineFunction(error) => {
                 error.fmt(f)
             }
