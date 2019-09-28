@@ -1,4 +1,7 @@
-use crate::data::span::Span;
+use crate::data::{
+    functions::Scope,
+    span::Span,
+};
 
 
 #[derive(Clone, Debug)]
@@ -25,5 +28,6 @@ impl CallStack {
 
 #[derive(Clone, Debug)]
 pub struct StackFrame {
-    pub span: Span,
+    pub scope: Scope,
+    pub span:  Span,
 }
