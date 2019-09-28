@@ -62,6 +62,7 @@ builtins!(
     "wrap",    wrap,    (t::Any,);
     "unwrap",  unwrap,  (t::List,);
     "prepend", prepend, (t::List, t::Any,);
+    "append",  append,  (t::List, t::Any,);
 
     "+", add_n, (t::Number, t::Number,);
     "*", mul_n, (t::Number, t::Number,);
@@ -391,6 +392,23 @@ fn prepend<Host>(
 
     list.span = context.call_stack().operator().span.clone().merge(&list.span).merge(&arg.span);
     list.inner.items.insert(0, arg);
+
+    context.stack().push(list);
+
+    Ok(())
+}
+
+fn append<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let (mut list, arg) = context.stack().pop((&t::List, &t::Any));
+
+    list.span = context.call_stack().operator().span.clone().merge(&list.span).merge(&arg.span);
+    list.inner.items.push(arg);
 
     context.stack().push(list);
 
