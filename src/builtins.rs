@@ -42,13 +42,14 @@ macro_rules! builtins {
 }
 
 builtins!(
-    "print",   print,   (t::Any,);
-    "define",  define,  (t::List, t::Symbol,);
-    "caller",  caller,  ();
-    "fail",    fail,    ();
-    "eval",    eval,    (t::List,);
-    "load",    load,    (t::String,);
-    "to_list", to_list, (t::Symbol,);
+    "print",   print,    (t::Any,);
+    "define",  define,   (t::List, t::Symbol,);
+    "define",  define_s, (t::List, t::Symbol, t::Scope,);
+    "caller",  caller,   ();
+    "fail",    fail,     ();
+    "eval",    eval,     (t::List,);
+    "load",    load,     (t::String,);
+    "to_list", to_list,  (t::Symbol,);
 
     "drop", drop, (t::Any,);
     "dup",  dup,  (t::Any,);
@@ -100,6 +101,26 @@ fn define<Host>(
 
     context.functions().define(
         scope,
+        name.inner,
+        &[],
+        Function::UserDefined { body },
+    )?;
+
+    Ok(())
+}
+
+fn define_s<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let (body, name, scope) = context.stack()
+        .pop((&t::List, &t::Symbol, &t::Scope));
+
+    context.functions().define(
+        scope.inner,
         name.inner,
         &[],
         Function::UserDefined { body },
