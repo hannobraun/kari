@@ -130,3 +130,19 @@ impl<A, B> Pop for (A, B)
         (a, b)
     }
 }
+
+impl<A, B, C> Pop for (A, B, C)
+    where
+        A: Pop + Copy,
+        B: Pop + Copy,
+        C: Pop + Copy,
+{
+    type Value = (A::Value, B::Value, C::Value);
+
+    fn pop(&self, stack: &mut Stack) -> Self::Value {
+        let c = stack.pop(self.2);
+        let b = stack.pop(self.1);
+        let a = stack.pop(self.0);
+        (a, b, c)
+    }
+}
