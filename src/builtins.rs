@@ -44,6 +44,7 @@ macro_rules! builtins {
 builtins!(
     "print",   print,   (t::Any,);
     "define",  define,  (t::List, t::Symbol,);
+    "caller",  caller,  ();
     "fail",    fail,    ();
     "eval",    eval,    (t::List,);
     "load",    load,    (t::String,);
@@ -103,6 +104,23 @@ fn define<Host>(
         &[],
         Function::UserDefined { body },
     )?;
+
+    Ok(())
+}
+
+fn caller<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let caller = match context.call_stack().caller() {
+        Some(caller) => caller.clone(),
+        None         => return Err(context::Error::Caller),
+    };
+
+    context.stack().push(value::Scope::new(caller.scope, caller.span));
 
     Ok(())
 }

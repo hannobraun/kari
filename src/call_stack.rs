@@ -23,6 +23,14 @@ impl CallStack {
             // on the call stack.
             .expect("Tried to get operator from empty call stack")
     }
+
+    pub fn caller(&self) -> Option<&StackFrame> {
+        if self.frames.len() < 2 {
+            return None;
+        }
+
+        Some(&self.frames[self.frames.len() - 2])
+    }
 }
 
 
