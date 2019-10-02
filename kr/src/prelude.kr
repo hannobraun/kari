@@ -11,7 +11,7 @@
 	# Load module's exported functions into namespace
 	[
 		# on stack: scope [ [ word ] symbol ]
-		[ dup ] dig   # => scope scope [ [ word ] symbol ]
+		[ clone ] dig # => scope scope [ [ word ] symbol ]
 		swap append   # => scope [ [ word ] symbol scope ]
 		unwrap define # => scope
 	]

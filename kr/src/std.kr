@@ -7,7 +7,7 @@
 [
 	[
 		# on stack: symbol
-		dup          # => symbol symbol
+		clone        # => symbol symbol
 		to_list      # => symbol [ word ]
 		swap wrap    # => [ word ] [ symbol ]
 		swap prepend # => [ [ word ] symbol ]

@@ -51,10 +51,10 @@ builtins!(
     "load",    load,     (t::String,);
     "to_list", to_list,  (t::Symbol,);
 
-    "drop", drop, (t::Any,);
-    "dup",  dup,  (t::Any,);
-    "swap", swap, (t::Any, t::Any,);
-    "dig",  dig,  (t::Any, t::List,);
+    "drop",  drop,  (t::Any,);
+    "clone", clone, (t::Any,);
+    "swap",  swap,  (t::Any, t::Any,);
+    "dig",   dig,   (t::Any, t::List,);
 
     "if", r#if, (t::List, t::List,);
 
@@ -240,7 +240,7 @@ fn drop<Host>(
     Ok(())
 }
 
-fn dup<Host>(
+fn clone<Host>(
     _:       &mut Host,
     context: &mut dyn Context<Host>,
     _:       Scope,
