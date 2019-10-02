@@ -18,5 +18,5 @@
 :export
 	define
 
-[ :assert :fold :println ]
+[ :assert :fold :println :export ]
 	export
