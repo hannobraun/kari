@@ -35,8 +35,8 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let mut builder = TokenBuilder::new(self.stream.clone());
         let mut state   = State::Initial;
+        let mut builder = TokenBuilder::new(self.stream.clone());
 
         loop {
             let c = self.reader.next()?;
