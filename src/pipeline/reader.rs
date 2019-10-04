@@ -7,9 +7,9 @@ use std::{
 };
 
 use crate::{
-    data::{
-        ch::Char,
-        span::Position,
+    data::ch::{
+        Char,
+        Position,
     },
     pipeline,
 };
