@@ -114,6 +114,16 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
 }
 
 
+enum State {
+    Initial,
+    Comment,
+    String,
+    StringEscape,
+    Symbol,
+    Word,
+}
+
+
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
@@ -180,16 +190,6 @@ impl TokenBuilder {
             span: self.span.unwrap(),
         }
     }
-}
-
-
-enum State {
-    Initial,
-    Comment,
-    String,
-    StringEscape,
-    Symbol,
-    Word,
 }
 
 
