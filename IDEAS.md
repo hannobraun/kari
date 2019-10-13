@@ -59,6 +59,22 @@ This would put an anonymous function on the stack that could then be `define`d a
 [! a b c !]
 ```
 
+### Maps as Composite Types
+
+Instead of having different types for lists, structs, tuples, maps, etc., all of those could be implemented through an ordered map type. Maps would be defined through a general syntax, but list syntax would still exist and desugar into that.
+
+While representing all composite types as maps is kinda neat from a conceptual and implementation perspective, I don't think it's nice from a typing perspective, as everything would be structurally types. I think there's a way to embrace this, without letting go of nominal typing, by making type structure and type names othorgonal concepts.
+
+I think this can be done by introducing the concept of a named type, which can be created like this:
+
+```
+map :name type
+```
+
+This would create a type called `name`, which under the hood is a map. Every function that accepts a `name` would accept a `name`only, and passing any other map would lead to a type error.
+
+Of course all of this is pretty course-grained, if `name` is supposed to be some kind of struct, for example. In the short term, I think this could be solved by somehow making direct manipulation of the map private to the module where the type was defined. In the long term, it might be possible to use refinement types to refine maps down to more specific structures.
+
 
 ## Implementation
 
