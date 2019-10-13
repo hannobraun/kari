@@ -43,6 +43,22 @@ It is highly desirable to support function overloading of user-defined functions
 
 Even in cases where type annotations are necessary or desirable, type inference would enable the use of inline type annotations for this. Then there wouldn't need to be a special syntax for function types.
 
+### Function Types
+
+Currently, each list has an associated scope, as each list could be a function. This is unnecessary from a design perspective, and makes some things slightly more complicated from an implementation perspective. Maybe it would be nicer to distinguish functions and list. A list would be just a list, while a function would be a composite type that has a list and a scope.
+
+It would be possible to define functions like this:
+
+``` kari
+[ a b c ] fn
+```
+
+This would put an anonymous function on the stack that could then be `define`d as usual. It might make sense to make functions more visually distinct (also through syntax highlighting) by creating a special syntax for this:
+
+```
+[! a b c !]
+```
+
 
 ## Implementation
 
