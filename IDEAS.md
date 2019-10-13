@@ -2,7 +2,7 @@
 
 ## Design
 
-### Assert Stack Types
+### Type Annotations
 
 I've found that more complicated code benefits from comments that explicitely point out which types are currently at the top of the stack. But of course, such comments can go out of date, or be wrong in the first place.
 
@@ -25,7 +25,11 @@ swap wrap    [ [ word ] [ symbol ] ] on_stack
 swap prepend [ [ [ word ] symbol ] ] on_stack
 ```
 
-There's one advantage of the comment approach though: Thanks to syntax highlighting, the annotations are visually distinct. It might make sense to use a special syntax here, to preserve that attribute.
+There's one advantage of the comment approach though: Thanks to syntax highlighting, the annotations are visually distinct. It might make sense to use a special syntax here, to preserve that attribute. Maybe create a special list syntax that creates a list of types on the stack, then executes a functions the checks said list against the stack. Maybe something like this:
+
+``` kari
+[? symbol ?] # verifies that a symbol is on top of the stack
+```
 
 
 ## Implementation
