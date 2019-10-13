@@ -28,7 +28,13 @@ swap prepend [ [ [ word ] symbol ] ] on_stack
 There's one advantage of the comment approach though: Thanks to syntax highlighting, the annotations are visually distinct. It might make sense to use a special syntax here, to preserve that attribute. Maybe create a special list syntax that creates a list of types on the stack, then executes a functions the checks said list against the stack. Maybe something like this:
 
 ``` kari
-[? symbol ?] # verifies that a symbol is on top of the stack
+[: symbol :] # verifies that a symbol is on top of the stack
+```
+
+This would just be syntax sugar for the following:
+
+``` kari
+[ symbol ] annotation
 ```
 
 ### Overloading via Type Inference
