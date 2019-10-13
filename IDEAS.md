@@ -30,9 +30,9 @@ There's one advantage of the comment approach though: Thanks to syntax highlight
 
 ## Implementation
 
-### Builtin/Extension Input/Output
+### Builtin Input/Output
 
-Builtins and extensions already need to define their input. It probably makes sense to make that directly available to them as an argument to the builtin/extension function. This would be less work and less error-prone. It might even be possible to take stack manipulation out of them completely, if outputs are also defined at some point.
+Builtins already need to define their input. It probably makes sense to make that directly available to them as an argument to the builtin function. This would be less work and less error-prone. It might even be possible to take stack manipulation out of them completely, if outputs are also defined at some point.
 
 ### `Evaluator` as `Stream` of side effects
 
