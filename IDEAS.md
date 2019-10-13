@@ -2,12 +2,6 @@
 
 ## Design
 
-### Scopes
-
-- Add a scope to each list. Calling `define` defines the function in the scope of the current list.
-- Since each list must be defined in another list (except the top-level module, which is the implicit root list), lists, and therefore scopes, form a hierarchy. If a function is not found in a given scope, it should be searched for in the parent scope, and so on.
-- It must be possible to export functions from a module. This could be done by explicitely pushing a list of list/symbol pairs to the stack at the end of a module. The list would then be `eval`uated item by item when loading the list. This could all be implemented in Kari.
-
 ### Assert Stack Types
 
 I've found that more complicated code benefits from comments that explicitely point out which types are currently at the top of the stack. But of course, such comments can go out of date, or be wrong in the first place.
