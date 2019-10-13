@@ -25,6 +25,8 @@ swap wrap    [ [ word ] [ symbol ] ] on_stack
 swap prepend [ [ [ word ] symbol ] ] on_stack
 ```
 
+There's one advantage of the comment approach though: Thanks to syntax highlighting, the annotations are visually distinct. It might make sense to use a special syntax here, to preserve that attribute.
+
 
 ## Implementation
 
