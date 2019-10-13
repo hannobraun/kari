@@ -31,6 +31,12 @@ There's one advantage of the comment approach though: Thanks to syntax highlight
 [? symbol ?] # verifies that a symbol is on top of the stack
 ```
 
+### Overloading via Type Inference
+
+It is highly desirable to support function overloading of user-defined functions. It would be nice to use type inference to determine the signatures, then there wouldn't need to be explicit type annotations in many cases.
+
+Even in cases where type annotations are necessary or desirable, type inference would enable the use of inline type annotations for this. Then there wouldn't need to be a special syntax for function types.
+
 
 ## Implementation
 
