@@ -1,6 +1,6 @@
 use crate::data::{
     functions::Scope,
-    span::Span,
+    token::Span,
 };
 
 

@@ -10,7 +10,7 @@ use crate::data::{
         Expression,
     },
     functions::Scope as Scope_,
-    span::Span,
+    token::Span,
 };
 
 

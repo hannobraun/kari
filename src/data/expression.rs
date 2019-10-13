@@ -1,9 +1,7 @@
-use crate::data::{
-    span::Span,
-    token::{
-        self,
-        Token,
-    },
+use crate::data::token::{
+    self,
+    Span,
+    Token,
 };
 
 

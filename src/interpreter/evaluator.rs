@@ -22,8 +22,8 @@ use crate::{
             Functions,
             Scope,
         },
-        span::Span,
         stack::Stack,
+        token::Span,
         value::{
             self,
             Value as _,

@@ -6,9 +6,9 @@ use crate::{
             self,
             Expression,
         },
-        span::Span,
         token::{
             self,
+            Span,
             Token,
         },
     },

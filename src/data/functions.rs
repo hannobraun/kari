@@ -348,8 +348,8 @@ pub type Signatures = Vec<Vec<&'static dyn Type>>;
 #[cfg(test)]
 mod tests {
     use crate::data::{
-        span::Span,
         stack::Stack,
+        token::Span,
         types::{
             self as t,
             Type,

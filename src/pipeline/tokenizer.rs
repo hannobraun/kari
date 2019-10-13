@@ -1,9 +1,9 @@
 use crate::{
     data::{
         ch::Char,
-        span::Span,
         token::{
             self,
+            Span,
             Token,
         },
     },

@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::data::{
-    span::Span,
+    token::Span,
     value::{
         self,
         Value,

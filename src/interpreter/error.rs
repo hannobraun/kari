@@ -17,7 +17,7 @@ use termion::{
 use crate::{
     call_stack::CallStack,
     context,
-    data::span::Span,
+    data::token::Span,
     interpreter::stream::Stream,
     pipeline::parser,
 };
