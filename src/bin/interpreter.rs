@@ -53,13 +53,13 @@ fn main() {
                     exit(1);
                 });
 
-            Evaluator::new(stdout, stderr)
+            let _ = Evaluator::new(stdout, stderr)
                 .run(&mut (), path.into(), prelude, Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            Evaluator::new(stdout, stderr)
+            let _ = Evaluator::new(stdout, stderr)
                 .run(&mut (), "<stdin>".into(), prelude, stdin);
         }
     }

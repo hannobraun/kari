@@ -73,7 +73,7 @@ fn main() {
     }
 
     for (success, path) in results {
-        if success {
+        if success.is_ok() {
             print!("       {}{}OK{}{} {}\n",
                 style::Bold, color::Fg(color::LightGreen),
                 color::Fg(color::Reset), style::Reset,

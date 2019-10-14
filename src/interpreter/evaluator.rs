@@ -79,7 +79,7 @@ impl<Host> Evaluator<Host> {
         mut prelude:   Box<dyn Stream>,
         mut program:   Box<dyn Stream>,
     )
-        -> bool
+        -> Result<(), ()>
     {
         let prelude_name = "<prelude>";
 
@@ -126,10 +126,10 @@ impl<Host> Evaluator<Host> {
                 print!("Error printing error: {}\n", error)
             }
 
-            return false;
+            return Err(());
         }
 
-        true
+        Ok(())
     }
 
     fn evaluate_expressions<Parser>(&mut self,
