@@ -79,7 +79,7 @@ impl<Host> Evaluator<Host> {
         mut prelude:   Box<dyn Stream>,
         mut program:   Box<dyn Stream>,
     )
-        -> Result<(), ()>
+        -> Result<Vec<value::Any>, ()>
     {
         let prelude_name = "<prelude>";
 
@@ -129,7 +129,7 @@ impl<Host> Evaluator<Host> {
             return Err(());
         }
 
-        Ok(())
+        Ok(self.stack.into_vec())
     }
 
     fn evaluate_expressions<Parser>(&mut self,

@@ -56,6 +56,16 @@ impl Stack {
     pub fn destroy_substack(&mut self) -> Vec<value::Any> {
         self.substacks.pop().unwrap()
     }
+
+    pub fn into_vec(mut self) -> Vec<value::Any> {
+        let mut vec = Vec::new();
+
+        while let Some(value) = self.pop_raw() {
+            vec.insert(0, value);
+        }
+
+        vec
+    }
 }
 
 impl fmt::Display for Stack {
