@@ -39,17 +39,14 @@ impl Stack {
         stack.push(value)
     }
 
-    pub fn pop_raw(&mut self) -> value::Any {
+    pub fn pop_raw(&mut self) -> Option<value::Any> {
         for stack in self.substacks.iter_mut().rev() {
             if let Some(value) = stack.pop() {
-                return value;
+                return Some(value);
             }
         }
 
-        // This indicates that a builtin is buggy. It shouldn't happen
-        // otherwise, as the stack entries are checked against the builtin's
-        // input type before executing the builtin.
-        panic!("Tried to pop from empty stack.");
+        None
     }
 
     pub fn create_substack(&mut self) {
@@ -109,7 +106,12 @@ impl<T> Pop for &T where T: types::Downcast {
     type Value = T::Value;
 
     fn pop(&self, stack: &mut Stack) -> Self::Value {
-        let expr = stack.pop_raw();
+        let expr = stack.pop_raw()
+            // This indicates that a builtin is buggy. It shouldn't happen
+            // otherwise, as the stack entries are checked against the builtin's
+            // input type before executing the builtin.
+            .expect("Tried to pop from empty stack");
+
         self.downcast(expr)
             // This should never happen, unless a builtin is buggy and takes
             // different types from the stack than are specified as its input.
