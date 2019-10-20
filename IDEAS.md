@@ -2,6 +2,32 @@
 
 ## Design
 
+### Extendable Syntax
+
+Kari should have a pure syntax, that simply consists of words and nothing else. Nicer syntax could be implemented on top of that, but should be reducable to pure syntax. Consider the following array literal:
+
+``` kari
+[ 3 5 8 ]
+```
+
+This would then become syntax sugar for the following:
+
+``` kari
+3 5 8 3 array
+```
+
+`array` would just be a built-in function that creates an array from values on the stack, and the right-most argument would define the length of that array.
+
+The same could be done for all literals except maybe numbers. (Although, if you think about it, numbers are just words that follow a certain format. We could treat these as built-in functions that are specially handled, or allow functions with regexes as names. Then numbers wouldn't be special syntax at all.)
+
+Special syntax should be implemented as an extension of the parser. These extensions could be implemented in Rust code, by implementing a trait, or in Kari, by providing a function.
+
+### Limiting Kari Programs
+
+There's often a conflict between making Kari powerful and keeping it reasonable. I think I know how to solve this conflict: Make Kari as powerful as it can be, including seemingly unreasonable stuff like extending syntax and deleting functions. However, if functions can be deleted, then a piece of code that has access to function deletion can just delete the `delete` function to limit any code from then on. The same would go for other functions of course.
+
+Another possibility would be an opt-in model: If builtin functions were organized in modules, and all modules would need to be passed as an argument in order to be accessed, then a module/function could only access whatever has been passed to it from the outside.
+
 ### Type Annotations
 
 I've found that more complicated code benefits from comments that explicitely point out which types are currently at the top of the stack. But of course, such comments can go out of date, or be wrong in the first place.
