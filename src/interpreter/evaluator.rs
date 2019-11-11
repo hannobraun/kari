@@ -75,7 +75,7 @@ impl<Host> Evaluator<Host> {
 
     pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, io::Error> {
         let     name    = "<prelude>";
-        let mut prelude = Box::new(File::open("kr/src/prelude.kr")?);
+        let mut prelude = File::open("kr/src/prelude.kr")?;
 
         let prelude_pipeline = pipeline::new(
             name.into(),
@@ -95,7 +95,7 @@ impl<Host> Evaluator<Host> {
         // prelude.
         self.streams.insert(
             name.into(),
-            prelude,
+            Box::new(prelude),
         );
 
         Ok(self)
