@@ -40,9 +40,7 @@ fn main() {
         });
 
     match args.value_of("path") {
-        Some(name) => {
-            let path = format!("kr/examples/{}.kr", name);
-
+        Some(path) => {
             let file = File::open(&path)
                 .unwrap_or_else(|error| {
                     print!(
