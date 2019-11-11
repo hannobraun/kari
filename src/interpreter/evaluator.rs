@@ -76,7 +76,7 @@ impl<Host> Evaluator<Host> {
         }
     }
 
-    pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, io::Error> {
+    pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, Error> {
         let     name    = "<prelude>";
         let mut prelude = Cursor::new(
             &include_bytes!("../../kr/src/prelude.kr")[..],
@@ -87,13 +87,11 @@ impl<Host> Evaluator<Host> {
             &mut prelude,
         );
 
-        self
-            .evaluate_expressions(
-                host,
-                self.functions.root_scope(),
-                prelude_pipeline,
-            )
-            .expect("Error while evaluating prelude");
+        self.evaluate_expressions(
+            host,
+            self.functions.root_scope(),
+            prelude_pipeline,
+        )?;
 
         // We panic on errors in the prelude itself, but errors in other modules
         // might still produce stack traces with spans that refer to the
