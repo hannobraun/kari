@@ -101,6 +101,10 @@ This would create a type called `name`, which under the hood is a map. Every fun
 
 Of course all of this is pretty course-grained, if `name` is supposed to be some kind of struct, for example. In the short term, I think this could be solved by somehow making direct manipulation of the map private to the module where the type was defined. In the long term, it might be possible to use refinement types to refine maps down to more specific structures.
 
+### Builtin modules
+
+All builtin functions currently live in a global scope. It would be better if they were integrated with the module system. Then they wouldn't use up as much of the namespace, and the difference between builtin and non-builtin functions would become smaller.
+
 
 ## Implementation
 
