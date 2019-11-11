@@ -78,7 +78,9 @@ impl<Host> Evaluator<Host> {
         self
     }
 
-    pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, Error> {
+    pub fn with_default_prelude(mut self, host: &mut Host)
+        -> Result<Self, Error>
+    {
         let     name    = "<prelude>";
         let mut prelude = Cursor::new(
             &include_bytes!("../../kr/src/prelude.kr")[..],

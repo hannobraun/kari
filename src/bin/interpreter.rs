@@ -47,7 +47,7 @@ fn main() {
 
             let _ = Evaluator::new(stdout, stderr)
                 .with_default_builtins()
-                .load_prelude(&mut ())
+                .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {
                     print!("ERROR: Failed to load prelude: {}\n", error);
                     exit(1);
@@ -59,7 +59,7 @@ fn main() {
 
             let _ = Evaluator::new(stdout, stderr)
                 .with_default_builtins()
-                .load_prelude(&mut ())
+                .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {
                     print!("ERROR: Failed to load prelude: {}\n", error);
                     exit(1);
