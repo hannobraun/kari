@@ -22,17 +22,22 @@ use crate::{
         expression::Expression,
         functions::{
             self,
+            DefineError,
             Functions,
             Scope,
         },
         stack::Stack,
         token::Span,
+        types::Type,
         value::{
             self,
             Value as _,
         },
     },
-    function::Function,
+    function::{
+        Builtin,
+        Function,
+    },
     interpreter::{
         error::Error,
         stream::Stream,
@@ -106,6 +111,21 @@ impl<Host> Evaluator<Host> {
         );
 
         Ok(self)
+    }
+
+    pub fn with_builtin(mut self,
+        name:    &str,
+        args:    &[&'static dyn Type],
+        builtin: Builtin<Host>,
+    ) -> Result<Self, DefineError> {
+        self.functions.define(
+            self.functions.root_scope(),
+            String::from(name),
+            args,
+            Function::Builtin(builtin),
+        )?;
+        Ok(self)
+
     }
 
     pub fn run(mut self,
