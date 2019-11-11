@@ -73,15 +73,9 @@ impl<Host> Evaluator<Host> {
         }
     }
 
-    pub fn run(mut self,
-            host:      &mut Host,
-            name:      Cow<str>,
-        mut prelude:   Box<dyn Stream>,
-        mut program:   Box<dyn Stream>,
-    )
-        -> Result<Vec<value::Any>, ()>
-    {
-        let prelude_name = "<prelude>";
+    pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, io::Error> {
+        let     prelude_name = "<prelude>";
+        let mut prelude      = Box::new(File::open("kr/src/prelude.kr")?);
 
         let prelude_pipeline = pipeline::new(
             prelude_name.into(),
@@ -104,6 +98,16 @@ impl<Host> Evaluator<Host> {
             prelude,
         );
 
+        Ok(self)
+    }
+
+    pub fn run(mut self,
+            host:    &mut Host,
+            name:    Cow<str>,
+        mut program: Box<dyn Stream>,
+    )
+        -> Result<Vec<value::Any>, ()>
+    {
         let pipeline = pipeline::new(
             name.clone().into_owned(),
             &mut program,

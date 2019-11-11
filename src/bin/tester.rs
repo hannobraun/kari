@@ -60,14 +60,13 @@ fn main() {
         let stdout = Box::new(stdout());
         let stderr = Box::new(stderr());
 
-        let prelude = kari::prelude()
+        let success = Evaluator::new(stdout, stderr)
+            .load_prelude(&mut ())
             .unwrap_or_else(|error| {
                 print!("ERROR: Failed to load prelude: {}\n", error);
                 exit(1);
-            });
-
-        let success = Evaluator::new(stdout, stderr)
-            .run(&mut (), path.into(), prelude, Box::new(file));
+            })
+            .run(&mut (), path.into(), Box::new(file));
 
         results.push((success, path.to_owned()));
     }

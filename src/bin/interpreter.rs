@@ -33,12 +33,6 @@ fn main() {
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
 
-    let prelude = kari::prelude()
-        .unwrap_or_else(|error| {
-            print!("ERROR: Failed to load prelude: {}\n", error);
-            exit(1);
-        });
-
     match args.value_of("path") {
         Some(path) => {
             let file = File::open(&path)
@@ -52,13 +46,23 @@ fn main() {
                 });
 
             let _ = Evaluator::new(stdout, stderr)
-                .run(&mut (), path.into(), prelude, Box::new(file));
+                .load_prelude(&mut ())
+                .unwrap_or_else(|error| {
+                    print!("ERROR: Failed to load prelude: {}\n", error);
+                    exit(1);
+                })
+                .run(&mut (), path.into(), Box::new(file));
         }
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
             let _ = Evaluator::new(stdout, stderr)
-                .run(&mut (), "<stdin>".into(), prelude, stdin);
+                .load_prelude(&mut ())
+                .unwrap_or_else(|error| {
+                    print!("ERROR: Failed to load prelude: {}\n", error);
+                    exit(1);
+                })
+                .run(&mut (), "<stdin>".into(), stdin);
         }
     }
 }
