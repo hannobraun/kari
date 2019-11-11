@@ -46,6 +46,7 @@ fn main() {
                 });
 
             let _ = Evaluator::new(stdout, stderr)
+                .with_default_builtins()
                 .load_prelude(&mut ())
                 .unwrap_or_else(|error| {
                     print!("ERROR: Failed to load prelude: {}\n", error);
@@ -57,6 +58,7 @@ fn main() {
             let stdin = Box::new(AccReader::new(stdin()));
 
             let _ = Evaluator::new(stdout, stderr)
+                .with_default_builtins()
                 .load_prelude(&mut ())
                 .unwrap_or_else(|error| {
                     print!("ERROR: Failed to load prelude: {}\n", error);

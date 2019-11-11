@@ -62,18 +62,20 @@ impl<Host> Evaluator<Host> {
     )
         -> Self
     {
-        let mut functions = Functions::new();
-        builtins(&mut functions);
-
         Self {
             streams: HashMap::new(),
             stdout,
             stderr,
 
-            functions,
+            functions:  Functions::new(),
             stack:      Stack::new(),
             call_stack: CallStack::new(),
         }
+    }
+
+    pub fn with_default_builtins(mut self) -> Self {
+        builtins(&mut self.functions);
+        self
     }
 
     pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, Error> {
