@@ -2,7 +2,10 @@ use std::{
     borrow::Cow,
     collections::HashMap,
     fs::File,
-    io,
+    io::{
+        self,
+        Cursor,
+    },
 };
 
 use crate::{
@@ -75,7 +78,9 @@ impl<Host> Evaluator<Host> {
 
     pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, io::Error> {
         let     name    = "<prelude>";
-        let mut prelude = File::open("kr/src/prelude.kr")?;
+        let mut prelude = Cursor::new(
+            &include_bytes!("../../kr/src/prelude.kr")[..],
+        );
 
         let prelude_pipeline = pipeline::new(
             name.into(),
