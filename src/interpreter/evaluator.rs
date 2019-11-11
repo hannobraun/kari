@@ -74,11 +74,11 @@ impl<Host> Evaluator<Host> {
     }
 
     pub fn load_prelude(mut self, host: &mut Host) -> Result<Self, io::Error> {
-        let     prelude_name = "<prelude>";
-        let mut prelude      = Box::new(File::open("kr/src/prelude.kr")?);
+        let     name    = "<prelude>";
+        let mut prelude = Box::new(File::open("kr/src/prelude.kr")?);
 
         let prelude_pipeline = pipeline::new(
-            prelude_name.into(),
+            name.into(),
             &mut prelude,
         );
 
@@ -94,7 +94,7 @@ impl<Host> Evaluator<Host> {
         // might still produce stack traces with spans that refer to the
         // prelude.
         self.streams.insert(
-            prelude_name.into(),
+            name.into(),
             prelude,
         );
 
