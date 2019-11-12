@@ -81,8 +81,14 @@ It would be possible to define functions like this:
 
 This would put an anonymous function on the stack that could then be `define`d as usual. It might make sense to make functions more visually distinct (also through syntax highlighting) by creating a special syntax for this:
 
-```
+``` kari
 [! a b c !]
+```
+
+There could even be special syntax for more specific function types. For example, if functions that evaluate to a boolean had special syntax, `if` might become easier to read.
+
+``` kari
+[! do_stuff !] [? a b = ?] if
 ```
 
 ### Maps as Composite Types
