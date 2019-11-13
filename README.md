@@ -50,15 +50,9 @@ just test # run all tests from `kr/tests`
 
 To run your own programs, you should be able `cargo install` the Kari interpreter and use it to run your programs wherever they are located. This is currently not documented.
 
-To embed Kari programs in your application, depend on the `kari` crate:
-``` toml
-# Cargo.toml
+The [minimal-host] repository demonstrates how to embed Kari into a host application.
 
-[dependencies]
-kari = "0.1"
-```
-
-The main entry point to Kari's API is `Evaluator`. You can use its API to run a Kari program. This is currently not documented.
+[minimal-host]: https://github.com/kari-lang/minimal-host.git
 
 
 ## Tutorial
