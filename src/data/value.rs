@@ -249,7 +249,7 @@ pub trait Compute {
     fn compute<Out, F, R>(self, f: F) -> Out
         where
             Out: Value<Inner=R>,
-            F:   Fn(Self::In) -> R;
+            F:   FnOnce(Self::In) -> R;
 }
 
 impl<T> Compute for T where T: Value {
@@ -258,7 +258,7 @@ impl<T> Compute for T where T: Value {
     fn compute<Out, F, R>(self, f: F) -> Out
         where
             Out: Value<Inner=R>,
-            F:   Fn(Self::In) -> R,
+            F:   FnOnce(Self::In) -> R,
     {
         let (inner, span) = self.open();
         Out::new(
@@ -278,7 +278,7 @@ impl<A, B> Compute for (A, B)
     fn compute<Out, F, R>(self, f: F) -> Out
         where
             Out: Value<Inner=R>,
-            F:   Fn(Self::In) -> R,
+            F:   FnOnce(Self::In) -> R,
     {
         let (a_inner, a_span) = self.0.open();
         let (b_inner, b_span) = self.1.open();
