@@ -13,7 +13,7 @@ categories    = ["command-line-utilities", "config", "development-tools"]
 license       = "0BSD"
 
 [dependencies]
-acc_reader = "*"
-clap       = "*"
-termion    = "*"
-walkdir    = "*"
+acc_reader = "2.0.0"
+clap       = "2.33.0"
+termion    = "1.5.3"
+walkdir    = "2.2.9"
