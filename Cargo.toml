@@ -4,6 +4,14 @@ version = "0.1.0"
 authors = ["Hanno Braun <hb@hannobraun.de>"]
 edition = "2018"
 
+description   = "An embeddable programming language, writting in and for Rust"
+documentation = "https://docs.rs/kari"
+repository    = "https://github.com/kari-lang/kari/"
+readme        = "README.md"
+keywords      = ["embeddable", "programming", "language", "scripting", "configuration"]
+categories    = ["command-line-utilities", "config", "development-tools"]
+license       = "0BSD"
+
 [dependencies]
 acc_reader = "*"
 clap       = "*"
