@@ -40,7 +40,7 @@ That said, if you like the concepts presented here and are are willing to tinker
 
 ## Usage
 
-You can run Kari programs like this:
+You can run Kari programs like this (requires [`just`]):
 
 ```
 git clone https://github.com/kari-lang/kari.git
@@ -178,6 +178,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 
 [Rust]: https://www.rust-lang.org/
+[`just`]: https://crates.io/crates/just
 [Kari code]: https://github.com/kari-lang/kari/tree/master/kr
 [tests]: https://github.com/kari-lang/kari/tree/master/kr/tests
 [builtins.rs]: https://github.com/kari-lang/kari/blob/master/src/builtins.rs
