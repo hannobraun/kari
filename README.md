@@ -54,8 +54,8 @@ To embed Kari programs in your application, depend on the `kari` crate:
 ``` toml
 # Cargo.toml
 
-[dependencies.kari]
-git = "https://github.com/kari-lang/kari.git"
+[dependencies]
+kari = "0.1"
 ```
 
 The main entry point to Kari's API is `Evaluator`. You can use its API to run a Kari program. This is currently not documented.
