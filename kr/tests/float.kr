@@ -6,5 +6,4 @@
 3.0 2.0 -
 1.0 = assert
 
-2.0 1.0
-> assert
+2.0 1.0 > assert
