@@ -1,7 +1,6 @@
 use std::{
     borrow::Cow,
     collections::HashMap,
-    fs::File,
     io::{
         self,
         Cursor,
@@ -111,6 +110,15 @@ impl<Host> Evaluator<Host> {
         );
 
         Ok(self)
+    }
+
+    pub fn with_default_modules(mut self) -> Self {
+        self.streams.insert(
+            "std".into(),
+            Box::new(Cursor::new(&include_bytes!("../../kr/src/std.kr")[..])),
+        );
+
+        self
     }
 
     pub fn with_builtin(mut self,
@@ -231,12 +239,16 @@ impl<Host> Context<Host> for Evaluator<Host> {
     fn load(&mut self, name: value::String, scope: Scope)
         -> Result<value::List, context::Error>
     {
-        let module_scope = self.functions.new_scope(scope, name.inner.clone());
+        let name = name.inner;
 
-        let     path   = format!("kr/src/{}.kr", name.inner);
-        let mut stream = File::open(&path)?;
+        let module_scope = self.functions.new_scope(scope, name.clone());
 
-        let mut parser      = pipeline::new(path.clone(), &mut stream);
+        let stream = match self.streams.get_mut(&name) {
+            Some(stream) => stream,
+            None         => return Err(context::Error::ModuleNotFound(name)),
+        };
+
+        let mut parser      = pipeline::new(name, stream.as_mut());
         let mut expressions = Vec::new();
 
         loop {
@@ -246,8 +258,6 @@ impl<Host> Context<Host> for Evaluator<Host> {
                 Err(error)                      => return Err(error.into()),
             }
         }
-
-        self.streams.insert(path, Box::new(stream));
 
         let start = expressions
             .first()

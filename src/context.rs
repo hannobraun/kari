@@ -65,6 +65,7 @@ pub enum Error {
         candidates: Signatures,
         scope:      String,
     },
+    ModuleNotFound(String),
     Io(io::Error),
     Parser(parser::Error),
     Type(TypeError),
@@ -77,6 +78,7 @@ impl Error {
             Error::DefineFunction(_)       => (),
             Error::Failure                 => (),
             Error::FunctionNotFound { .. } => (),
+            Error::ModuleNotFound(_)       => (),
 
             Error::Parser(error) => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
@@ -181,6 +183,9 @@ impl fmt::Display for Error {
             }
             Error::FunctionNotFound { name, .. } => {
                 write!(f, "No matching function found: `{}`", name)
+            }
+            Error::ModuleNotFound(name) => {
+                write!(f, "Module not found: {}", name)
             }
             Error::Io(error) => {
                 write!(f, "Error loading stream: {}", error)
