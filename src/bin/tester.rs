@@ -67,6 +67,7 @@ fn main() {
                 print!("ERROR: Failed to load prelude: {}\n", error);
                 exit(1);
             })
+            .with_default_modules()
             .run(&mut (), path.into(), Box::new(file));
 
         results.push((success, path.to_owned()));

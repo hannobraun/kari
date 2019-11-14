@@ -52,6 +52,7 @@ fn main() {
                     print!("ERROR: Failed to load prelude: {}\n", error);
                     exit(1);
                 })
+                .with_default_modules()
                 .run(&mut (), path.into(), Box::new(file));
         }
         None => {
@@ -64,6 +65,7 @@ fn main() {
                     print!("ERROR: Failed to load prelude: {}\n", error);
                     exit(1);
                 })
+                .with_default_modules()
                 .run(&mut (), "<stdin>".into(), stdin);
         }
     }
