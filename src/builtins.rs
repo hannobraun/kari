@@ -292,7 +292,7 @@ fn r#if<Host>(
 )
     -> Result
 {
-    let (function, condition)  =context.stack()
+    let (function, condition) = context.stack()
         .pop((&t::List, &t::List));
 
     context.evaluate_list(host, condition)?;
