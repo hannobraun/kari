@@ -5,7 +5,7 @@
 ``` kari
 "std" import
 
-"The answer to live is: " print
+"The answer to life, the universe, and everything is: " print
 1 [ 2 3 7 ] [ * ] fold println
 ```
 
