@@ -1,0 +1,4 @@
+"std" import
+
+0 [ 1 + ] 100 times
+100 = assert
