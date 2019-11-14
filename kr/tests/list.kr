@@ -1,5 +1,10 @@
 "std" import
 
+1 2 3
+3
+	list
+[ 1 2 3 ] = assert
+
 [ 1 2 + ] eval
 [ 3 ] = assert
 

@@ -58,6 +58,7 @@ builtins!(
 
     "if", r#if, (t::List, t::List,);
 
+    "list",    list,    (t::Number,);
     "map",     map,     (t::List, t::List,);
     "wrap",    wrap,    (t::Any,);
     "unwrap",  unwrap,  (t::List,);
@@ -309,6 +310,40 @@ fn r#if<Host>(
     Ok(())
 }
 
+
+fn list<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    scope:   Scope,
+)
+    -> Result
+{
+    let len = context.stack()
+        .pop(&t::Number);
+
+    let mut items = Vec::new();
+    let mut span  = len.span;
+
+    for _ in 0 .. len.inner {
+        let item = context.stack()
+            .pop(&t::Any);
+
+        span = span.merge(&item.span);
+        items.insert(0, item);
+    }
+
+    let list = value::List::new(
+        value::ListInner::from_values(
+            items,
+            context.functions().new_scope(scope, "list"),
+        ),
+        span,
+    );
+
+    context.stack().push(list);
+
+    Ok(())
+}
 
 fn map<Host>(
     host:    &mut Host,
