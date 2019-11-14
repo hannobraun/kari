@@ -65,6 +65,7 @@ builtins!(
     "append",  append,  (t::List, t::Any,);
 
     "+", add_n, (t::Number, t::Number,);
+    "-", sub_n, (t::Number, t::Number,);
     "*", mul_n, (t::Number, t::Number,);
     "/", div_n, (t::Number, t::Number,);
     ">", gt_n,  (t::Number, t::Number,);
@@ -428,6 +429,22 @@ fn add_n<Host>(
         .compute::<value::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
+
+    Ok(())
+}
+
+fn sub_n<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let difference = context.stack()
+        .pop((&t::Number, &t::Number))
+        .compute::<value::Number, _, _>(|(a, b)| a - b);
+
+    context.stack().push(difference);
 
     Ok(())
 }
