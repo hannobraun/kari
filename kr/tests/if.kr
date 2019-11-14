@@ -1,0 +1,5 @@
+"std" import
+
+1
+[ 2 + ] [ true ] if
+3 = assert
