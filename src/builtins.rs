@@ -71,6 +71,7 @@ builtins!(
     ">", gt_n,  (t::Number, t::Number,);
 
     "+", add_f, (t::Float, t::Float,);
+    "-", sub_f, (t::Float, t::Float,);
     "*", mul_f, (t::Float, t::Float,);
     ">", gt_f,  (t::Float, t::Float,);
 
@@ -508,6 +509,22 @@ fn add_f<Host>(
     let sum = context.stack()
         .pop((&t::Float, &t::Float))
         .compute::<value::Float, _, _>(|(a, b)| a + b);
+
+    context.stack().push(sum);
+
+    Ok(())
+}
+
+fn sub_f<Host>(
+    _:       &mut Host,
+    context: &mut dyn Context<Host>,
+    _:       Scope,
+)
+    -> Result
+{
+    let sum = context.stack()
+        .pop((&t::Float, &t::Float))
+        .compute::<value::Float, _, _>(|(a, b)| a - b);
 
     context.stack().push(sum);
 
