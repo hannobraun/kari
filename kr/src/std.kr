@@ -5,6 +5,47 @@
 [ print "\n" print ] :println define
 
 [
+	# on stack: <initial values> list number
+	[
+		# on stack: <initial values> list number
+		2 list clone
+		# on stack: <initial values> [ list number ] [ list number ]
+		[
+			# on stack: <initial values> [ list number ]
+			unwrap
+			# on stack: <initial values> list number
+			[
+				# on stack: <initial values> list
+				clone
+				# on stack: <initial values> list list
+				[
+					# on stack: <inivial values> list
+					eval unwrap
+					# on stack: <results of function>
+				]
+					dig
+				# on stack: <results of function> list
+			]
+				dig
+
+			# on stack: <results of function> list number
+			1 - times
+		]
+			dig
+
+		unwrap
+	]
+	[ clone 0 > ]
+		if
+
+	# At this point, we've recursively called ourselves, or done nothing. Either
+	# way, just drop the arguments and we're done.
+	drop drop
+]
+	:times
+	define
+
+[
 	[
 		# on stack: symbol
 		clone        # => symbol symbol
@@ -18,5 +59,5 @@
 :export
 	define
 
-[ :assert :fold :println :export ]
+[ :assert :fold :println :times :export ]
 	export
