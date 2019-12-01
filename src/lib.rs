@@ -7,4 +7,7 @@ pub mod interpreter;
 pub mod pipeline;
 
 
-pub use crate::interpreter::Interpreter;
+pub use crate::{
+    context::Context,
+    interpreter::Interpreter,
+};
