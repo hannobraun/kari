@@ -13,7 +13,7 @@ use termion::{
 };
 use walkdir::WalkDir;
 
-use kari::interpreter::interpreter::Interpreter;
+use kari::interpreter::Interpreter;
 
 
 fn main() {

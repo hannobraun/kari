@@ -1,3 +1,7 @@
+pub mod error;
+pub mod stream;
+
+
 use std::{
     borrow::Cow,
     collections::HashMap,
@@ -87,7 +91,7 @@ impl<Host> Interpreter<Host> {
     {
         let     name    = "<prelude>";
         let mut prelude = Cursor::new(
-            &include_bytes!("../../kr/src/prelude.kr")[..],
+            &include_bytes!("../kr/src/prelude.kr")[..],
         );
 
         let prelude_pipeline = pipeline::new(
@@ -115,7 +119,7 @@ impl<Host> Interpreter<Host> {
     pub fn with_default_modules(mut self) -> Self {
         self.streams.insert(
             "std".into(),
-            Box::new(Cursor::new(&include_bytes!("../../kr/src/std.kr")[..])),
+            Box::new(Cursor::new(&include_bytes!("../kr/src/std.kr")[..])),
         );
 
         self

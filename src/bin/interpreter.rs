@@ -14,7 +14,7 @@ use clap::{
     Arg,
 };
 
-use kari::interpreter::interpreter::Interpreter;
+use kari::interpreter::Interpreter;
 
 
 fn main() {
