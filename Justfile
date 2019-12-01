@@ -1,5 +1,5 @@
 run PROGRAM:
-	cargo run --bin interpreter -- kr/examples/{{PROGRAM}}.kr
+	cargo run --bin kari -- kr/examples/{{PROGRAM}}.kr
 
 test:
 	cargo build
