@@ -12,6 +12,14 @@ pub mod types;
 pub mod value;
 
 
+pub mod prelude {
+    pub use crate::{
+        types::Downcast as _,
+        value::Value as _,
+    };
+}
+
+
 pub use crate::{
     context::Context,
     interpreter::Interpreter,
