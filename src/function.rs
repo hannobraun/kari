@@ -5,10 +5,8 @@ use crate::{
         self,
         Context,
     },
-    data::{
-        functions::Scope,
-        value,
-    },
+    functions::Scope,
+    value,
 };
 
 

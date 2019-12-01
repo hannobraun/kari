@@ -10,20 +10,18 @@ use termion::{
 
 use crate::{
     call_stack::CallStack,
-    data::{
-        functions::{
-            self,
-            Functions,
-            Scope,
-            Signatures,
-        },
-        stack::Stack,
-        token::Span,
-        types::TypeError,
-        value,
-    },
     function::Function,
+    functions::{
+        self,
+        Functions,
+        Scope,
+        Signatures,
+    },
     pipeline::parser,
+    stack::Stack,
+    token::Span,
+    types::TypeError,
+    value,
 };
 
 

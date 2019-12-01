@@ -1,4 +1,4 @@
-use crate::data::token::{
+use crate::token::{
     self,
     Span,
     Token,

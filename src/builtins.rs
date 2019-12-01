@@ -3,19 +3,17 @@ use crate::{
         self,
         Context,
     },
-    data::{
-        functions::{
-            Functions,
-            Scope,
-        },
-        types as t,
-        value::{
-            self,
-            Compute as _,
-            Value as _,
-        },
-    },
     function::Function,
+    functions::{
+        Functions,
+        Scope,
+    },
+    types as t,
+    value::{
+        self,
+        Compute as _,
+        Value as _,
+    },
 };
 
 

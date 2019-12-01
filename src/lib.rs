@@ -1,10 +1,16 @@
 pub mod builtins;
 pub mod call_stack;
+pub mod ch;
 pub mod context;
-pub mod data;
+pub mod expression;
 pub mod function;
+pub mod functions;
 pub mod interpreter;
 pub mod pipeline;
+pub mod stack;
+pub mod token;
+pub mod types;
+pub mod value;
 
 
 pub use crate::{

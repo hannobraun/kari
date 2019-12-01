@@ -21,30 +21,28 @@ use crate::{
         self,
         Context,
     },
-    data::{
-        expression::Expression,
-        functions::{
-            self,
-            DefineError,
-            Functions,
-            Scope,
-        },
-        stack::Stack,
-        token::Span,
-        types::Type,
-        value::{
-            self,
-            Value as _,
-        },
-    },
+    expression::Expression,
     function::{
         Builtin,
         Function,
+    },
+    functions::{
+        self,
+        DefineError,
+        Functions,
+        Scope,
     },
     pipeline::{
         self,
         Stage as _,
         parser,
+    },
+    stack::Stack,
+    token::Span,
+    types::Type,
+    value::{
+        self,
+        Value as _,
     },
 };
 

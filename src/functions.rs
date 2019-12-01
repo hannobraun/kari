@@ -3,7 +3,7 @@ use std::{
     fmt,
 };
 
-use crate::data::{
+use crate::{
     stack::Stack,
     types::{
         Type,
@@ -347,7 +347,7 @@ pub type Signatures = Vec<Vec<&'static dyn Type>>;
 
 #[cfg(test)]
 mod tests {
-    use crate::data::{
+    use crate::{
         stack::Stack,
         token::Span,
         types::{

@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::data::{
+use crate::{
     types,
     value::{
         self,
