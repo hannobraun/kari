@@ -41,15 +41,16 @@ use crate::{
         Builtin,
         Function,
     },
-    interpreter::{
-        error::Error,
-        stream::Stream,
-    },
     pipeline::{
         self,
         Stage as _,
         parser,
     },
+};
+
+use self::{
+    error::Error,
+    stream::Stream,
 };
 
 
