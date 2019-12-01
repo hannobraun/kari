@@ -6,7 +6,7 @@ use std::{
     },
 };
 
-use crate::data::{
+use crate::{
     token::Span,
     value::{
         self,

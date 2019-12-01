@@ -1,15 +1,13 @@
 use crate::{
-    data::{
-        ch::Char,
-        token::{
-            self,
-            Span,
-            Token,
-        },
-    },
+    ch::Char,
     pipeline::{
         self,
         reader,
+    },
+    token::{
+        self,
+        Span,
+        Token,
     },
 };
 

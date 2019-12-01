@@ -1,3 +1,7 @@
+pub mod error;
+pub mod stream;
+
+
 use std::{
     borrow::Cow,
     collections::HashMap,
@@ -17,39 +21,36 @@ use crate::{
         self,
         Context,
     },
-    data::{
-        expression::Expression,
-        functions::{
-            self,
-            DefineError,
-            Functions,
-            Scope,
-        },
-        stack::Stack,
-        token::Span,
-        types::Type,
-        value::{
-            self,
-            Value as _,
-        },
-    },
-    function::{
+    expression::Expression,
+    functions::{
+        self,
         Builtin,
+        DefineError,
         Function,
-    },
-    interpreter::{
-        error::Error,
-        stream::Stream,
+        Functions,
+        Scope,
     },
     pipeline::{
         self,
         Stage as _,
         parser,
     },
+    stack::Stack,
+    token::Span,
+    types::Type,
+    value::{
+        self,
+        Value as _,
+    },
+};
+
+use self::{
+    error::Error,
+    stream::Stream,
 };
 
 
-pub struct Evaluator<Host> {
+pub struct Interpreter<Host> {
     streams: HashMap<String, Box<dyn Stream>>,
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
@@ -59,7 +60,7 @@ pub struct Evaluator<Host> {
     call_stack: CallStack,
 }
 
-impl<Host> Evaluator<Host> {
+impl<Host> Interpreter<Host> {
     pub fn new(
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
@@ -87,7 +88,7 @@ impl<Host> Evaluator<Host> {
     {
         let     name    = "<prelude>";
         let mut prelude = Cursor::new(
-            &include_bytes!("../../kr/src/prelude.kr")[..],
+            &include_bytes!("../kr/src/prelude.kr")[..],
         );
 
         let prelude_pipeline = pipeline::new(
@@ -115,7 +116,7 @@ impl<Host> Evaluator<Host> {
     pub fn with_default_modules(mut self) -> Self {
         self.streams.insert(
             "std".into(),
-            Box::new(Cursor::new(&include_bytes!("../../kr/src/std.kr")[..])),
+            Box::new(Cursor::new(&include_bytes!("../kr/src/std.kr")[..])),
         );
 
         self
@@ -219,7 +220,7 @@ impl<Host> Evaluator<Host> {
     }
 }
 
-impl<Host> Context<Host> for Evaluator<Host> {
+impl<Host> Context<Host> for Interpreter<Host> {
     fn functions(&mut self) -> &mut Functions<Function<Host>> {
         &mut self.functions
     }

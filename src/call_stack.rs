@@ -1,4 +1,4 @@
-use crate::data::{
+use crate::{
     functions::Scope,
     token::Span,
 };

@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    data::ch::{
+    ch::{
         Char,
         Position,
     },
