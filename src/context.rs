@@ -20,6 +20,7 @@ use crate::{
     pipeline::parser,
     stack::Stack,
     token::Span,
+    stack,
     types::TypeError,
     value,
 };
@@ -66,6 +67,7 @@ pub enum Error {
     ModuleNotFound(String),
     Io(io::Error),
     Parser(parser::Error),
+    Stack(stack::Error),
     Type(TypeError),
 }
 
@@ -79,6 +81,7 @@ impl Error {
             Error::ModuleNotFound(_)       => (),
 
             Error::Parser(error) => error.spans(spans),
+            Error::Stack(error)  => error.spans(spans),
             Error::Type(error)   => error.spans(spans),
 
             Error::Io(_)    => (),
@@ -143,6 +146,12 @@ impl Error {
     }
 }
 
+impl From<stack::Error> for Error {
+    fn from(from: stack::Error) -> Self {
+        Error::Stack(from)
+    }
+}
+
 impl From<TypeError> for Error {
     fn from(from: TypeError) -> Self {
         Error::Type(from)
@@ -173,9 +182,6 @@ impl fmt::Display for Error {
             Error::Caller => {
                 write!(f, "No caller found")
             }
-            Error::DefineFunction(error) => {
-                error.fmt(f)
-            }
             Error::Failure { .. } => {
                 write!(f, "Explicit failure")
             }
@@ -189,8 +195,10 @@ impl fmt::Display for Error {
                 write!(f, "Error loading stream: {}", error)
             }
 
-            Error::Parser(error) => error.fmt(f),
-            Error::Type(error)   => error.fmt(f),
+            Error::DefineFunction(error) => error.fmt(f),
+            Error::Parser(error)         => error.fmt(f),
+            Error::Stack(error)          => error.fmt(f),
+            Error::Type(error)           => error.fmt(f),
         }
     }
 }
