@@ -1,7 +1,11 @@
 use std::fmt;
 
 use crate::{
-    types,
+    token::Span,
+    types::{
+        self,
+        TypeError,
+    },
     value::{
         self,
         Value,
@@ -26,7 +30,7 @@ impl Stack {
         self
     }
 
-    pub fn pop<T: Pop>(&mut self, ty: T) -> T::Value {
+    pub fn pop<T: Pop>(&mut self, ty: T) -> Result<T::Value, Error> {
         ty.pop(self)
     }
 
@@ -109,23 +113,20 @@ impl<A, B> Push for (A, B)
 pub trait Pop : Sized {
     type Value;
 
-    fn pop(&self, _: &mut Stack) -> Self::Value;
+    fn pop(&self, _: &mut Stack) -> Result<Self::Value, Error>;
 }
 
 impl<T> Pop for &T where T: types::Downcast {
     type Value = T::Value;
 
-    fn pop(&self, stack: &mut Stack) -> Self::Value {
+    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
         let expr = stack.pop_raw()
-            // This indicates that a builtin is buggy. It shouldn't happen
-            // otherwise, as the stack entries are checked against the builtin's
-            // input type before executing the builtin.
-            .expect("Tried to pop from empty stack");
+            .ok_or(Error::StackEmpty)?;
 
-        self.downcast(expr)
-            // This should never happen, unless a builtin is buggy and takes
-            // different types from the stack than are specified as its input.
-            .expect("Failed to downcast value")
+        let value = self.downcast(expr)
+            .map_err(|err| Error::TypeError(err))?;
+
+        Ok(value)
     }
 }
 
@@ -136,10 +137,10 @@ impl<A, B> Pop for (A, B)
 {
     type Value = (A::Value, B::Value);
 
-    fn pop(&self, stack: &mut Stack) -> Self::Value {
-        let b = stack.pop(self.1);
-        let a = stack.pop(self.0);
-        (a, b)
+    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
+        let b = stack.pop(self.1)?;
+        let a = stack.pop(self.0)?;
+        Ok((a, b))
     }
 }
 
@@ -151,10 +152,38 @@ impl<A, B, C> Pop for (A, B, C)
 {
     type Value = (A::Value, B::Value, C::Value);
 
-    fn pop(&self, stack: &mut Stack) -> Self::Value {
-        let c = stack.pop(self.2);
-        let b = stack.pop(self.1);
-        let a = stack.pop(self.0);
-        (a, b, c)
+    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
+        let c = stack.pop(self.2)?;
+        let b = stack.pop(self.1)?;
+        let a = stack.pop(self.0)?;
+        Ok((a, b, c))
+    }
+}
+
+
+#[derive(Debug)]
+pub enum Error {
+    StackEmpty,
+    TypeError(TypeError),
+}
+
+impl Error {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+        match self {
+            Error::StackEmpty     => (),
+            Error::TypeError(err) => err.spans(spans),
+        }
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::StackEmpty => {
+                write!(f, "Tried to pop value, but stack is empty")
+            }
+
+            Error::TypeError(error) => error.fmt(f),
+        }
     }
 }
