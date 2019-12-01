@@ -49,7 +49,7 @@ use crate::{
 };
 
 
-pub struct Evaluator<Host> {
+pub struct Interpreter<Host> {
     streams: HashMap<String, Box<dyn Stream>>,
     stdout:  Box<dyn io::Write>,
     stderr:  Box<dyn io::Write>,
@@ -59,7 +59,7 @@ pub struct Evaluator<Host> {
     call_stack: CallStack,
 }
 
-impl<Host> Evaluator<Host> {
+impl<Host> Interpreter<Host> {
     pub fn new(
         stdout: Box<dyn io::Write>,
         stderr: Box<dyn io::Write>,
@@ -219,7 +219,7 @@ impl<Host> Evaluator<Host> {
     }
 }
 
-impl<Host> Context<Host> for Evaluator<Host> {
+impl<Host> Context<Host> for Interpreter<Host> {
     fn functions(&mut self) -> &mut Functions<Function<Host>> {
         &mut self.functions
     }

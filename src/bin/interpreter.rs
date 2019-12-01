@@ -14,7 +14,7 @@ use clap::{
     Arg,
 };
 
-use kari::interpreter::evaluator::Evaluator;
+use kari::interpreter::interpreter::Interpreter;
 
 
 fn main() {
@@ -45,7 +45,7 @@ fn main() {
                     exit(1);
                 });
 
-            let _ = Evaluator::new(stdout, stderr)
+            let _ = Interpreter::new(stdout, stderr)
                 .with_default_builtins()
                 .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {
@@ -58,7 +58,7 @@ fn main() {
         None => {
             let stdin = Box::new(AccReader::new(stdin()));
 
-            let _ = Evaluator::new(stdout, stderr)
+            let _ = Interpreter::new(stdout, stderr)
                 .with_default_builtins()
                 .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {

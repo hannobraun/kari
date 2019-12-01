@@ -13,7 +13,7 @@ use termion::{
 };
 use walkdir::WalkDir;
 
-use kari::interpreter::evaluator::Evaluator;
+use kari::interpreter::interpreter::Interpreter;
 
 
 fn main() {
@@ -60,7 +60,7 @@ fn main() {
         let stdout = Box::new(stdout());
         let stderr = Box::new(stderr());
 
-        let success = Evaluator::new(stdout, stderr)
+        let success = Interpreter::new(stdout, stderr)
             .with_default_builtins()
             .with_default_prelude(&mut ())
             .unwrap_or_else(|error| {
