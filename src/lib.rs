@@ -3,7 +3,6 @@ pub mod call_stack;
 pub mod ch;
 pub mod context;
 pub mod expression;
-pub mod function;
 pub mod functions;
 pub mod interpreter;
 pub mod pipeline;

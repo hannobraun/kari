@@ -10,9 +10,9 @@ use termion::{
 
 use crate::{
     call_stack::CallStack,
-    function::Function,
     functions::{
         self,
+        Function,
         Functions,
         Scope,
         Signatures,

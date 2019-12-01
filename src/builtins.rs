@@ -3,8 +3,8 @@ use crate::{
         self,
         Context,
     },
-    function::Function,
     functions::{
+        Function,
         Functions,
         Scope,
     },

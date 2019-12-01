@@ -22,13 +22,11 @@ use crate::{
         Context,
     },
     expression::Expression,
-    function::{
-        Builtin,
-        Function,
-    },
     functions::{
         self,
+        Builtin,
         DefineError,
+        Function,
         Functions,
         Scope,
     },
