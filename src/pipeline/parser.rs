@@ -1,10 +1,9 @@
+pub mod expression;
+
+
 use std::fmt;
 
 use crate::{
-    expression::{
-        self,
-        Expression,
-    },
     pipeline::{
         self,
         tokenizer::{
@@ -17,6 +16,8 @@ use crate::{
         },
     },
 };
+
+use self::expression::Expression;
 
 
 pub struct Parser<Tokenizer> {
