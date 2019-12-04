@@ -21,8 +21,10 @@ use crate::{
     stack::Stack,
     token::Span,
     stack,
-    types::TypeError,
-    value,
+    value::{
+        self,
+        types::TypeError,
+    },
 };
 
 

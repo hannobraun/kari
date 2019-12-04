@@ -9,11 +9,13 @@ use crate::{
         Context,
     },
     stack::Stack,
-    types::{
-        Type,
-        Typed,
+    value::{
+        self,
+        types::{
+            Type,
+            Typed,
+        },
     },
-    value,
 };
 
 
@@ -390,15 +392,15 @@ pub type Builtin<Host> =
 #[cfg(test)]
 mod tests {
     use crate::{
+        prelude::*,
         stack::Stack,
         token::Span,
-        types::{
-            self as t,
-            Type,
-        },
         value::{
             self,
-            Value as _,
+            types::{
+                self as t,
+                Type,
+            },
         },
     };
 

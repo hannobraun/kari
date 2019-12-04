@@ -12,6 +12,7 @@ use std::{
 };
 
 use crate::{
+    prelude::*,
     builtins::builtins,
     call_stack::{
         CallStack,
@@ -32,15 +33,13 @@ use crate::{
     },
     pipeline::{
         self,
-        Stage as _,
         parser,
     },
     stack::Stack,
     token::Span,
-    types::Type,
     value::{
         self,
-        Value as _,
+        types::Type,
     },
 };
 
