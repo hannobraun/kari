@@ -392,11 +392,11 @@ pub type Builtin<Host> =
 #[cfg(test)]
 mod tests {
     use crate::{
+        prelude::*,
         stack::Stack,
         token::Span,
         value::{
             self,
-            Value as _,
             types::{
                 self as t,
                 Type,
