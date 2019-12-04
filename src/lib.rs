@@ -8,17 +8,14 @@ pub mod interpreter;
 pub mod pipeline;
 pub mod stack;
 pub mod token;
-pub mod types;
 pub mod value;
 
 
 pub mod prelude {
-    pub use crate::{
+    pub use crate::value::{
+        Value as _,
+        compute::Compute as _,
         types::Downcast as _,
-        value::{
-            Value as _,
-            compute::Compute as _,
-        },
     };
 }
 

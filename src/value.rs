@@ -1,4 +1,5 @@
 pub mod compute;
+pub mod types;
 
 
 use std::{

@@ -9,8 +9,10 @@ use crate::{
         Functions,
         Scope,
     },
-    types as t,
-    value,
+    value::{
+        self,
+        types as t,
+    },
 };
 
 

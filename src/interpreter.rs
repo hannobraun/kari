@@ -37,10 +37,10 @@ use crate::{
     },
     stack::Stack,
     token::Span,
-    types::Type,
     value::{
         self,
         Value as _,
+        types::Type,
     },
 };
 

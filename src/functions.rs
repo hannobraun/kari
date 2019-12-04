@@ -9,11 +9,13 @@ use crate::{
         Context,
     },
     stack::Stack,
-    types::{
-        Type,
-        Typed,
+    value::{
+        self,
+        types::{
+            Type,
+            Typed,
+        },
     },
-    value,
 };
 
 
@@ -392,13 +394,13 @@ mod tests {
     use crate::{
         stack::Stack,
         token::Span,
-        types::{
-            self as t,
-            Type,
-        },
         value::{
             self,
             Value as _,
+            types::{
+                self as t,
+                Type,
+            },
         },
     };
 

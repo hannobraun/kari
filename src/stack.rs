@@ -2,13 +2,13 @@ use std::fmt;
 
 use crate::{
     token::Span,
-    types::{
-        self,
-        TypeError,
-    },
     value::{
         self,
         Value,
+        types::{
+            self,
+            TypeError,
+        },
     },
 };
 
