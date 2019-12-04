@@ -15,7 +15,10 @@ pub mod value;
 pub mod prelude {
     pub use crate::{
         types::Downcast as _,
-        value::Value as _,
+        value::{
+            Compute as _,
+            Value as _,
+        },
     };
 }
 
