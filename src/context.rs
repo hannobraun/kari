@@ -17,10 +17,14 @@ use crate::{
         Scope,
         Signatures,
     },
-    pipeline::parser,
-    stack::Stack,
-    token::Span,
-    stack,
+    pipeline::{
+        parser,
+        tokenizer::token::Span,
+    },
+    stack::{
+        self,
+        Stack,
+    },
     value::{
         self,
         types::TypeError,

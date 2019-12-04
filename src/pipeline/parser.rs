@@ -1,20 +1,23 @@
+pub mod expression;
+
+
 use std::fmt;
 
 use crate::{
-    expression::{
-        self,
-        Expression,
-    },
     pipeline::{
         self,
-        tokenizer,
-    },
-    token::{
-        self,
-        Span,
-        Token,
+        tokenizer::{
+            self,
+            token::{
+                self,
+                Span,
+                Token,
+            },
+        },
     },
 };
+
+use self::expression::Expression;
 
 
 pub struct Parser<Tokenizer> {

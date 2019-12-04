@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    token::Span,
+    pipeline::tokenizer::token::Span,
     value::{
         self,
         Value,

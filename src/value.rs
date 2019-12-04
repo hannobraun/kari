@@ -9,12 +9,14 @@ use std::{
 };
 
 use crate::{
-    expression::{
-        self,
-        Expression,
-    },
     functions::Scope as Scope_,
-    token::Span,
+    pipeline::{
+        parser::expression::{
+            self,
+            Expression,
+        },
+        tokenizer::token::Span,
+    },
 };
 
 

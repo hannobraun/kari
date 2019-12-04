@@ -1,4 +1,4 @@
-use crate::token::{
+use crate::pipeline::tokenizer::token::{
     self,
     Span,
     Token,

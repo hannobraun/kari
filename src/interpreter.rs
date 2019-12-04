@@ -22,7 +22,6 @@ use crate::{
         self,
         Context,
     },
-    expression::Expression,
     functions::{
         self,
         Builtin,
@@ -33,10 +32,13 @@ use crate::{
     },
     pipeline::{
         self,
-        parser,
+        parser::{
+            self,
+            expression::Expression,
+        },
+        tokenizer::token::Span,
     },
     stack::Stack,
-    token::Span,
     value::{
         self,
         types::Type,
