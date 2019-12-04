@@ -21,8 +21,10 @@ use crate::{
         parser,
         tokenizer::token::Span,
     },
-    stack::Stack,
-    stack,
+    stack::{
+        self,
+        Stack,
+    },
     value::{
         self,
         types::TypeError,
