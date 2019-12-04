@@ -12,10 +12,13 @@ pub mod value;
 
 
 pub mod prelude {
-    pub use crate::value::{
-        Value as _,
-        compute::Compute as _,
-        types::Downcast as _,
+    pub use crate::{
+        pipeline::Stage as _,
+        value::{
+            Value as _,
+            compute::Compute as _,
+            types::Downcast as _,
+        },
     };
 }
 
