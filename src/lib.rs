@@ -6,7 +6,6 @@ pub mod functions;
 pub mod interpreter;
 pub mod pipeline;
 pub mod stack;
-pub mod token;
 pub mod value;
 
 

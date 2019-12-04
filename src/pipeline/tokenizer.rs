@@ -1,16 +1,17 @@
-use crate::{
-    pipeline::{
+pub mod token;
+
+
+use crate::pipeline::{
+    self,
+    reader::{
         self,
-        reader::{
-            self,
-            Char,
-        },
+        Char,
     },
-    token::{
-        self,
-        Span,
-        Token,
-    },
+};
+
+use self::token::{
+    Span,
+    Token,
 };
 
 

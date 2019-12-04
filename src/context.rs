@@ -17,9 +17,11 @@ use crate::{
         Scope,
         Signatures,
     },
-    pipeline::parser,
+    pipeline::{
+        parser,
+        tokenizer::token::Span,
+    },
     stack::Stack,
-    token::Span,
     stack,
     value::{
         self,

@@ -7,12 +7,14 @@ use crate::{
     },
     pipeline::{
         self,
-        tokenizer,
-    },
-    token::{
-        self,
-        Span,
-        Token,
+        tokenizer::{
+            self,
+            token::{
+                self,
+                Span,
+                Token,
+            },
+        },
     },
 };
 

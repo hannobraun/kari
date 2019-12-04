@@ -18,8 +18,10 @@ use crate::{
     call_stack::CallStack,
     context,
     interpreter::stream::Stream,
-    pipeline::parser,
-    token::Span,
+    pipeline::{
+        parser,
+        tokenizer::token::Span,
+    },
 };
 
 

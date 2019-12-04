@@ -14,7 +14,7 @@ use crate::{
         Expression,
     },
     functions::Scope as Scope_,
-    token::Span,
+    pipeline::tokenizer::token::Span,
 };
 
 

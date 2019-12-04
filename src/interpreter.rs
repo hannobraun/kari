@@ -34,9 +34,9 @@ use crate::{
     pipeline::{
         self,
         parser,
+        tokenizer::token::Span,
     },
     stack::Stack,
-    token::Span,
     value::{
         self,
         types::Type,
