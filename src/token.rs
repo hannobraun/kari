@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::ch::Position;
+use crate::pipeline::reader::Position;
 
 
 #[derive(Debug)]

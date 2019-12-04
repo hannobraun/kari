@@ -1,8 +1,10 @@
 use crate::{
-    ch::Char,
     pipeline::{
         self,
-        reader,
+        reader::{
+            self,
+            Char,
+        },
     },
     token::{
         self,
