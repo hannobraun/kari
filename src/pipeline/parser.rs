@@ -58,7 +58,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self, mut list_span: Source)
+    fn parse_list(&mut self, mut list_source: Source)
         -> Result<Expression, Error>
     {
         let mut expressions = Vec::new();
@@ -66,7 +66,7 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            list_span = list_span.merge(&token.span);
+            list_source = list_source.merge(&token.span);
 
             let expr = match token.kind {
                 token::Kind::ListOpen => {
@@ -76,7 +76,7 @@ impl<Tokenizer> Parser<Tokenizer>
                     return Ok(
                         Expression {
                             kind: expression::Kind::List(expressions),
-                            span: list_span,
+                            span: list_source,
                         }
                     );
                 }
