@@ -49,12 +49,6 @@ impl Source {
     }
 }
 
-impl Default for Source {
-    fn default() -> Self {
-        Source::Continuous(Continuous::default())
-    }
-}
-
 
 /// A source that consists of a single region in a single file
 #[derive(Clone, Debug, Default)]
