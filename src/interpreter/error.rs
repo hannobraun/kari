@@ -20,7 +20,10 @@ use crate::{
     interpreter::stream::Stream,
     pipeline::{
         parser,
-        tokenizer::Source,
+        tokenizer::{
+            Source,
+            source,
+        },
     },
 };
 
@@ -51,11 +54,15 @@ impl Error {
         self.kind.sources(&mut sources);
 
         for source in sources {
-            print_source(
-                source,
-                streams,
-                stderr,
-            )?;
+            match source {
+                Source::Continuous(source) => {
+                    print_source(
+                        source,
+                        streams,
+                        stderr,
+                    )?;
+                }
+            }
         }
 
         self.kind.write_hint(stderr)?;
@@ -67,11 +74,15 @@ impl Error {
                 color::Fg(color::Cyan),
                 color::Fg(color::Reset),
             )?;
-            print_source(
-                &stack_frame.src,
-                streams,
-                stderr,
-            )?;
+            match &stack_frame.src {
+                Source::Continuous(src) => {
+                    print_source(
+                        src,
+                        streams,
+                        stderr,
+                    )?;
+                }
+            }
         }
 
         write!(stderr, "\n")?;
@@ -126,7 +137,7 @@ impl From<parser::Error> for ErrorKind {
 
 
 fn print_source<Stream>(
-    src:     &Source,
+    src:     &source::Continuous,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
 )

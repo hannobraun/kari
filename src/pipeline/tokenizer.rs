@@ -129,7 +129,7 @@ enum State {
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    src:    Option<Source>,
+    src:    Option<source::Continuous>,
 }
 
 impl TokenBuilder {
@@ -148,7 +148,7 @@ impl TokenBuilder {
             }
             None => {
                 self.src = Some(
-                    Source {
+                    source::Continuous {
                         stream: self.stream.take().unwrap(),
                         start:  c.pos,
                         end:    c.pos,
@@ -166,14 +166,14 @@ impl TokenBuilder {
     fn into_string(self) -> Token {
         Token {
             kind: token::Kind::String(self.buffer),
-            src: self.src.unwrap(),
+            src: self.src.unwrap().into_source(),
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
             kind: token::Kind::Symbol(self.buffer),
-            src:  self.src.unwrap(),
+            src:  self.src.unwrap().into_source(),
         }
     }
 
@@ -189,7 +189,7 @@ impl TokenBuilder {
 
         Token {
             kind,
-            src: self.src.unwrap(),
+            src: self.src.unwrap().into_source(),
         }
     }
 }
