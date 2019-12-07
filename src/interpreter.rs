@@ -292,7 +292,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
             self.call_stack.frames.push(
                 StackFrame {
                     scope,
-                    span: value.span,
+                    src: value.span,
                 }
             );
 

@@ -37,5 +37,5 @@ impl CallStack {
 #[derive(Clone, Debug)]
 pub struct StackFrame {
     pub scope: Scope,
-    pub span:  Source,
+    pub src:   Source,
 }

@@ -68,7 +68,7 @@ impl Error {
                 color::Fg(color::Reset),
             )?;
             print_span(
-                &stack_frame.span,
+                &stack_frame.src,
                 streams,
                 stderr,
             )?;
