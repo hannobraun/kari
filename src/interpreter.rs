@@ -36,7 +36,7 @@ use crate::{
             self,
             Expression,
         },
-        tokenizer::Span,
+        tokenizer::Source,
     },
     stack::Stack,
     value::{
@@ -263,12 +263,12 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         let start = expressions
             .first()
-            .map(|expression| expression.span.clone())
-            .unwrap_or(Span::default());
+            .map(|expression| expression.src.clone())
+            .unwrap_or(Source::Null);
         let end = expressions
             .last()
-            .map(|expression| expression.span.clone())
-            .unwrap_or(Span::default());
+            .map(|expression| expression.src.clone())
+            .unwrap_or(Source::Null);
 
         Ok(
             value::List::new(
@@ -292,7 +292,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
             self.call_stack.frames.push(
                 StackFrame {
                     scope,
-                    span: value.span,
+                    src: value.src,
                 }
             );
 

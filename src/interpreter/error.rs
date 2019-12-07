@@ -20,7 +20,10 @@ use crate::{
     interpreter::stream::Stream,
     pipeline::{
         parser,
-        tokenizer::Span,
+        tokenizer::{
+            Source,
+            source,
+        },
     },
 };
 
@@ -47,15 +50,22 @@ impl Error {
             style::Reset,
         )?;
 
-        let mut spans = Vec::new();
-        self.kind.spans(&mut spans);
+        let mut sources = Vec::new();
+        self.kind.sources(&mut sources);
 
-        for span in spans {
-            print_span(
-                span,
-                streams,
-                stderr,
-            )?;
+        for source in sources {
+            match source {
+                Source::Null => {
+                    panic!("Tried to format a null source");
+                }
+                Source::Continuous(source) => {
+                    print_source(
+                        source,
+                        streams,
+                        stderr,
+                    )?;
+                }
+            }
         }
 
         self.kind.write_hint(stderr)?;
@@ -67,11 +77,18 @@ impl Error {
                 color::Fg(color::Cyan),
                 color::Fg(color::Reset),
             )?;
-            print_span(
-                &stack_frame.span,
-                streams,
-                stderr,
-            )?;
+            match &stack_frame.src {
+                Source::Null => {
+                    panic!("Tried to format a null source");
+                }
+                Source::Continuous(src) => {
+                    print_source(
+                        src,
+                        streams,
+                        stderr,
+                    )?;
+                }
+            }
         }
 
         write!(stderr, "\n")?;
@@ -97,10 +114,10 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            ErrorKind::Context(error) => error.spans(spans),
-            ErrorKind::Parser(error)  => error.spans(spans),
+            ErrorKind::Context(error) => error.sources(sources),
+            ErrorKind::Parser(error)  => error.sources(sources),
         }
     }
 
@@ -125,8 +142,8 @@ impl From<parser::Error> for ErrorKind {
 }
 
 
-fn print_span<Stream>(
-    span:    &Span,
+fn print_source<Stream>(
+    src:     &source::Continuous,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
 )
@@ -134,11 +151,11 @@ fn print_span<Stream>(
     where Stream: io::Read + io::Seek
 {
     let stream = streams
-        .get_mut(&span.stream)
+        .get_mut(&src.stream)
         .unwrap();
 
-    let start = search_backward(span.start.index, stream)?;
-    let end   = search_forward(span.end.index, stream)?;
+    let start = search_backward(src.start.index, stream)?;
+    let end   = search_forward(src.end.index, stream)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
     stream.seek(SeekFrom::Start(start as u64))?;
@@ -154,15 +171,15 @@ fn print_span<Stream>(
         color::Fg(color::Magenta),
 
         color::Fg(color::LightBlue),
-        span.stream,
-        span.start.line + 1,
-        span.start.column + 1,
+        src.stream,
+        src.start.line + 1,
+        src.start.column + 1,
         color::Fg(color::Reset),
     )?;
     write!(stderr, "\n")?;
 
     for (i, line) in buffer.lines().enumerate() {
-        let line_number = span.start.line + i;
+        let line_number = src.start.line + i;
         let line_len    = line.chars().count();
 
         write!(
@@ -178,14 +195,14 @@ fn print_span<Stream>(
             color::Fg(color::Reset), style::Reset,
         )?;
 
-        let start_column = if line_number == span.start.line {
-            span.start.column
+        let start_column = if line_number == src.start.line {
+            src.start.column
         }
         else {
             0
         };
-        let end_column = if line_number == span.end.line {
-            span.end.column + 1
+        let end_column = if line_number == src.end.line {
+            src.end.column + 1
         }
         else {
             line_len

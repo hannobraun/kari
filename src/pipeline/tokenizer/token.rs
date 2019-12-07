@@ -1,12 +1,12 @@
 use std::fmt;
 
-use super::Span;
+use super::Source;
 
 
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub span: Span,
+    pub src:  Source,
 }
 
 

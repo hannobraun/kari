@@ -10,7 +10,7 @@ use crate::{
         self,
         tokenizer::{
             self,
-            Span,
+            Source,
             Token,
             token,
         },
@@ -41,7 +41,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 
         let expr = match token.kind {
             token::Kind::ListOpen => {
-                self.parse_list(token.span)?
+                self.parse_list(token.src)?
             }
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
@@ -58,23 +58,25 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self, mut list_span: Span) -> Result<Expression, Error> {
+    fn parse_list(&mut self, mut list_source: Source)
+        -> Result<Expression, Error>
+    {
         let mut expressions = Vec::new();
 
         loop {
             let token = self.tokenizer.next()?;
 
-            list_span = list_span.merge(&token.span);
+            list_source = list_source.merge(&token.src);
 
             let expr = match token.kind {
                 token::Kind::ListOpen => {
-                    self.parse_list(token.span)?
+                    self.parse_list(token.src)?
                 }
                 token::Kind::ListClose => {
                     return Ok(
                         Expression {
                             kind: expression::Kind::List(expressions),
-                            span: list_span,
+                            src:  list_source,
                         }
                     );
                 }
@@ -97,9 +99,9 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::UnexpectedToken(token) => spans.push(&token.span),
+            Error::UnexpectedToken(token) => sources.push(&token.src),
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream  => (),

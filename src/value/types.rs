@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    pipeline::tokenizer::Span,
+    pipeline::tokenizer::Source,
     value::{
         self,
         Value,
@@ -108,7 +108,7 @@ macro_rules! impl_type {
                 {
                     match any.kind {
                         value::Kind::$ty(value) => {
-                            Ok(Value::new(value, any.span))
+                            Ok(Value::new(value, any.src))
                         }
                         _ => {
                             Err(any)
@@ -139,8 +139,8 @@ pub struct TypeError {
 }
 
 impl TypeError {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
-        spans.push(&self.actual.span);
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
+        sources.push(&self.actual.src);
     }
 }
 

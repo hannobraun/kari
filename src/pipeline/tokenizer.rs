@@ -1,8 +1,8 @@
-pub mod span;
+pub mod source;
 pub mod token;
 
 pub use self::{
-    span::Span,
+    source::Source,
     token::Token,
 };
 
@@ -129,7 +129,7 @@ enum State {
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    span:   Option<Span>,
+    src:    Option<source::Continuous>,
 }
 
 impl TokenBuilder {
@@ -137,18 +137,18 @@ impl TokenBuilder {
         Self {
             buffer: String::new(),
             stream: Some(stream),
-            span:   None,
+            src:    None,
         }
     }
 
     fn process(&mut self, c: Char) {
-        match &mut self.span {
-            Some(span) => {
-                span.end = c.pos
+        match &mut self.src {
+            Some(src) => {
+                src.end = c.pos
             }
             None => {
-                self.span = Some(
-                    Span {
+                self.src = Some(
+                    source::Continuous {
                         stream: self.stream.take().unwrap(),
                         start:  c.pos,
                         end:    c.pos,
@@ -166,14 +166,14 @@ impl TokenBuilder {
     fn into_string(self) -> Token {
         Token {
             kind: token::Kind::String(self.buffer),
-            span: self.span.unwrap(),
+            src: self.src.unwrap().into_source(),
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
             kind: token::Kind::Symbol(self.buffer),
-            span: self.span.unwrap(),
+            src:  self.src.unwrap().into_source(),
         }
     }
 
@@ -189,7 +189,7 @@ impl TokenBuilder {
 
         Token {
             kind,
-            span: self.span.unwrap(),
+            src: self.src.unwrap().into_source(),
         }
     }
 }
