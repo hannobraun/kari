@@ -6,7 +6,7 @@ use super::Source;
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub span: Source,
+    pub src:  Source,
 }
 
 

@@ -41,7 +41,7 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 
         let expr = match token.kind {
             token::Kind::ListOpen => {
-                self.parse_list(token.span)?
+                self.parse_list(token.src)?
             }
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
@@ -66,11 +66,11 @@ impl<Tokenizer> Parser<Tokenizer>
         loop {
             let token = self.tokenizer.next()?;
 
-            list_source = list_source.merge(&token.span);
+            list_source = list_source.merge(&token.src);
 
             let expr = match token.kind {
                 token::Kind::ListOpen => {
-                    self.parse_list(token.span)?
+                    self.parse_list(token.src)?
                 }
                 token::Kind::ListClose => {
                     return Ok(
@@ -101,7 +101,7 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::UnexpectedToken(token) => sources.push(&token.span),
+            Error::UnexpectedToken(token) => sources.push(&token.src),
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream  => (),

@@ -36,7 +36,7 @@ impl Expression {
 
         Self {
             kind,
-            src: token.span,
+            src: token.src,
         }
     }
 }
