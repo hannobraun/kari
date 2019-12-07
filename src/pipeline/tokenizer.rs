@@ -143,8 +143,8 @@ impl TokenBuilder {
 
     fn process(&mut self, c: Char) {
         match &mut self.src {
-            Some(span) => {
-                span.end = c.pos
+            Some(src) => {
+                src.end = c.pos
             }
             None => {
                 self.src = Some(
