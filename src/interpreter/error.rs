@@ -126,7 +126,7 @@ impl From<parser::Error> for ErrorKind {
 
 
 fn print_source<Stream>(
-    span:    &Source,
+    src:     &Source,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
 )
@@ -134,11 +134,11 @@ fn print_source<Stream>(
     where Stream: io::Read + io::Seek
 {
     let stream = streams
-        .get_mut(&span.stream)
+        .get_mut(&src.stream)
         .unwrap();
 
-    let start = search_backward(span.start.index, stream)?;
-    let end   = search_forward(span.end.index, stream)?;
+    let start = search_backward(src.start.index, stream)?;
+    let end   = search_forward(src.end.index, stream)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
     stream.seek(SeekFrom::Start(start as u64))?;
@@ -154,15 +154,15 @@ fn print_source<Stream>(
         color::Fg(color::Magenta),
 
         color::Fg(color::LightBlue),
-        span.stream,
-        span.start.line + 1,
-        span.start.column + 1,
+        src.stream,
+        src.start.line + 1,
+        src.start.column + 1,
         color::Fg(color::Reset),
     )?;
     write!(stderr, "\n")?;
 
     for (i, line) in buffer.lines().enumerate() {
-        let line_number = span.start.line + i;
+        let line_number = src.start.line + i;
         let line_len    = line.chars().count();
 
         write!(
@@ -178,14 +178,14 @@ fn print_source<Stream>(
             color::Fg(color::Reset), style::Reset,
         )?;
 
-        let start_column = if line_number == span.start.line {
-            span.start.column
+        let start_column = if line_number == src.start.line {
+            src.start.column
         }
         else {
             0
         };
-        let end_column = if line_number == span.end.line {
-            span.end.column + 1
+        let end_column = if line_number == src.end.line {
+            src.end.column + 1
         }
         else {
             line_len
