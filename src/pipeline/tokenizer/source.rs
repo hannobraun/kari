@@ -6,6 +6,12 @@ use crate::pipeline::reader::Position;
 /// Used to identify where tokens, values, etc. originate in the source code.
 #[derive(Clone, Debug)]
 pub enum Source {
+    /// Not a source
+    ///
+    /// Can be used in place of a source, where one would be expected, but none
+    /// is available. This is the case in unit tests, for example.
+    Null,
+
     /// A source that consists of a single region in a single file
     Continuous(Continuous),
 }
@@ -13,8 +19,14 @@ pub enum Source {
 impl Source {
     pub fn merge(self, other: &Self) -> Self {
         match self {
+            Source::Null => {
+                other.clone()
+            }
             Source::Continuous(mut self_) => {
                 match other {
+                    Source::Null => {
+                        Source::Continuous(self_)
+                    }
                     Source::Continuous(other) => {
                         // The following code obviously assumes something like
                         // the this assertion, but uncommenting the assertion

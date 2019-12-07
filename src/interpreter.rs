@@ -264,11 +264,11 @@ impl<Host> Context<Host> for Interpreter<Host> {
         let start = expressions
             .first()
             .map(|expression| expression.src.clone())
-            .unwrap_or(Source::default());
+            .unwrap_or(Source::Null);
         let end = expressions
             .last()
             .map(|expression| expression.src.clone())
-            .unwrap_or(Source::default());
+            .unwrap_or(Source::Null);
 
         Ok(
             value::List::new(

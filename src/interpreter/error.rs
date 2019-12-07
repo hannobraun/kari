@@ -55,6 +55,9 @@ impl Error {
 
         for source in sources {
             match source {
+                Source::Null => {
+                    panic!("Tried to format a null source");
+                }
                 Source::Continuous(source) => {
                     print_source(
                         source,
@@ -75,6 +78,9 @@ impl Error {
                 color::Fg(color::Reset),
             )?;
             match &stack_frame.src {
+                Source::Null => {
+                    panic!("Tried to format a null source");
+                }
                 Source::Continuous(src) => {
                     print_source(
                         src,
