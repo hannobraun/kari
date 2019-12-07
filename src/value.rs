@@ -53,7 +53,7 @@ impl Any {
 
         Self {
             kind,
-            span: expression.span,
+            span: expression.src,
         }
     }
 }

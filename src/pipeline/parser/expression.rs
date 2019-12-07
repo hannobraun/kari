@@ -7,7 +7,7 @@ use crate::pipeline::tokenizer::{
 
 pub struct Expression {
     pub kind: Kind,
-    pub span: Source,
+    pub src:  Source,
 }
 
 
@@ -36,7 +36,7 @@ impl Expression {
 
         Self {
             kind,
-            span: token.span,
+            src: token.span,
         }
     }
 }

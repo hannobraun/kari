@@ -263,11 +263,11 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         let start = expressions
             .first()
-            .map(|expression| expression.span.clone())
+            .map(|expression| expression.src.clone())
             .unwrap_or(Source::default());
         let end = expressions
             .last()
-            .map(|expression| expression.span.clone())
+            .map(|expression| expression.src.clone())
             .unwrap_or(Source::default());
 
         Ok(

@@ -76,7 +76,7 @@ impl<Tokenizer> Parser<Tokenizer>
                     return Ok(
                         Expression {
                             kind: expression::Kind::List(expressions),
-                            span: list_source,
+                            src:  list_source,
                         }
                     );
                 }
