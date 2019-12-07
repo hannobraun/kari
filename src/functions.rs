@@ -393,7 +393,7 @@ pub type Builtin<Host> =
 mod tests {
     use crate::{
         prelude::*,
-        pipeline::tokenizer::token::Span,
+        pipeline::tokenizer::Span,
         stack::Stack,
         value::{
             self,

@@ -2,12 +2,14 @@ pub mod parser;
 pub mod reader;
 pub mod tokenizer;
 
+pub use self::{
+    parser::Parser,
+    reader::Reader,
+    tokenizer::Tokenizer,
+};
+
 
 use std::io;
-
-use parser::Parser;
-use reader::Reader;
-use tokenizer::Tokenizer;
 
 
 pub fn new<Stream>(name: String, stream: Stream)

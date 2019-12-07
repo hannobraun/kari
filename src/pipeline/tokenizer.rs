@@ -1,4 +1,10 @@
+pub mod span;
 pub mod token;
+
+pub use self::{
+    span::Span,
+    token::Token,
+};
 
 
 use crate::pipeline::{
@@ -7,11 +13,6 @@ use crate::pipeline::{
         self,
         Char,
     },
-};
-
-use self::token::{
-    Span,
-    Token,
 };
 
 

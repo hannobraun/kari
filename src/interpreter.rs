@@ -34,9 +34,9 @@ use crate::{
         self,
         parser::{
             self,
-            expression::Expression,
+            Expression,
         },
-        tokenizer::token::Span,
+        tokenizer::Span,
     },
     stack::Stack,
     value::{

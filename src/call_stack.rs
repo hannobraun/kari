@@ -1,6 +1,6 @@
 use crate::{
     functions::Scope,
-    pipeline::tokenizer::token::Span,
+    pipeline::tokenizer::Span,
 };
 
 

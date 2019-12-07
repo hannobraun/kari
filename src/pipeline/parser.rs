@@ -1,5 +1,7 @@
 pub mod expression;
 
+pub use self::expression::Expression;
+
 
 use std::fmt;
 
@@ -8,16 +10,12 @@ use crate::{
         self,
         tokenizer::{
             self,
-            token::{
-                self,
-                Span,
-                Token,
-            },
+            Span,
+            Token,
+            token,
         },
     },
 };
-
-use self::expression::Expression;
 
 
 pub struct Parser<Tokenizer> {
