@@ -166,7 +166,7 @@ fn eval<Host>(
     -> Result
 {
     let list = context.stack().pop(&t::List)?;
-    let span = context.call_stack().operator().clone().src.merge(&list.span);
+    let span = context.call_stack().operator().clone().src.merge(&list.src);
 
     context.stack().create_substack();
 
@@ -319,7 +319,7 @@ fn list<Host>(
         .pop(&t::Number)?;
 
     let mut items = Vec::new();
-    let mut span  = len.span;
+    let mut span  = len.src;
 
     for _ in 0 .. len.inner {
         let item = context.stack()
@@ -369,7 +369,7 @@ fn map<Host>(
             result,
             context.functions().new_scope(list.inner.scope, "list"),
         ),
-        context.call_stack().operator().src.clone().merge(&list.span).merge(&function.span),
+        context.call_stack().operator().src.clone().merge(&list.src).merge(&function.src),
     );
     context.stack().push(data);
 
@@ -424,7 +424,7 @@ fn prepend<Host>(
 {
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
 
-    list.span = context.call_stack().operator().src.clone().merge(&list.span).merge(&arg.span);
+    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.span);
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -441,7 +441,7 @@ fn append<Host>(
 {
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
 
-    list.span = context.call_stack().operator().src.clone().merge(&list.span).merge(&arg.span);
+    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.span);
     list.inner.items.push(arg);
 
     context.stack().push(list);

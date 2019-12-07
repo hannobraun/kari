@@ -95,27 +95,27 @@ macro_rules! kinds {
             #[derive(Clone, Debug)]
             pub struct $ty {
                 pub inner: $inner,
-                pub span:  Source,
+                pub src:   Source,
             }
 
             impl Value for $ty {
                 type Inner = $inner;
 
-                fn new(inner: $inner, span: Source) -> Self {
+                fn new(inner: $inner, src: Source) -> Self {
                     Self {
                         inner,
-                        span,
+                        src,
                     }
                 }
 
                 fn open(self) -> (Self::Inner, Source) {
-                    (self.inner, self.span)
+                    (self.inner, self.src)
                 }
 
                 fn into_any(self) -> Any {
                     Any {
                         kind: Kind::$ty(self.inner),
-                        span: self.span,
+                        span: self.src,
                     }
                 }
             }
