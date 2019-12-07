@@ -47,10 +47,10 @@ impl Error {
             style::Reset,
         )?;
 
-        let mut spans = Vec::new();
-        self.kind.spans(&mut spans);
+        let mut sources = Vec::new();
+        self.kind.sources(&mut sources);
 
-        for span in spans {
+        for span in sources {
             print_span(
                 span,
                 streams,
@@ -97,10 +97,10 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            ErrorKind::Context(error) => error.spans(spans),
-            ErrorKind::Parser(error)  => error.spans(spans),
+            ErrorKind::Context(error) => error.sources(sources),
+            ErrorKind::Parser(error)  => error.sources(sources),
         }
     }
 

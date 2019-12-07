@@ -78,7 +78,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
             Error::Caller                  => (),
             Error::DefineFunction(_)       => (),
@@ -86,9 +86,9 @@ impl Error {
             Error::FunctionNotFound { .. } => (),
             Error::ModuleNotFound(_)       => (),
 
-            Error::Parser(error) => error.spans(spans),
-            Error::Stack(error)  => error.spans(spans),
-            Error::Type(error)   => error.spans(spans),
+            Error::Parser(error) => error.sources(sources),
+            Error::Stack(error)  => error.sources(sources),
+            Error::Type(error)   => error.sources(sources),
 
             Error::Io(_)    => (),
         }
