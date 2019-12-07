@@ -50,9 +50,9 @@ impl Error {
         let mut sources = Vec::new();
         self.kind.sources(&mut sources);
 
-        for span in sources {
+        for source in sources {
             print_source(
-                span,
+                source,
                 streams,
                 stderr,
             )?;
