@@ -1,8 +1,9 @@
+pub mod span;
 pub mod token;
 
-pub use self::token::{
-    Span,
-    Token,
+pub use self::{
+    span::Span,
+    token::Token,
 };
 
 
