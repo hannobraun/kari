@@ -108,7 +108,7 @@ macro_rules! impl_type {
                 {
                     match any.kind {
                         value::Kind::$ty(value) => {
-                            Ok(Value::new(value, any.span))
+                            Ok(Value::new(value, any.src))
                         }
                         _ => {
                             Err(any)
@@ -140,7 +140,7 @@ pub struct TypeError {
 
 impl TypeError {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
-        sources.push(&self.actual.span);
+        sources.push(&self.actual.src);
     }
 }
 

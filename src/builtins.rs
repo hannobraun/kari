@@ -249,7 +249,7 @@ fn clone<Host>(
 {
     let mut expression = context.stack().pop(&t::Any)?;
 
-    expression.span = context.call_stack().operator().src.clone().merge(&expression.span);
+    expression.src = context.call_stack().operator().src.clone().merge(&expression.src);
 
     context.stack().push((expression.clone(), expression));
 
@@ -325,7 +325,7 @@ fn list<Host>(
         let item = context.stack()
             .pop(&t::Any)?;
 
-        span = span.merge(&item.span);
+        span = span.merge(&item.src);
         items.insert(0, item);
     }
 
@@ -385,7 +385,7 @@ fn wrap<Host>(
 {
     let arg = context.stack().pop(&t::Any)?;
 
-    let span = context.call_stack().operator().src.clone().merge(&arg.span);
+    let span = context.call_stack().operator().src.clone().merge(&arg.src);
     let list = value::List::new(
         value::ListInner::from_values(
             vec![arg],
@@ -424,7 +424,7 @@ fn prepend<Host>(
 {
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
 
-    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.span);
+    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -441,7 +441,7 @@ fn append<Host>(
 {
     let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
 
-    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.span);
+    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.push(arg);
 
     context.stack().push(list);

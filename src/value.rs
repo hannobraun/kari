@@ -33,7 +33,7 @@ pub trait Value : Sized {
 #[derive(Clone, Debug)]
 pub struct Any {
     pub kind: Kind,
-    pub span: Source,
+    pub src:  Source,
 }
 
 impl Any {
@@ -53,7 +53,7 @@ impl Any {
 
         Self {
             kind,
-            span: expression.src,
+            src: expression.src,
         }
     }
 }
@@ -61,15 +61,15 @@ impl Any {
 impl Value for Any {
     type Inner = Kind;
 
-    fn new(kind: Self::Inner, span: Source) -> Self {
+    fn new(kind: Self::Inner, src: Source) -> Self {
         Self {
             kind,
-            span,
+            src,
         }
     }
 
     fn open(self) -> (Self::Inner, Source) {
-        (self.kind, self.span)
+        (self.kind, self.src)
     }
 
     fn into_any(self) -> Any {
@@ -115,7 +115,7 @@ macro_rules! kinds {
                 fn into_any(self) -> Any {
                     Any {
                         kind: Kind::$ty(self.inner),
-                        span: self.src,
+                        src:  self.src,
                     }
                 }
             }
