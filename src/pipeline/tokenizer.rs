@@ -1,8 +1,8 @@
-pub mod span;
+pub mod source;
 pub mod token;
 
 pub use self::{
-    span::Span,
+    source::Source,
     token::Token,
 };
 
@@ -129,7 +129,7 @@ enum State {
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    span:   Option<Span>,
+    span:   Option<Source>,
 }
 
 impl TokenBuilder {
@@ -148,7 +148,7 @@ impl TokenBuilder {
             }
             None => {
                 self.span = Some(
-                    Span {
+                    Source {
                         stream: self.stream.take().unwrap(),
                         start:  c.pos,
                         end:    c.pos,

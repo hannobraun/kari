@@ -393,7 +393,7 @@ pub type Builtin<Host> =
 mod tests {
     use crate::{
         prelude::*,
-        pipeline::tokenizer::Span,
+        pipeline::tokenizer::Source,
         stack::Stack,
         value::{
             self,
@@ -433,8 +433,8 @@ mod tests {
         functions
             .define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
-            .push(value::Number::new(0, Span::default()))
-            .push(value::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Source::default()))
+            .push(value::Float::new(0.0, Source::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -454,8 +454,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float ], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
-            .push(value::Number::new(0, Span::default()))
-            .push(value::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Source::default()))
+            .push(value::Float::new(0.0, Source::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -472,8 +472,8 @@ mod tests {
         functions
             .define(scope, "a", &[], 1)?;
         stack
-            .push(value::Number::new(0, Span::default()))
-            .push(value::Float::new(0.0, Span::default()));
+            .push(value::Number::new(0, Source::default()))
+            .push(value::Float::new(0.0, Source::default()));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -493,8 +493,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Float, &t::Float],  2)?;
         stack
-            .push(value::Number::new(0, Span::default()))
-            .push(value::Number::new(0, Span::default()));
+            .push(value::Number::new(0, Source::default()))
+            .push(value::Number::new(0, Source::default()));
 
         let error = match functions.get(scope, "a", &stack) {
             Ok(_)      => panic!("Expected error"),

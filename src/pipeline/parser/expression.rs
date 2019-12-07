@@ -1,5 +1,5 @@
 use crate::pipeline::tokenizer::{
-    Span,
+    Source,
     Token,
     token,
 };
@@ -7,7 +7,7 @@ use crate::pipeline::tokenizer::{
 
 pub struct Expression {
     pub kind: Kind,
-    pub span: Span,
+    pub span: Source,
 }
 
 

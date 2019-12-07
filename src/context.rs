@@ -19,7 +19,7 @@ use crate::{
     },
     pipeline::{
         parser,
-        tokenizer::Span,
+        tokenizer::Source,
     },
     stack::{
         self,
@@ -78,7 +78,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
         match self {
             Error::Caller                  => (),
             Error::DefineFunction(_)       => (),

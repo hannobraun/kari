@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    pipeline::tokenizer::Span,
+    pipeline::tokenizer::Source,
     value::{
         self,
         Value,
@@ -168,7 +168,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
         match self {
             Error::StackEmpty     => (),
             Error::TypeError(err) => err.spans(spans),

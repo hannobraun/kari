@@ -15,7 +15,7 @@ use crate::{
             self,
             Expression,
         },
-        tokenizer::Span,
+        tokenizer::Source,
     },
 };
 
@@ -23,8 +23,8 @@ use crate::{
 pub trait Value : Sized {
     type Inner;
 
-    fn new(_: Self::Inner, _: Span) -> Self;
-    fn open(self) -> (Self::Inner, Span);
+    fn new(_: Self::Inner, _: Source) -> Self;
+    fn open(self) -> (Self::Inner, Source);
 
     fn into_any(self) -> Any;
 }
@@ -33,7 +33,7 @@ pub trait Value : Sized {
 #[derive(Clone, Debug)]
 pub struct Any {
     pub kind: Kind,
-    pub span: Span,
+    pub span: Source,
 }
 
 impl Any {
@@ -61,14 +61,14 @@ impl Any {
 impl Value for Any {
     type Inner = Kind;
 
-    fn new(kind: Self::Inner, span: Span) -> Self {
+    fn new(kind: Self::Inner, span: Source) -> Self {
         Self {
             kind,
             span,
         }
     }
 
-    fn open(self) -> (Self::Inner, Span) {
+    fn open(self) -> (Self::Inner, Source) {
         (self.kind, self.span)
     }
 
@@ -95,20 +95,20 @@ macro_rules! kinds {
             #[derive(Clone, Debug)]
             pub struct $ty {
                 pub inner: $inner,
-                pub span:  Span,
+                pub span:  Source,
             }
 
             impl Value for $ty {
                 type Inner = $inner;
 
-                fn new(inner: $inner, span: Span) -> Self {
+                fn new(inner: $inner, span: Source) -> Self {
                     Self {
                         inner,
                         span,
                     }
                 }
 
-                fn open(self) -> (Self::Inner, Span) {
+                fn open(self) -> (Self::Inner, Source) {
                     (self.inner, self.span)
                 }
 

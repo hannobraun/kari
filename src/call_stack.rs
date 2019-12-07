@@ -1,6 +1,6 @@
 use crate::{
     functions::Scope,
-    pipeline::tokenizer::Span,
+    pipeline::tokenizer::Source,
 };
 
 
@@ -37,5 +37,5 @@ impl CallStack {
 #[derive(Clone, Debug)]
 pub struct StackFrame {
     pub scope: Scope,
-    pub span:  Span,
+    pub span:  Source,
 }

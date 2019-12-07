@@ -20,7 +20,7 @@ use crate::{
     interpreter::stream::Stream,
     pipeline::{
         parser,
-        tokenizer::Span,
+        tokenizer::Source,
     },
 };
 
@@ -97,7 +97,7 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
         match self {
             ErrorKind::Context(error) => error.spans(spans),
             ErrorKind::Parser(error)  => error.spans(spans),
@@ -126,7 +126,7 @@ impl From<parser::Error> for ErrorKind {
 
 
 fn print_span<Stream>(
-    span:    &Span,
+    span:    &Source,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
 )

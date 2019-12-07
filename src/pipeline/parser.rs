@@ -10,7 +10,7 @@ use crate::{
         self,
         tokenizer::{
             self,
-            Span,
+            Source,
             Token,
             token,
         },
@@ -58,7 +58,9 @@ impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
 impl<Tokenizer> Parser<Tokenizer>
     where Tokenizer: pipeline::Stage<Item=Token, Error=tokenizer::Error>
 {
-    fn parse_list(&mut self, mut list_span: Span) -> Result<Expression, Error> {
+    fn parse_list(&mut self, mut list_span: Source)
+        -> Result<Expression, Error>
+    {
         let mut expressions = Vec::new();
 
         loop {
@@ -97,7 +99,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
         match self {
             Error::UnexpectedToken(token) => spans.push(&token.span),
 

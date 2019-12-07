@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    pipeline::tokenizer::Span,
+    pipeline::tokenizer::Source,
     value::{
         self,
         Value,
@@ -139,7 +139,7 @@ pub struct TypeError {
 }
 
 impl TypeError {
-    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Source>) {
         spans.push(&self.actual.span);
     }
 }

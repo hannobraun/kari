@@ -36,7 +36,7 @@ use crate::{
             self,
             Expression,
         },
-        tokenizer::Span,
+        tokenizer::Source,
     },
     stack::Stack,
     value::{
@@ -264,11 +264,11 @@ impl<Host> Context<Host> for Interpreter<Host> {
         let start = expressions
             .first()
             .map(|expression| expression.span.clone())
-            .unwrap_or(Span::default());
+            .unwrap_or(Source::default());
         let end = expressions
             .last()
             .map(|expression| expression.span.clone())
-            .unwrap_or(Span::default());
+            .unwrap_or(Source::default());
 
         Ok(
             value::List::new(
