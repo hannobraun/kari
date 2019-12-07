@@ -51,7 +51,7 @@ impl Error {
         self.kind.sources(&mut sources);
 
         for span in sources {
-            print_span(
+            print_source(
                 span,
                 streams,
                 stderr,
@@ -67,7 +67,7 @@ impl Error {
                 color::Fg(color::Cyan),
                 color::Fg(color::Reset),
             )?;
-            print_span(
+            print_source(
                 &stack_frame.src,
                 streams,
                 stderr,
@@ -125,7 +125,7 @@ impl From<parser::Error> for ErrorKind {
 }
 
 
-fn print_span<Stream>(
+fn print_source<Stream>(
     span:    &Source,
     streams: &mut HashMap<String, Stream>,
     stderr:  &mut dyn io::Write,
