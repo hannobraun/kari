@@ -19,7 +19,7 @@ use crate::{
     },
     pipeline::{
         parser,
-        tokenizer::token::Span,
+        tokenizer::Span,
     },
     stack::{
         self,

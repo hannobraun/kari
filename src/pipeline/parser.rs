@@ -10,11 +10,9 @@ use crate::{
         self,
         tokenizer::{
             self,
-            token::{
-                self,
-                Span,
-                Token,
-            },
+            Span,
+            Token,
+            token,
         },
     },
 };

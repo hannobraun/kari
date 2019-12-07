@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    pipeline::tokenizer::token::Span,
+    pipeline::tokenizer::Span,
     value::{
         self,
         Value,

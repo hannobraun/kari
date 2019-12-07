@@ -20,7 +20,7 @@ use crate::{
     interpreter::stream::Stream,
     pipeline::{
         parser,
-        tokenizer::token::Span,
+        tokenizer::Span,
     },
 };
 

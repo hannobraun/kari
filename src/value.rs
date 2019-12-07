@@ -15,7 +15,7 @@ use crate::{
             self,
             Expression,
         },
-        tokenizer::token::Span,
+        tokenizer::Span,
     },
 };
 
