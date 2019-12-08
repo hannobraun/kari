@@ -396,10 +396,8 @@ mod tests {
         pipeline::tokenizer::Source,
         stack::Stack,
         value::{
-            types::{
-                self as t,
-                Type,
-            },
+            t,
+            types::Type,
             v,
         },
     };

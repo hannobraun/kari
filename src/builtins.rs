@@ -11,7 +11,8 @@ use crate::{
     },
     value::{
         self,
-        types as t,
+        t,
+        types,
         v,
     },
 };
@@ -40,7 +41,7 @@ macro_rules! builtins {
 }
 
 builtins!(
-    "print",   print,    (t::Any,);
+    "print",   print,    (types::Any,);
     "define",  define,   (t::List, t::Symbol,);
     "define",  define_s, (t::List, t::Symbol, t::Scope,);
     "caller",  caller,   ();
@@ -49,19 +50,19 @@ builtins!(
     "load",    load,     (t::String,);
     "to_list", to_list,  (t::Symbol,);
 
-    "drop",  drop,  (t::Any,);
-    "clone", clone, (t::Any,);
-    "swap",  swap,  (t::Any, t::Any,);
-    "dig",   dig,   (t::Any, t::List,);
+    "drop",  drop,  (types::Any,);
+    "clone", clone, (types::Any,);
+    "swap",  swap,  (types::Any, types::Any,);
+    "dig",   dig,   (types::Any, t::List,);
 
     "if", r#if, (t::List, t::List,);
 
     "list",    list,    (t::Number,);
     "map",     map,     (t::List, t::List,);
-    "wrap",    wrap,    (t::Any,);
+    "wrap",    wrap,    (types::Any,);
     "unwrap",  unwrap,  (t::List,);
-    "prepend", prepend, (t::List, t::Any,);
-    "append",  append,  (t::List, t::Any,);
+    "prepend", prepend, (t::List, types::Any,);
+    "append",  append,  (t::List, types::Any,);
 
     "+", add_n, (t::Number, t::Number,);
     "-", sub_n, (t::Number, t::Number,);
@@ -74,7 +75,7 @@ builtins!(
     "*", mul_f, (t::Float, t::Float,);
     ">", gt_f,  (t::Float, t::Float,);
 
-    "=",   eq,  (t::Any, t::Any,);
+    "=",   eq,  (types::Any, types::Any,);
     "not", not, (t::Bool,);
 );
 
@@ -86,7 +87,7 @@ fn print<Host>(
 )
     -> Result
 {
-    let expression = context.stack().pop(&t::Any)?;
+    let expression = context.stack().pop(&types::Any)?;
     write!(context.output(), "{}", expression.kind)?;
 
     Ok(())
@@ -237,7 +238,7 @@ fn drop<Host>(
 )
     -> Result
 {
-    context.stack().pop(&t::Any)?;
+    context.stack().pop(&types::Any)?;
     Ok(())
 }
 
@@ -248,7 +249,7 @@ fn clone<Host>(
 )
     -> Result
 {
-    let mut expression = context.stack().pop(&t::Any)?;
+    let mut expression = context.stack().pop(&types::Any)?;
 
     expression.src = context.call_stack().operator().src.clone().merge(&expression.src);
 
@@ -264,7 +265,7 @@ fn swap<Host>(
 )
     -> Result
 {
-    let (a, b) = context.stack().pop((&t::Any, &t::Any))?;
+    let (a, b) = context.stack().pop((&types::Any, &types::Any))?;
     context.stack().push((b, a));
 
     Ok(())
@@ -277,7 +278,7 @@ fn dig<Host>(
 )
     -> Result
 {
-    let (item, f) = context.stack().pop((&t::Any, &t::List))?;
+    let (item, f) = context.stack().pop((&types::Any, &t::List))?;
     context.evaluate_list(host, f)?;
     context.stack().push(item);
     Ok(())
@@ -324,7 +325,7 @@ fn list<Host>(
 
     for _ in 0 .. len.inner {
         let item = context.stack()
-            .pop(&t::Any)?;
+            .pop(&types::Any)?;
 
         span = span.merge(&item.src);
         items.insert(0, item);
@@ -384,7 +385,7 @@ fn wrap<Host>(
 )
     -> Result
 {
-    let arg = context.stack().pop(&t::Any)?;
+    let arg = context.stack().pop(&types::Any)?;
 
     let span = context.call_stack().operator().src.clone().merge(&arg.src);
     let list = v::List::new(
@@ -423,7 +424,7 @@ fn prepend<Host>(
 )
     -> Result
 {
-    let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
+    let (mut list, arg) = context.stack().pop((&t::List, &types::Any))?;
 
     list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.insert(0, arg);
@@ -440,7 +441,7 @@ fn append<Host>(
 )
     -> Result
 {
-    let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
+    let (mut list, arg) = context.stack().pop((&t::List, &types::Any))?;
 
     list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.push(arg);
@@ -605,7 +606,7 @@ fn eq<Host>(
     -> Result
 {
     let is_equal = context.stack()
-        .pop((&t::Any, &t::Any))?
+        .pop((&types::Any, &types::Any))?
         .compute::<v::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);

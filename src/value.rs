@@ -19,6 +19,11 @@ use crate::{
     },
 };
 
+use self::types::{
+    Type,
+    Typed,
+};
+
 
 pub trait Value : Sized {
     type Inner;
@@ -82,12 +87,22 @@ macro_rules! kinds {
     (
         $(
             $ty:ident,
+            $name:expr,
             $inner:ty;
         )*
     ) => {
         #[derive(Clone, Debug)]
         pub enum Kind {
             $($ty($inner),)*
+        }
+
+
+        impl Typed for Any {
+            fn get_type(&self) -> &'static dyn Type {
+                match self.kind {
+                    $(Kind::$ty(_) => &t::$ty,)*
+                }
+            }
         }
 
 
@@ -137,18 +152,57 @@ macro_rules! kinds {
                 }
             )*
         }
+
+        pub mod t {
+            use crate::value::{
+                self,
+                Value,
+                types::{
+                    Downcast,
+                    Type,
+                },
+                v,
+            };
+
+
+            $(
+                #[derive(Debug)]
+                pub struct $ty;
+    
+                impl Type for $ty {
+                    fn name(&self) -> &'static str { $name }
+                }
+    
+                impl Downcast for $ty {
+                    type Value = v::$ty;
+    
+                    fn downcast_raw(&self, any: value::Any)
+                        -> Result<Self::Value, value::Any>
+                    {
+                        match any.kind {
+                            value::Kind::$ty(value) => {
+                                Ok(Value::new(value, any.src))
+                            }
+                            _ => {
+                                Err(any)
+                            }
+                        }
+                    }
+                }
+            )*
+        }
     }
 }
 
 kinds!(
-    Bool,   bool;
-    Float,  f32;
-    Number, u32;
-    List,   ListInner;
-    Scope,  Scope_;
-    String, String_;
-    Symbol, String_;
-    Word,   String_;
+    Bool,   "bool",   bool;
+    Float,  "float",  f32;
+    Number, "number", u32;
+    List,   "list",   ListInner;
+    Scope,  "scope",  Scope_;
+    String, "string", String_;
+    Symbol, "symbol", String_;
+    Word,   "word",   String_;
 );
 
 
