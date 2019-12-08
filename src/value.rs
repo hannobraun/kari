@@ -158,11 +158,15 @@ macro_rules! kinds {
                 self,
                 Value,
                 types::{
+                    self,
                     Downcast,
                     Type,
                 },
                 v,
             };
+
+
+            pub use types::Any;
 
 
             $(
