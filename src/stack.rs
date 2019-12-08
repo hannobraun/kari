@@ -5,10 +5,7 @@ use crate::{
     value::{
         self,
         Value,
-        cast::{
-            Downcast,
-            TypeError,
-        },
+        cast::TypeError,
     },
 };
 
@@ -30,8 +27,8 @@ impl Stack {
         self
     }
 
-    pub fn pop<T: Pop>(&mut self, ty: T) -> Result<T::Value, Error> {
-        ty.pop(self)
+    pub fn pop<T: Pop>(&mut self) -> Result<T, Error> {
+        T::pop(self)
     }
 
     pub fn peek(&self) -> impl Iterator<Item=&value::Any> + '_ {
@@ -111,51 +108,29 @@ impl<A, B> Push for (A, B)
 
 
 pub trait Pop : Sized {
-    type Value;
-
-    fn pop(&self, _: &mut Stack) -> Result<Self::Value, Error>;
+    fn pop(_: &mut Stack) -> Result<Self, Error>;
 }
 
-impl<T> Pop for &T where T: Downcast<Input=value::Any> {
-    type Value = T::Output;
-
-    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
-        let expr = stack.pop_raw()
-            .ok_or(Error::StackEmpty)?;
-
-        let value = self.downcast(expr)
-            .map_err(|err| Error::TypeError(err))?;
-
-        Ok(value)
+impl Pop for value::Any {
+    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+        stack.pop_raw()
+            .ok_or(Error::StackEmpty)
     }
 }
 
-impl<A, B> Pop for (A, B)
-    where
-        A: Pop + Copy,
-        B: Pop + Copy,
-{
-    type Value = (A::Value, B::Value);
-
-    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
-        let b = stack.pop(self.1)?;
-        let a = stack.pop(self.0)?;
+impl Pop for (value::Any, value::Any) {
+    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+        let b = stack.pop()?;
+        let a = stack.pop()?;
         Ok((a, b))
     }
 }
 
-impl<A, B, C> Pop for (A, B, C)
-    where
-        A: Pop + Copy,
-        B: Pop + Copy,
-        C: Pop + Copy,
-{
-    type Value = (A::Value, B::Value, C::Value);
-
-    fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
-        let c = stack.pop(self.2)?;
-        let b = stack.pop(self.1)?;
-        let a = stack.pop(self.0)?;
+impl Pop for (value::Any, value::Any, value::Any) {
+    fn pop(stack: &mut Stack) -> Result<Self, Error> {
+        let c = stack.pop()?;
+        let b = stack.pop()?;
+        let a = stack.pop()?;
         Ok((a, b, c))
     }
 }
