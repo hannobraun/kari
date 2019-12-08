@@ -8,10 +8,7 @@ use std::{
 
 use crate::{
     pipeline::tokenizer::Source,
-    value::{
-        self,
-        Value,
-    },
+    value,
 };
 
 
@@ -43,7 +40,7 @@ impl Hash for dyn Type {
 
 
 pub trait Downcast : Type {
-    type Output: Value;
+    type Output;
 
     fn downcast_raw(&self, _: value::Any) -> Result<Self::Output, value::Any>;
 
