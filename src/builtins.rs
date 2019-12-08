@@ -86,8 +86,8 @@ fn print<Host>(
 )
     -> Result
 {
-    let expression = context.stack().pop::<v::Any>()?;
-    write!(context.output(), "{}", expression.kind)?;
+    let value = context.stack().pop::<v::Any>()?;
+    write!(context.output(), "{}", value.kind)?;
 
     Ok(())
 }
