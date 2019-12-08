@@ -46,6 +46,40 @@ pub trait Downcast {
     fn downcast(&self, _: Self::Input) -> Result<Self::Output, TypeError>;
 }
 
+impl<A, B> Downcast for (A, B)
+    where
+        A: Downcast,
+        B: Downcast,
+{
+    type Input  = (A::Input,  B::Input);
+    type Output = (A::Output, B::Output);
+
+    fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
+        Ok((
+            self.0.downcast(input.0)?,
+            self.1.downcast(input.1)?,
+        ))
+    }
+}
+
+impl<A, B, C> Downcast for (A, B, C)
+    where
+        A: Downcast,
+        B: Downcast,
+        C: Downcast,
+{
+    type Input  = (A::Input,  B::Input,  C::Input);
+    type Output = (A::Output, B::Output, C::Output);
+
+    fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
+        Ok((
+            self.0.downcast(input.0)?,
+            self.1.downcast(input.1)?,
+            self.2.downcast(input.2)?,
+        ))
+    }
+}
+
 
 #[derive(Debug)]
 pub struct Any;
