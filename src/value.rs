@@ -106,11 +106,13 @@ macro_rules! kinds {
             };
 
             use super::{
-                Any,
                 Kind,
                 ListInner,
                 Value,
             };
+
+
+            pub use crate::value::Any;
 
 
             $(
