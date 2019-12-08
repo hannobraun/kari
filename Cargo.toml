@@ -15,5 +15,6 @@ license       = "0BSD"
 [dependencies]
 acc_reader = "2.0.0"
 clap       = "2.33.0"
+decorum    = "0.1.3"
 termion    = "1.5.4"
 walkdir    = "2.2.9"
