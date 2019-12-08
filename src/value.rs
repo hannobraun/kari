@@ -19,11 +19,6 @@ use crate::{
     },
 };
 
-use self::types::{
-    Type,
-    Typed,
-};
-
 
 pub trait Value : Sized {
     type Inner;
@@ -97,15 +92,6 @@ macro_rules! kinds {
         }
 
 
-        impl Typed for Any {
-            fn get_type(&self) -> &'static dyn Type {
-                match self.kind {
-                    $(Kind::$ty(_) => &t::$ty,)*
-                }
-            }
-        }
-
-
         pub mod v {
             use std::string::String as String_;
 
@@ -161,12 +147,22 @@ macro_rules! kinds {
                     self,
                     Downcast,
                     Type,
+                    Typed,
                 },
                 v,
             };
 
 
             pub use types::Any;
+
+
+            impl Typed for value::Any {
+                fn get_type(&self) -> &'static dyn Type {
+                    match self.kind {
+                        $(value::Kind::$ty(_) => &$ty,)*
+                    }
+                }
+            }
 
 
             $(
