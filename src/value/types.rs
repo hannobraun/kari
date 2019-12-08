@@ -75,7 +75,7 @@ impl Downcast for Any {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct TypeError {
     pub expected: &'static str,
     pub actual:   value::Any,
