@@ -171,6 +171,7 @@ macro_rules! kinds {
                     Downcast,
                     Type,
                     Typed,
+                    TypeError,
                 },
                 v,
             };
@@ -199,15 +200,20 @@ macro_rules! kinds {
                 impl Downcast for $ty {
                     type Output = v::$ty;
     
-                    fn downcast_raw(&self, any: value::Any)
-                        -> Result<Self::Output, value::Any>
+                    fn downcast(&self, any: value::Any)
+                        -> Result<Self::Output, TypeError>
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {
                                 Ok(Value::new(value, any.src))
                             }
                             _ => {
-                                Err(any)
+                                Err(
+                                    TypeError {
+                                        expected: self.name(),
+                                        actual:   any,
+                                    }
+                                )
                             }
                         }
                     }
