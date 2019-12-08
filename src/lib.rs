@@ -13,8 +13,8 @@ pub mod prelude {
         pipeline::Stage as _,
         value::{
             Value as _,
+            cast::Downcast as _,
             compute::Compute as _,
-            types::Downcast as _,
         },
     };
 }

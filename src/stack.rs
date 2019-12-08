@@ -5,8 +5,8 @@ use crate::{
     value::{
         self,
         Value,
-        types::{
-            self,
+        cast::{
+            Downcast,
             TypeError,
         },
     },
@@ -116,7 +116,7 @@ pub trait Pop : Sized {
     fn pop(&self, _: &mut Stack) -> Result<Self::Value, Error>;
 }
 
-impl<T> Pop for &T where T: types::Downcast<Input=value::Any> {
+impl<T> Pop for &T where T: Downcast<Input=value::Any> {
     type Value = T::Output;
 
     fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {

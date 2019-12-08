@@ -167,12 +167,14 @@ macro_rules! kinds {
             use crate::value::{
                 self,
                 Value,
+                cast::{
+                    Downcast,
+                    TypeError,
+                },
                 types::{
                     self,
-                    Downcast,
                     Type,
                     Typed,
-                    TypeError,
                 },
                 v,
             };

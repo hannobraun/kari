@@ -1,6 +1,8 @@
-use crate::value::types::{
-    Downcast,
-    TypeError,
+use std::fmt;
+
+use crate::{
+    pipeline::tokenizer::Source,
+    value,
 };
 
 
@@ -17,6 +19,72 @@ pub trait Cast<T: Downcast> {
 impl<T> Cast<T> for T::Input where T: Downcast {
     fn cast(self, t: T) -> Result<<T as Downcast>::Output, TypeError> {
         t.downcast(self)
+    }
+}
+
+
+pub trait Downcast {
+    type Input;
+    type Output;
+
+    fn downcast(&self, _: Self::Input) -> Result<Self::Output, TypeError>;
+}
+
+impl<A, B> Downcast for (A, B)
+    where
+        A: Downcast,
+        B: Downcast,
+{
+    type Input  = (A::Input,  B::Input);
+    type Output = (A::Output, B::Output);
+
+    fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
+        Ok((
+            self.0.downcast(input.0)?,
+            self.1.downcast(input.1)?,
+        ))
+    }
+}
+
+impl<A, B, C> Downcast for (A, B, C)
+    where
+        A: Downcast,
+        B: Downcast,
+        C: Downcast,
+{
+    type Input  = (A::Input,  B::Input,  C::Input);
+    type Output = (A::Output, B::Output, C::Output);
+
+    fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
+        Ok((
+            self.0.downcast(input.0)?,
+            self.1.downcast(input.1)?,
+            self.2.downcast(input.2)?,
+        ))
+    }
+}
+
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct TypeError {
+    pub expected: &'static str,
+    pub actual:   value::Any,
+}
+
+impl TypeError {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
+        sources.push(&self.actual.src);
+    }
+}
+
+impl fmt::Display for TypeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Type error: Expected `{}`, found `{}`",
+            self.expected,
+            self.actual.kind,
+        )
     }
 }
 
