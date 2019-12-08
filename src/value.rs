@@ -82,6 +82,7 @@ macro_rules! kinds {
     (
         $(
             $ty:ident,
+            $name:expr,
             $inner:ty;
         )*
     ) => {
@@ -91,47 +92,117 @@ macro_rules! kinds {
         }
 
 
-        $(
-            #[derive(Clone, Debug)]
-            pub struct $ty {
-                pub inner: $inner,
-                pub src:   Source,
-            }
+        pub mod v {
+            use std::string::String as String_;
 
-            impl Value for $ty {
-                type Inner = $inner;
+            use crate::{
+                functions::Scope as Scope_,
+                pipeline::tokenizer::Source,
+            };
 
-                fn new(inner: $inner, src: Source) -> Self {
-                    Self {
-                        inner,
-                        src,
+            use super::{
+                Any,
+                Kind,
+                ListInner,
+                Value,
+            };
+
+
+            $(
+                #[derive(Clone, Debug)]
+                pub struct $ty {
+                    pub inner: $inner,
+                    pub src:   Source,
+                }
+
+                impl Value for $ty {
+                    type Inner = $inner;
+
+                    fn new(inner: $inner, src: Source) -> Self {
+                        Self {
+                            inner,
+                            src,
+                        }
+                    }
+
+                    fn open(self) -> (Self::Inner, Source) {
+                        (self.inner, self.src)
+                    }
+
+                    fn into_any(self) -> Any {
+                        Any {
+                            kind: Kind::$ty(self.inner),
+                            src:  self.src,
+                        }
                     }
                 }
+            )*
+        }
 
-                fn open(self) -> (Self::Inner, Source) {
-                    (self.inner, self.src)
-                }
+        pub mod t {
+            use crate::value::{
+                self,
+                Value,
+                types::{
+                    self,
+                    Downcast,
+                    Type,
+                    Typed,
+                },
+                v,
+            };
 
-                fn into_any(self) -> Any {
-                    Any {
-                        kind: Kind::$ty(self.inner),
-                        src:  self.src,
+
+            pub use types::Any;
+
+
+            impl Typed for value::Any {
+                fn get_type(&self) -> &'static dyn Type {
+                    match self.kind {
+                        $(value::Kind::$ty(_) => &$ty,)*
                     }
                 }
             }
-        )*
+
+
+            $(
+                #[derive(Debug)]
+                pub struct $ty;
+    
+                impl Type for $ty {
+                    fn name(&self) -> &'static str { $name }
+                }
+    
+                impl Downcast for $ty {
+                    type Value = v::$ty;
+    
+                    fn downcast_raw(&self, any: value::Any)
+                        -> Result<Self::Value, value::Any>
+                    {
+                        match any.kind {
+                            value::Kind::$ty(value) => {
+                                Ok(Value::new(value, any.src))
+                            }
+                            _ => {
+                                Err(any)
+                            }
+                        }
+                    }
+                }
+            )*
+        }
     }
 }
 
 kinds!(
-    Bool,   bool;
-    Float,  f32;
-    Number, u32;
-    List,   ListInner;
-    Scope,  Scope_;
-    String, String_;
-    Symbol, String_;
-    Word,   String_;
+    Bool,   "bool",   bool;
+    Float,  "float",  f32;
+    Number, "number", u32;
+    List,   "list",   ListInner;
+    Scope,  "scope",  Scope_;
+    String, "string", String_;
+    Symbol, "symbol", String_;
+    Word,   "word",   String_;
 );
 
 
@@ -222,7 +293,7 @@ impl ListInner {
 }
 
 
-impl IntoIterator for List {
+impl IntoIterator for v::List {
     type Item     = <Vec<Any> as IntoIterator>::Item;
     type IntoIter = <Vec<Any> as IntoIterator>::IntoIter;
 
@@ -231,7 +302,7 @@ impl IntoIterator for List {
     }
 }
 
-impl fmt::Display for List {
+impl fmt::Display for v::List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt_list(&self.inner.items, f)
     }

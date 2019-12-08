@@ -75,63 +75,6 @@ impl Downcast for Any {
 }
 
 
-macro_rules! impl_type {
-    (
-        $(
-            $ty:ident,
-            $name:expr;
-        )*
-    )
-        =>
-    {
-        impl Typed for value::Any {
-            fn get_type(&self) -> &'static dyn Type {
-                match self.kind {
-                    $(value::Kind::$ty(_) => &$ty,)*
-                }
-            }
-        }
-
-        $(
-            #[derive(Debug)]
-            pub struct $ty;
-
-            impl Type for $ty {
-                fn name(&self) -> &'static str { $name }
-            }
-
-            impl Downcast for $ty {
-                type Value = value::$ty;
-
-                fn downcast_raw(&self, any: value::Any)
-                    -> Result<Self::Value, value::Any>
-                {
-                    match any.kind {
-                        value::Kind::$ty(value) => {
-                            Ok(Value::new(value, any.src))
-                        }
-                        _ => {
-                            Err(any)
-                        }
-                    }
-                }
-            }
-        )*
-    }
-}
-
-impl_type!(
-    Bool,   "bool";
-    Float,  "float";
-    Number, "number";
-    List,   "list";
-    Scope,  "scope";
-    String, "string";
-    Symbol, "symbol";
-    Word,   "word";
-);
-
-
 #[derive(Debug)]
 pub struct TypeError {
     pub expected: &'static str,

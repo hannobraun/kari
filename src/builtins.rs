@@ -11,7 +11,8 @@ use crate::{
     },
     value::{
         self,
-        types as t,
+        t,
+        v,
     },
 };
 
@@ -143,7 +144,7 @@ fn caller<Host>(
         None         => return Err(context::Error::Caller),
     };
 
-    context.stack().push(value::Scope::new(caller.scope, caller.src));
+    context.stack().push(v::Scope::new(caller.scope, caller.src));
 
     Ok(())
 }
@@ -177,7 +178,7 @@ fn eval<Host>(
 
     let items = context.stack().destroy_substack();
 
-    let list = value::List::new(
+    let list = v::List::new(
         value::ListInner::from_values(
             items,
             context.functions().new_scope(scope, "list"),
@@ -216,7 +217,7 @@ fn to_list<Host>(
     let list_span    = context.call_stack().operator().src.clone().merge(&span);
     let word         = value::Any::new(value::Kind::Word(word), span);
 
-    let list = value::List::new(
+    let list = v::List::new(
         value::ListInner::from_values(
             vec![word],
             context.functions().new_scope(scope, "list"),
@@ -329,7 +330,7 @@ fn list<Host>(
         items.insert(0, item);
     }
 
-    let list = value::List::new(
+    let list = v::List::new(
         value::ListInner::from_values(
             items,
             context.functions().new_scope(scope, "list"),
@@ -364,7 +365,7 @@ fn map<Host>(
 
     let result = context.stack().destroy_substack();
 
-    let data = value::List::new(
+    let data = v::List::new(
         value::ListInner::from_values(
             result,
             context.functions().new_scope(list.inner.scope, "list"),
@@ -386,7 +387,7 @@ fn wrap<Host>(
     let arg = context.stack().pop(&t::Any)?;
 
     let span = context.call_stack().operator().src.clone().merge(&arg.src);
-    let list = value::List::new(
+    let list = v::List::new(
         value::ListInner::from_values(
             vec![arg],
             context.functions().new_scope(scope, "list"),
@@ -459,7 +460,7 @@ fn add_n<Host>(
 {
     let sum = context.stack()
         .pop((&t::Number, &t::Number))?
-        .compute::<value::Number, _, _>(|(a, b)| a + b);
+        .compute::<v::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
 
@@ -475,7 +476,7 @@ fn sub_n<Host>(
 {
     let difference = context.stack()
         .pop((&t::Number, &t::Number))?
-        .compute::<value::Number, _, _>(|(a, b)| a - b);
+        .compute::<v::Number, _, _>(|(a, b)| a - b);
 
     context.stack().push(difference);
 
@@ -491,7 +492,7 @@ fn mul_n<Host>(
 {
     let product = context.stack()
         .pop((&t::Number, &t::Number))?
-        .compute::<value::Number, _, _>(|(a, b)| a * b);
+        .compute::<v::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
 
@@ -507,7 +508,7 @@ fn div_n<Host>(
 {
     let quotient = context.stack()
         .pop((&t::Number, &t::Number))?
-        .compute::<value::Number, _, _>(|(a, b)| a / b);
+        .compute::<v::Number, _, _>(|(a, b)| a / b);
 
     context.stack().push(quotient);
 
@@ -523,7 +524,7 @@ fn gt_n<Host>(
 {
     let is_greater = context.stack()
         .pop((&t::Number, &t::Number))?
-        .compute::<value::Bool, _, _>(|(a, b)| a > b);
+        .compute::<v::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
 
@@ -540,7 +541,7 @@ fn add_f<Host>(
 {
     let sum = context.stack()
         .pop((&t::Float, &t::Float))?
-        .compute::<value::Float, _, _>(|(a, b)| a + b);
+        .compute::<v::Float, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
 
@@ -556,7 +557,7 @@ fn sub_f<Host>(
 {
     let sum = context.stack()
         .pop((&t::Float, &t::Float))?
-        .compute::<value::Float, _, _>(|(a, b)| a - b);
+        .compute::<v::Float, _, _>(|(a, b)| a - b);
 
     context.stack().push(sum);
 
@@ -572,7 +573,7 @@ fn mul_f<Host>(
 {
     let product = context.stack()
         .pop((&t::Float, &t::Float))?
-        .compute::<value::Float, _, _>(|(a, b)| a * b);
+        .compute::<v::Float, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
 
@@ -588,7 +589,7 @@ fn gt_f<Host>(
 {
     let is_greater = context.stack()
         .pop((&t::Float, &t::Float))?
-        .compute::<value::Bool, _, _>(|(a, b)| a > b);
+        .compute::<v::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
 
@@ -605,7 +606,7 @@ fn eq<Host>(
 {
     let is_equal = context.stack()
         .pop((&t::Any, &t::Any))?
-        .compute::<value::Bool, _, _>(|(a, b)| a == b);
+        .compute::<v::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
 
@@ -621,7 +622,7 @@ fn not<Host>(
 {
     let inverted = context.stack()
         .pop(&t::Bool)?
-        .compute::<value::Bool, _, _>(|b| !b);
+        .compute::<v::Bool, _, _>(|b| !b);
 
     context.stack().push(inverted);
 

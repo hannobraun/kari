@@ -28,6 +28,7 @@ use crate::{
     value::{
         self,
         types::TypeError,
+        v,
     },
 };
 
@@ -41,8 +42,8 @@ pub trait Context<Host> {
 
     fn output(&mut self) -> &mut dyn io::Write;
 
-    fn load(&mut self, name: value::String, scope: Scope)
-        -> Result<value::List, Error>;
+    fn load(&mut self, name: v::String, scope: Scope)
+        -> Result<v::List, Error>;
 
     fn evaluate_value(&mut self,
         host:  &mut Host,
@@ -53,7 +54,7 @@ pub trait Context<Host> {
 
     fn evaluate_list(&mut self,
         host: &mut Host,
-        list: value::List,
+        list: v::List,
     )
         -> Result<(), Error>;
 }
