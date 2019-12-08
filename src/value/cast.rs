@@ -6,7 +6,7 @@ use crate::{
 };
 
 
-/// Used to cast `value::Any` or tuples of `value::Any` to concrete values
+/// Cast `value::Any` or tuples of `value::Any` to concrete values
 ///
 /// This trait does mostly the same thing as `Downcast`, with the exception that
 /// it's implemented on `value::Any` and tuples thereof, not type structs and
@@ -23,6 +23,10 @@ impl<T> Cast<T> for T::Input where T: Downcast {
 }
 
 
+/// Cast types to more specific types
+///
+/// This is probably not useful to users. It exists as an implementation detail
+/// of [`Cast`].
 pub trait Downcast {
     type Input;
     type Output;
