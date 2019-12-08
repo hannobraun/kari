@@ -32,7 +32,7 @@ pub trait Value : Sized {
 }
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
     pub src:  Source,
@@ -113,7 +113,7 @@ macro_rules! kinds {
 
 
             $(
-                #[derive(Clone, Debug)]
+                #[derive(Clone, Debug, Eq, PartialEq)]
                 pub struct $ty {
                     pub inner: $inner,
                     pub src:   Source,
@@ -270,7 +270,7 @@ impl fmt::Display for Kind {
 }
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ListInner {
     pub items: Vec<Any>,
     pub scope: Scope_,
