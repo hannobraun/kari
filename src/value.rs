@@ -198,6 +198,7 @@ macro_rules! kinds {
                 }
     
                 impl Downcast for $ty {
+                    type Input  = value::Any;
                     type Output = v::$ty;
     
                     fn downcast(&self, any: value::Any)
