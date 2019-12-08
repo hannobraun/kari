@@ -7,10 +7,12 @@ use std::{
 };
 
 use crate::{
-    pipeline::tokenizer::Source,
     value::{
         self,
-        Value,
+        cast::{
+            Downcast,
+            TypeError,
+        },
     },
 };
 
@@ -42,23 +44,6 @@ impl Hash for dyn Type {
 }
 
 
-pub trait Downcast : Type {
-    type Value: Value;
-
-    fn downcast_raw(&self, _: value::Any) -> Result<Self::Value, value::Any>;
-
-    fn downcast(&self, any: value::Any) -> Result<Self::Value, TypeError> {
-        self.downcast_raw(any)
-            .map_err(|any|
-                TypeError {
-                    expected: self.name(),
-                    actual:   any,
-                }
-            )
-    }
-}
-
-
 #[derive(Debug)]
 pub struct Any;
 
@@ -67,33 +52,10 @@ impl Type for Any {
 }
 
 impl Downcast for Any {
-    type Value = value::Any;
+    type Input  = value::Any;
+    type Output = value::Any;
 
-    fn downcast_raw(&self, any: value::Any) -> Result<Self::Value, value::Any> {
+    fn downcast(&self, any: value::Any) -> Result<Self::Output, TypeError> {
         Ok(any)
-    }
-}
-
-
-#[derive(Debug)]
-pub struct TypeError {
-    pub expected: &'static str,
-    pub actual:   value::Any,
-}
-
-impl TypeError {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
-        sources.push(&self.actual.src);
-    }
-}
-
-impl fmt::Display for TypeError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Type error: Expected `{}`, found `{}`",
-            self.expected,
-            self.actual.kind,
-        )
     }
 }

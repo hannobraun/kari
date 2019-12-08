@@ -27,7 +27,7 @@ use crate::{
     },
     value::{
         self,
-        types::TypeError,
+        cast::TypeError,
         v,
     },
 };

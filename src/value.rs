@@ -1,3 +1,4 @@
+pub mod cast;
 pub mod compute;
 pub mod types;
 
@@ -105,11 +106,13 @@ macro_rules! kinds {
             };
 
             use super::{
-                Any,
                 Kind,
                 ListInner,
                 Value,
             };
+
+
+            pub use crate::value::Any;
 
 
             $(
@@ -140,6 +143,25 @@ macro_rules! kinds {
                         }
                     }
                 }
+
+                impl From<$inner> for $ty {
+                    fn from(inner: $inner) -> Self {
+                        $ty {
+                            inner,
+                            src: Source::Null,
+                        }
+                    }
+                }
+
+
+                impl From<$ty> for Any {
+                    fn from(ty: $ty) -> Self {
+                        Any {
+                            kind: Kind::$ty(ty.inner),
+                            src:  ty.src,
+                        }
+                    }
+                }
             )*
         }
 
@@ -147,9 +169,12 @@ macro_rules! kinds {
             use crate::value::{
                 self,
                 Value,
+                cast::{
+                    Downcast,
+                    TypeError,
+                },
                 types::{
                     self,
-                    Downcast,
                     Type,
                     Typed,
                 },
@@ -178,17 +203,23 @@ macro_rules! kinds {
                 }
     
                 impl Downcast for $ty {
-                    type Value = v::$ty;
+                    type Input  = value::Any;
+                    type Output = v::$ty;
     
-                    fn downcast_raw(&self, any: value::Any)
-                        -> Result<Self::Value, value::Any>
+                    fn downcast(&self, any: value::Any)
+                        -> Result<Self::Output, TypeError>
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {
                                 Ok(Value::new(value, any.src))
                             }
                             _ => {
-                                Err(any)
+                                Err(
+                                    TypeError {
+                                        expected: self.name(),
+                                        actual:   any,
+                                    }
+                                )
                             }
                         }
                     }

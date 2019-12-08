@@ -86,8 +86,8 @@ fn print<Host>(
 )
     -> Result
 {
-    let expression = context.stack().pop(&t::Any)?;
-    write!(context.output(), "{}", expression.kind)?;
+    let value = context.stack().pop::<v::Any>()?;
+    write!(context.output(), "{}", value.kind)?;
 
     Ok(())
 }
@@ -100,7 +100,8 @@ fn define<Host>(
     -> Result
 {
     let (body, name) = context.stack()
-        .pop((&t::List, &t::Symbol))?;
+        .pop::<(_, _)>()?
+        .cast((t::List, t::Symbol))?;
 
     context.functions().define(
         scope,
@@ -120,7 +121,8 @@ fn define_s<Host>(
     -> Result
 {
     let (body, name, scope) = context.stack()
-        .pop((&t::List, &t::Symbol, &t::Scope))?;
+        .pop::<(_, _, _)>()?
+        .cast((t::List, t::Symbol, t::Scope))?;
 
     context.functions().define(
         scope.inner,
@@ -166,7 +168,9 @@ fn eval<Host>(
 )
     -> Result
 {
-    let list = context.stack().pop(&t::List)?;
+    let list = context.stack()
+        .pop::<v::Any>()?
+        .cast(t::List)?;
     let span = context.call_stack().operator().clone().src.merge(&list.src);
 
     context.stack().create_substack();
@@ -197,7 +201,9 @@ fn load<Host>(
 )
     -> Result
 {
-    let path = context.stack().pop(&t::String)?;
+    let path = context.stack()
+        .pop::<v::Any>()?
+        .cast(t::String)?;
 
     let list = context.load(path, scope)?;
     context.stack().push(list);
@@ -211,7 +217,9 @@ fn to_list<Host>(
 )
     -> Result
 {
-    let symbol = context.stack().pop(&t::Symbol)?;
+    let symbol = context.stack()
+        .pop::<v::Any>()?
+        .cast(t::Symbol)?;
 
     let (word, span) = symbol.open();
     let list_span    = context.call_stack().operator().src.clone().merge(&span);
@@ -237,7 +245,7 @@ fn drop<Host>(
 )
     -> Result
 {
-    context.stack().pop(&t::Any)?;
+    context.stack().pop::<v::Any>()?;
     Ok(())
 }
 
@@ -248,7 +256,8 @@ fn clone<Host>(
 )
     -> Result
 {
-    let mut expression = context.stack().pop(&t::Any)?;
+    let mut expression = context.stack()
+        .pop::<v::Any>()?;
 
     expression.src = context.call_stack().operator().src.clone().merge(&expression.src);
 
@@ -264,7 +273,8 @@ fn swap<Host>(
 )
     -> Result
 {
-    let (a, b) = context.stack().pop((&t::Any, &t::Any))?;
+    let (a, b) = context.stack()
+        .pop::<(_, _)>()?;
     context.stack().push((b, a));
 
     Ok(())
@@ -277,7 +287,9 @@ fn dig<Host>(
 )
     -> Result
 {
-    let (item, f) = context.stack().pop((&t::Any, &t::List))?;
+    let (item, f) = context.stack()
+        .pop::<(_, _)>()?
+        .cast((t::Any, t::List))?;
     context.evaluate_list(host, f)?;
     context.stack().push(item);
     Ok(())
@@ -292,11 +304,14 @@ fn r#if<Host>(
     -> Result
 {
     let (function, condition) = context.stack()
-        .pop((&t::List, &t::List))?;
+        .pop::<(_, _)>()?
+        .cast((t::List, t::List))?;
 
     context.evaluate_list(host, condition)?;
 
-    let evaluated_condition = context.stack().pop(&t::Bool)?;
+    let evaluated_condition = context.stack()
+        .pop::<v::Any>()?
+        .cast(t::Bool)?;
 
     if evaluated_condition.inner {
         context.evaluate_list(
@@ -317,14 +332,15 @@ fn list<Host>(
     -> Result
 {
     let len = context.stack()
-        .pop(&t::Number)?;
+        .pop::<v::Any>()?
+        .cast(t::Number)?;
 
     let mut items = Vec::new();
     let mut span  = len.src;
 
     for _ in 0 .. len.inner {
         let item = context.stack()
-            .pop(&t::Any)?;
+            .pop::<v::Any>()?;
 
         span = span.merge(&item.src);
         items.insert(0, item);
@@ -351,7 +367,8 @@ fn map<Host>(
     -> Result
 {
     let (list, function) = context.stack()
-        .pop((&t::List, &t::List))?;
+        .pop::<(_, _)>()?
+        .cast((t::List, t::List))?;
 
     context.stack().create_substack();
 
@@ -384,7 +401,8 @@ fn wrap<Host>(
 )
     -> Result
 {
-    let arg = context.stack().pop(&t::Any)?;
+    let arg = context.stack()
+        .pop::<v::Any>()?;
 
     let span = context.call_stack().operator().src.clone().merge(&arg.src);
     let list = v::List::new(
@@ -407,7 +425,9 @@ fn unwrap<Host>(
 )
     -> Result
 {
-    let list = context.stack().pop(&t::List)?;
+    let list = context.stack()
+        .pop::<v::Any>()?
+        .cast(t::List)?;
 
     for value in list.inner.items {
         context.stack().push(value);
@@ -423,7 +443,9 @@ fn prepend<Host>(
 )
     -> Result
 {
-    let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
+    let (mut list, arg) = context.stack()
+        .pop::<(_, _)>()?
+        .cast((t::List, t::Any))?;
 
     list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.insert(0, arg);
@@ -440,7 +462,9 @@ fn append<Host>(
 )
     -> Result
 {
-    let (mut list, arg) = context.stack().pop((&t::List, &t::Any))?;
+    let (mut list, arg) = context.stack()
+        .pop::<(_, _)>()?
+        .cast((t::List, t::Any))?;
 
     list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
     list.inner.items.push(arg);
@@ -459,7 +483,8 @@ fn add_n<Host>(
     -> Result
 {
     let sum = context.stack()
-        .pop((&t::Number, &t::Number))?
+        .pop::<(_, _)>()?
+        .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
@@ -475,7 +500,8 @@ fn sub_n<Host>(
     -> Result
 {
     let difference = context.stack()
-        .pop((&t::Number, &t::Number))?
+        .pop::<(_, _)>()?
+        .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a - b);
 
     context.stack().push(difference);
@@ -491,7 +517,8 @@ fn mul_n<Host>(
     -> Result
 {
     let product = context.stack()
-        .pop((&t::Number, &t::Number))?
+        .pop::<(_, _)>()?
+        .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
@@ -507,7 +534,8 @@ fn div_n<Host>(
     -> Result
 {
     let quotient = context.stack()
-        .pop((&t::Number, &t::Number))?
+        .pop::<(_, _)>()?
+        .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a / b);
 
     context.stack().push(quotient);
@@ -523,7 +551,8 @@ fn gt_n<Host>(
     -> Result
 {
     let is_greater = context.stack()
-        .pop((&t::Number, &t::Number))?
+        .pop::<(_, _)>()?
+        .cast((t::Number, t::Number))?
         .compute::<v::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
@@ -540,7 +569,8 @@ fn add_f<Host>(
     -> Result
 {
     let sum = context.stack()
-        .pop((&t::Float, &t::Float))?
+        .pop::<(_, _)>()?
+        .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a + b);
 
     context.stack().push(sum);
@@ -556,7 +586,8 @@ fn sub_f<Host>(
     -> Result
 {
     let sum = context.stack()
-        .pop((&t::Float, &t::Float))?
+        .pop::<(_, _)>()?
+        .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a - b);
 
     context.stack().push(sum);
@@ -572,7 +603,8 @@ fn mul_f<Host>(
     -> Result
 {
     let product = context.stack()
-        .pop((&t::Float, &t::Float))?
+        .pop::<(_, _)>()?
+        .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a * b);
 
     context.stack().push(product);
@@ -588,7 +620,8 @@ fn gt_f<Host>(
     -> Result
 {
     let is_greater = context.stack()
-        .pop((&t::Float, &t::Float))?
+        .pop::<(_, _)>()?
+        .cast((t::Float, t::Float))?
         .compute::<v::Bool, _, _>(|(a, b)| a > b);
 
     context.stack().push(is_greater);
@@ -605,7 +638,7 @@ fn eq<Host>(
     -> Result
 {
     let is_equal = context.stack()
-        .pop((&t::Any, &t::Any))?
+        .pop::<(_, _)>()?
         .compute::<v::Bool, _, _>(|(a, b)| a == b);
 
     context.stack().push(is_equal);
@@ -621,7 +654,8 @@ fn not<Host>(
     -> Result
 {
     let inverted = context.stack()
-        .pop(&t::Bool)?
+        .pop::<v::Any>()?
+        .cast(t::Bool)?
         .compute::<v::Bool, _, _>(|b| !b);
 
     context.stack().push(inverted);
