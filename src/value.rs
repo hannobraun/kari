@@ -140,6 +140,25 @@ macro_rules! kinds {
                         }
                     }
                 }
+
+                impl From<$inner> for $ty {
+                    fn from(inner: $inner) -> Self {
+                        $ty {
+                            inner,
+                            src: Source::Null,
+                        }
+                    }
+                }
+
+
+                impl From<$ty> for Any {
+                    fn from(ty: $ty) -> Self {
+                        Any {
+                            kind: Kind::$ty(ty.inner),
+                            src:  ty.src,
+                        }
+                    }
+                }
             )*
         }
 
