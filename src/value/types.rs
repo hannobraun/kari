@@ -43,11 +43,11 @@ impl Hash for dyn Type {
 
 
 pub trait Downcast : Type {
-    type Value: Value;
+    type Output: Value;
 
-    fn downcast_raw(&self, _: value::Any) -> Result<Self::Value, value::Any>;
+    fn downcast_raw(&self, _: value::Any) -> Result<Self::Output, value::Any>;
 
-    fn downcast(&self, any: value::Any) -> Result<Self::Value, TypeError> {
+    fn downcast(&self, any: value::Any) -> Result<Self::Output, TypeError> {
         self.downcast_raw(any)
             .map_err(|any|
                 TypeError {
@@ -67,9 +67,11 @@ impl Type for Any {
 }
 
 impl Downcast for Any {
-    type Value = value::Any;
+    type Output = value::Any;
 
-    fn downcast_raw(&self, any: value::Any) -> Result<Self::Value, value::Any> {
+    fn downcast_raw(&self, any: value::Any)
+        -> Result<Self::Output, value::Any>
+    {
         Ok(any)
     }
 }

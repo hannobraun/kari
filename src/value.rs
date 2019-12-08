@@ -197,10 +197,10 @@ macro_rules! kinds {
                 }
     
                 impl Downcast for $ty {
-                    type Value = v::$ty;
+                    type Output = v::$ty;
     
                     fn downcast_raw(&self, any: value::Any)
-                        -> Result<Self::Value, value::Any>
+                        -> Result<Self::Output, value::Any>
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {

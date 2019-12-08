@@ -117,7 +117,7 @@ pub trait Pop : Sized {
 }
 
 impl<T> Pop for &T where T: types::Downcast {
-    type Value = T::Value;
+    type Value = T::Output;
 
     fn pop(&self, stack: &mut Stack) -> Result<Self::Value, Error> {
         let expr = stack.pop_raw()
