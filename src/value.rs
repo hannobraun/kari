@@ -1,3 +1,4 @@
+pub mod cast;
 pub mod compute;
 pub mod types;
 
