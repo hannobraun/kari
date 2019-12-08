@@ -1,5 +1,7 @@
 use std::fmt;
 
+use decorum::R32;
+
 use super::Source;
 
 
@@ -15,7 +17,7 @@ pub enum Kind {
     ListOpen,
     ListClose,
     Bool(bool),
-    Float(f32),
+    Float(R32),
     Number(u32),
     String(String),
     Symbol(String),
@@ -30,7 +32,7 @@ impl Kind {
         if let Ok(value) = word.parse::<u32>() {
             return Kind::Number(value);
         }
-        if let Ok(value) = word.parse::<f32>() {
+        if let Ok(value) = word.parse::<R32>() {
             return Kind::Float(value)
         }
 

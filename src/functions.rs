@@ -432,7 +432,7 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
             .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0, Source::Null));
+            .push(v::Float::new(0.0.into(), Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -453,7 +453,7 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
             .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0, Source::Null));
+            .push(v::Float::new(0.0.into(), Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -471,7 +471,7 @@ mod tests {
             .define(scope, "a", &[], 1)?;
         stack
             .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0, Source::Null));
+            .push(v::Float::new(0.0.into(), Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 

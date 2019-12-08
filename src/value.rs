@@ -8,6 +8,8 @@ use std::{
     string::String as String_,
 };
 
+use decorum::R32;
+
 use crate::{
     functions::Scope as Scope_,
     pipeline::{
@@ -94,6 +96,8 @@ macro_rules! kinds {
 
         pub mod v {
             use std::string::String as String_;
+
+            use decorum::R32;
 
             use crate::{
                 functions::Scope as Scope_,
@@ -196,7 +200,7 @@ macro_rules! kinds {
 
 kinds!(
     Bool,   "bool",   bool;
-    Float,  "float",  f32;
+    Float,  "float",  R32;
     Number, "number", u32;
     List,   "list",   ListInner;
     Scope,  "scope",  Scope_;
