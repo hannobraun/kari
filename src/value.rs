@@ -8,6 +8,8 @@ use std::{
     string::String as String_,
 };
 
+use decorum::R32;
+
 use crate::{
     functions::Scope as Scope_,
     pipeline::{
@@ -30,7 +32,7 @@ pub trait Value : Sized {
 }
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
     pub src:  Source,
@@ -95,6 +97,8 @@ macro_rules! kinds {
         pub mod v {
             use std::string::String as String_;
 
+            use decorum::R32;
+
             use crate::{
                 functions::Scope as Scope_,
                 pipeline::tokenizer::Source,
@@ -109,7 +113,7 @@ macro_rules! kinds {
 
 
             $(
-                #[derive(Clone, Debug)]
+                #[derive(Clone, Debug, Eq, PartialEq)]
                 pub struct $ty {
                     pub inner: $inner,
                     pub src:   Source,
@@ -196,7 +200,7 @@ macro_rules! kinds {
 
 kinds!(
     Bool,   "bool",   bool;
-    Float,  "float",  f32;
+    Float,  "float",  R32;
     Number, "number", u32;
     List,   "list",   ListInner;
     Scope,  "scope",  Scope_;
@@ -266,7 +270,7 @@ impl fmt::Display for Kind {
 }
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ListInner {
     pub items: Vec<Any>,
     pub scope: Scope_,

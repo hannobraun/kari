@@ -4,7 +4,7 @@ use crate::pipeline::reader::Position;
 /// A location in the source code
 ///
 /// Used to identify where tokens, values, etc. originate in the source code.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Source {
     /// Not a source
     ///
@@ -51,7 +51,7 @@ impl Source {
 
 
 /// A source that consists of a single region in a single file
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Continuous {
     /// The stream this source refers to
     pub stream: String,

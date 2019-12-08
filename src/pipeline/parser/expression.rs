@@ -1,3 +1,5 @@
+use decorum::R32;
+
 use crate::pipeline::tokenizer::{
     Source,
     Token,
@@ -13,7 +15,7 @@ pub struct Expression {
 
 pub enum Kind {
     Bool(bool),
-    Float(f32),
+    Float(R32),
     Number(u32),
     List(Vec<Expression>),
     String(String),
