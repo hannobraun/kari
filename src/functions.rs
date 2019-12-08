@@ -10,11 +10,11 @@ use crate::{
     },
     stack::Stack,
     value::{
-        self,
         types::{
             Type,
             Typed,
         },
+        v,
     },
 };
 
@@ -355,7 +355,7 @@ pub type Signatures = Vec<Vec<&'static dyn Type>>;
 pub enum Function<H> {
     Builtin(Builtin<H>),
     UserDefined {
-        body: value::List,
+        body: v::List,
     }
 }
 
@@ -396,11 +396,11 @@ mod tests {
         pipeline::tokenizer::Source,
         stack::Stack,
         value::{
-            self,
             types::{
                 self as t,
                 Type,
             },
+            v,
         },
     };
 
@@ -433,8 +433,8 @@ mod tests {
         functions
             .define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
-            .push(value::Number::new(0, Source::Null))
-            .push(value::Float::new(0.0, Source::Null));
+            .push(v::Number::new(0, Source::Null))
+            .push(v::Float::new(0.0, Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -454,8 +454,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float ], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
-            .push(value::Number::new(0, Source::Null))
-            .push(value::Float::new(0.0, Source::Null));
+            .push(v::Number::new(0, Source::Null))
+            .push(v::Float::new(0.0, Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -472,8 +472,8 @@ mod tests {
         functions
             .define(scope, "a", &[], 1)?;
         stack
-            .push(value::Number::new(0, Source::Null))
-            .push(value::Float::new(0.0, Source::Null));
+            .push(v::Number::new(0, Source::Null))
+            .push(v::Float::new(0.0, Source::Null));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -493,8 +493,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Float, &t::Float],  2)?;
         stack
-            .push(value::Number::new(0, Source::Null))
-            .push(value::Number::new(0, Source::Null));
+            .push(v::Number::new(0, Source::Null))
+            .push(v::Number::new(0, Source::Null));
 
         let error = match functions.get(scope, "a", &stack) {
             Ok(_)      => panic!("Expected error"),

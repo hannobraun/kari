@@ -42,6 +42,7 @@ use crate::{
     value::{
         self,
         types::Type,
+        v,
     },
 };
 
@@ -238,8 +239,8 @@ impl<Host> Context<Host> for Interpreter<Host> {
         &mut self.stdout
     }
 
-    fn load(&mut self, name: value::String, scope: Scope)
-        -> Result<value::List, context::Error>
+    fn load(&mut self, name: v::String, scope: Scope)
+        -> Result<v::List, context::Error>
     {
         let name = name.inner;
 
@@ -271,7 +272,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
             .unwrap_or(Source::Null);
 
         Ok(
-            value::List::new(
+            v::List::new(
                 value::ListInner::from_expressions(
                     expressions,
                     module_scope,
@@ -337,7 +338,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
     fn evaluate_list(&mut self,
         host: &mut Host,
-        list: value::List,
+        list: v::List,
     )
         -> Result<(), context::Error>
     {

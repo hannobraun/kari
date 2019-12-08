@@ -11,6 +11,7 @@ use crate::{
     value::{
         self,
         Value,
+        v,
     },
 };
 
@@ -101,7 +102,7 @@ macro_rules! impl_type {
             }
 
             impl Downcast for $ty {
-                type Value = value::$ty;
+                type Value = v::$ty;
 
                 fn downcast_raw(&self, any: value::Any)
                     -> Result<Self::Value, value::Any>
