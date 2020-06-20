@@ -9,31 +9,25 @@ use std::{
 };
 
 use acc_reader::AccReader;
-use clap::{
-    App,
-    Arg,
-};
+use structopt::StructOpt;
+
 
 use kari::Interpreter;
 
 
-fn main() {
-    let args = App::new("Kari")
-        .version(env!("CARGO_PKG_VERSION"))
-        .author(env!("CARGO_PKG_AUTHORS"))
-        .about("Interpreter for the Kari programming language")
-        .arg(
-            Arg::with_name("path")
-                .value_name("PATH")
-                .index(1)
-                .help("The program to execute, without the \".kr\" extension.")
-        )
-        .get_matches();
+#[derive(StructOpt)]
+struct Options {
+    path: Option<String>,
+}
 
+
+fn main() {
     let stdout = Box::new(stdout());
     let stderr = Box::new(stderr());
 
-    match args.value_of("path") {
+    let options = Options::from_args();
+
+    match options.path {
         Some(path) => {
             let file = File::open(&path)
                 .unwrap_or_else(|error| {
