@@ -124,7 +124,7 @@ Once we did that we can use those functions defined in `std`, alongside the buil
 true assert # will do nothing, but `false assert` would have failed the program
 ```
 
-Since functions all share the implicit stack, we can change different functions together to create more complex operations.
+Since functions all share the implicit stack, we can chain different functions together to create more complex operations.
 
 ``` kari
 1 2 + # add `1` and `2`, leaving `3` on the stack
