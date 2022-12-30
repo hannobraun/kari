@@ -252,7 +252,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
                         name: word,
                         stack: self.stack.clone(),
                         candidates,
-                        scope: scope,
+                        scope,
                     });
                 }
             }
