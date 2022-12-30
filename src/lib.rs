@@ -7,23 +7,15 @@ pub mod pipeline;
 pub mod stack;
 pub mod value;
 
-
 pub mod prelude {
     pub use crate::{
         pipeline::Stage as _,
         value::{
-            Value as _,
-            cast::{
-                Cast,
-                Downcast as _,
-            },
+            cast::{Cast, Downcast as _},
             compute::Compute as _,
+            Value as _,
         },
     };
 }
 
-
-pub use crate::{
-    context::Context,
-    interpreter::Interpreter,
-};
+pub use crate::{context::Context, interpreter::Interpreter};

@@ -1,10 +1,6 @@
 use std::fmt;
 
-use crate::{
-    pipeline::tokenizer::Source,
-    value,
-};
-
+use crate::{pipeline::tokenizer::Source, value};
 
 /// Cast `value::Any` or tuples of `value::Any` to concrete values
 ///
@@ -16,12 +12,14 @@ pub trait Cast<T: Downcast> {
     fn cast(self, _: T) -> Result<<T as Downcast>::Output, TypeError>;
 }
 
-impl<T> Cast<T> for T::Input where T: Downcast {
+impl<T> Cast<T> for T::Input
+where
+    T: Downcast,
+{
     fn cast(self, t: T) -> Result<<T as Downcast>::Output, TypeError> {
         t.downcast(self)
     }
 }
-
 
 /// Cast types to more specific types
 ///
@@ -35,28 +33,25 @@ pub trait Downcast {
 }
 
 impl<A, B> Downcast for (A, B)
-    where
-        A: Downcast,
-        B: Downcast,
+where
+    A: Downcast,
+    B: Downcast,
 {
-    type Input  = (A::Input,  B::Input);
+    type Input = (A::Input, B::Input);
     type Output = (A::Output, B::Output);
 
     fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
-        Ok((
-            self.0.downcast(input.0)?,
-            self.1.downcast(input.1)?,
-        ))
+        Ok((self.0.downcast(input.0)?, self.1.downcast(input.1)?))
     }
 }
 
 impl<A, B, C> Downcast for (A, B, C)
-    where
-        A: Downcast,
-        B: Downcast,
-        C: Downcast,
+where
+    A: Downcast,
+    B: Downcast,
+    C: Downcast,
 {
-    type Input  = (A::Input,  B::Input,  C::Input);
+    type Input = (A::Input, B::Input, C::Input);
     type Output = (A::Output, B::Output, C::Output);
 
     fn downcast(&self, input: Self::Input) -> Result<Self::Output, TypeError> {
@@ -68,11 +63,10 @@ impl<A, B, C> Downcast for (A, B, C)
     }
 }
 
-
 #[derive(Debug, Eq, PartialEq)]
 pub struct TypeError {
     pub expected: &'static str,
-    pub actual:   value::Any,
+    pub actual: value::Any,
 }
 
 impl TypeError {
@@ -86,30 +80,23 @@ impl fmt::Display for TypeError {
         write!(
             f,
             "Type error: Expected `{}`, found `{}`",
-            self.expected,
-            self.actual.kind,
+            self.expected, self.actual.kind,
         )
     }
 }
-
 
 #[cfg(test)]
 mod test {
     use decorum::R32;
 
-    use crate::value::{
-        self,
-        t,
-        v,
-    };
+    use crate::value::{self, t, v};
 
     use super::Cast;
-
 
     #[test]
     fn it_should_cast_a_single_value() {
         let value = v::Bool::from(false);
-        let any   = value::Any::from(value.clone());
+        let any = value::Any::from(value.clone());
 
         assert_eq!(any.clone().cast(t::Bool), Ok(value));
         assert!(any.cast(t::Number).is_err());
@@ -141,10 +128,15 @@ mod test {
         let any3 = value::Any::from(v3.clone());
 
         assert_eq!(
-            (any1.clone(), any2.clone(), any3.clone())
-                .cast((t::Bool, t::Number, t::Float)),
+            (any1.clone(), any2.clone(), any3.clone()).cast((
+                t::Bool,
+                t::Number,
+                t::Float
+            )),
             Ok((v1, v2, v3))
         );
-        assert!((any1, any2, any3).cast((t::Bool, t::Bool, t::Float)).is_err());
+        assert!((any1, any2, any3)
+            .cast((t::Bool, t::Bool, t::Float))
+            .is_err());
     }
 }

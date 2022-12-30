@@ -1,25 +1,18 @@
 use std::{
     fs::File,
-    io::{
-        stderr,
-        stdin,
-        stdout,
-    },
+    io::{stderr, stdin, stdout},
     process::exit,
 };
 
 use acc_reader::AccReader;
 use structopt::StructOpt;
 
-
 use kari::Interpreter;
-
 
 #[derive(StructOpt)]
 struct Options {
     path: Option<String>,
 }
-
 
 fn main() {
     let stdout = Box::new(stdout());
@@ -29,12 +22,11 @@ fn main() {
 
     match options.path {
         Some(path) => {
-            let file = File::open(&path)
-                .unwrap_or_else(|error| {
+            let file =
+                File::open(&path).unwrap_or_else(|error| {
                     print!(
                         "\nERROR: Failed to open file {} ({})\n\n",
-                        path,
-                        error,
+                        path, error,
                     );
                     exit(1);
                 });

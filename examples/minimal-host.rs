@@ -1,20 +1,12 @@
-use std::io::{
-    Cursor,
-    stdout,
-    stderr,
-};
+use std::io::{stderr, stdout, Cursor};
 
 use kari::{
-    prelude::*,
     context::Context,
     functions::Scope,
-    value::{
-        t,
-        v,
-    },
     interpreter::Interpreter,
+    prelude::*,
+    value::{t, v},
 };
-
 
 fn main() {
     // Running a Kari program can result in output to stdout and stderr. We
@@ -44,12 +36,12 @@ fn main() {
         // program. It provides the `import` function used to import modules.
         // You have the option to not include this for your own program.
         .with_default_prelude(&mut host)
-            .expect("Error loading prelude")
+        .expect("Error loading prelude")
         // Register a builtin function that will be made available to your Kari
         // program. You can call this method any number of times to register
         // more builtin functions.
         .with_builtin("is_42?", &[], is_42)
-            .expect("Error registering builtin function")
+        .expect("Error registering builtin function")
         // We're done configuring the interpreter. It's time to run your
         // program. This requires the host, a string that is used in error
         // messages to refer to your program (this could be a file path, if we
@@ -63,18 +55,19 @@ fn main() {
     }
 }
 
-
-fn is_42(host: &mut Host, context: &mut dyn Context<Host>, _scope: Scope)
-    -> kari::builtins::Result
-{
-    let is_42 = context.stack()
+fn is_42(
+    host: &mut Host,
+    context: &mut dyn Context<Host>,
+    _scope: Scope,
+) -> kari::builtins::Result {
+    let is_42 = context
+        .stack()
         .pop::<v::Any>()?
         .cast(t::Number)?
         .compute::<v::Bool, _, _>(|value| host.is_42(value));
     context.stack().push(is_42);
     Ok(())
 }
-
 
 struct Host;
 

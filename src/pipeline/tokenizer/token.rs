@@ -4,13 +4,11 @@ use decorum::R32;
 
 use super::Source;
 
-
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub src:  Source,
+    pub src: Source,
 }
-
 
 #[derive(Clone, Debug)]
 pub enum Kind {
@@ -33,7 +31,7 @@ impl Kind {
             return Kind::Number(value);
         }
         if let Ok(value) = word.parse::<R32>() {
-            return Kind::Float(value)
+            return Kind::Float(value);
         }
 
         Kind::Word(word)
@@ -43,14 +41,14 @@ impl Kind {
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::ListOpen      => write!(f, "["),
-            Kind::ListClose     => write!(f, "]"),
-            Kind::Bool(value)   => value.fmt(f),
-            Kind::Float(value)  => write!(f, "{:?}", value),
+            Kind::ListOpen => write!(f, "["),
+            Kind::ListClose => write!(f, "]"),
+            Kind::Bool(value) => value.fmt(f),
+            Kind::Float(value) => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
             Kind::String(value) => value.fmt(f),
             Kind::Symbol(value) => write!(f, ":{}", value),
-            Kind::Word(value)   => value.fmt(f),
+            Kind::Word(value) => value.fmt(f),
         }
     }
 }

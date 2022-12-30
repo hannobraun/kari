@@ -1,20 +1,12 @@
 pub mod source;
 pub mod token;
 
-pub use self::{
-    source::Source,
-    token::Token,
-};
-
+pub use self::{source::Source, token::Token};
 
 use crate::pipeline::{
     self,
-    reader::{
-        self,
-        Char,
-    },
+    reader::{self, Char},
 };
-
 
 pub struct Tokenizer<Reader> {
     reader: Reader,
@@ -23,79 +15,71 @@ pub struct Tokenizer<Reader> {
 
 impl<Reader> Tokenizer<Reader> {
     pub fn new(reader: Reader, stream: String) -> Self {
-        Self {
-            reader,
-            stream,
-        }
+        Self { reader, stream }
     }
 }
 
 impl<Reader> pipeline::Stage for Tokenizer<Reader>
-    where Reader: pipeline::Stage<Item=Char, Error=reader::Error>
+where
+    Reader: pipeline::Stage<Item = Char, Error = reader::Error>,
 {
-    type Item  = Token;
+    type Item = Token;
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let mut state   = State::Initial;
+        let mut state = State::Initial;
         let mut builder = TokenBuilder::new(self.stream.clone());
 
         loop {
             let c = self.reader.next()?;
 
             match state {
-                State::Initial => {
-                    match c.c {
-                        '#' => {
-                            state = State::Comment;
-                        }
-                        '"' => {
-                            state = State::String;
-                            builder.process(c);
-                        }
-                        ':' => {
-                            state = State::Symbol;
-                            builder.process(c);
-                        }
-                        _ => {
-                            if !c.is_whitespace() {
-                                state = State::Word;
-                                builder.store(c);
-                            }
+                State::Initial => match c.c {
+                    '#' => {
+                        state = State::Comment;
+                    }
+                    '"' => {
+                        state = State::String;
+                        builder.process(c);
+                    }
+                    ':' => {
+                        state = State::Symbol;
+                        builder.process(c);
+                    }
+                    _ => {
+                        if !c.is_whitespace() {
+                            state = State::Word;
+                            builder.store(c);
                         }
                     }
-                }
+                },
                 State::Comment => {
                     if c == '\n' {
                         state = State::Initial;
                     }
                 }
-                State::String => {
-                    match c.c {
-                        '\\' => {
-                            state = State::StringEscape;
-                            builder.process(c);
-                        }
-                        '"' => {
-                            builder.process(c);
-                            return Ok(builder.into_string());
-                        }
-                        _ => {
-                            builder.store(c);
-                        }
+                State::String => match c.c {
+                    '\\' => {
+                        state = State::StringEscape;
+                        builder.process(c);
                     }
-                }
-                State::StringEscape => {
-                    match c.c {
-                        'n' => {
-                            builder.store(Char { c: '\n', .. c });
-                            state = State::String;
-                        }
-                        c => {
-                            return Err(Error::UnexpectedEscape(c));
-                        }
+                    '"' => {
+                        builder.process(c);
+                        return Ok(builder.into_string());
                     }
-                }
+                    _ => {
+                        builder.store(c);
+                    }
+                },
+                State::StringEscape => match c.c {
+                    'n' => {
+                        builder.store(Char { c: '\n', ..c });
+                        state = State::String;
+                    }
+                    c => {
+                        return Err(Error::UnexpectedEscape(c));
+                    }
+                },
                 State::Symbol => {
                     if c.is_whitespace() {
                         return Ok(builder.into_symbol());
@@ -115,7 +99,6 @@ impl<Reader> pipeline::Stage for Tokenizer<Reader>
     }
 }
 
-
 enum State {
     Initial,
     Comment,
@@ -125,11 +108,10 @@ enum State {
     Word,
 }
 
-
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    src:    Option<source::Continuous>,
+    src: Option<source::Continuous>,
 }
 
 impl TokenBuilder {
@@ -137,23 +119,19 @@ impl TokenBuilder {
         Self {
             buffer: String::new(),
             stream: Some(stream),
-            src:    None,
+            src: None,
         }
     }
 
     fn process(&mut self, c: Char) {
         match &mut self.src {
-            Some(src) => {
-                src.end = c.pos
-            }
+            Some(src) => src.end = c.pos,
             None => {
-                self.src = Some(
-                    source::Continuous {
-                        stream: self.stream.take().unwrap(),
-                        start:  c.pos,
-                        end:    c.pos,
-                    }
-                )
+                self.src = Some(source::Continuous {
+                    stream: self.stream.take().unwrap(),
+                    start: c.pos,
+                    end: c.pos,
+                })
             }
         }
     }
@@ -173,7 +151,7 @@ impl TokenBuilder {
     fn into_symbol(self) -> Token {
         Token {
             kind: token::Kind::Symbol(self.buffer),
-            src:  self.src.unwrap().into_source(),
+            src: self.src.unwrap().into_source(),
         }
     }
 
@@ -182,9 +160,7 @@ impl TokenBuilder {
             "[" => token::Kind::ListOpen,
             "]" => token::Kind::ListClose,
 
-            _ => {
-                token::Kind::parse_word(self.buffer)
-            }
+            _ => token::Kind::parse_word(self.buffer),
         };
 
         Token {
@@ -193,7 +169,6 @@ impl TokenBuilder {
         }
     }
 }
-
 
 #[derive(Debug)]
 pub enum Error {
@@ -206,7 +181,7 @@ impl From<reader::Error> for Error {
     fn from(from: reader::Error) -> Self {
         match from {
             reader::Error::EndOfStream => Error::EndOfStream,
-            error                      => Error::Reader(error),
+            error => Error::Reader(error),
         }
     }
 }

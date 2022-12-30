@@ -1,9 +1,8 @@
 use super::Position;
 
-
 #[derive(Clone, Copy, Debug)]
 pub struct Char {
-    pub c:   char,
+    pub c: char,
     pub pos: Position,
 }
 

@@ -1,20 +1,13 @@
 use std::{
     fs::File,
-    io::{
-        stderr,
-        stdout,
-    },
+    io::{stderr, stdout},
     process::exit,
 };
 
-use termion::{
-    color,
-    style,
-};
+use termion::{color, style};
 use walkdir::WalkDir;
 
 use kari::Interpreter;
-
 
 fn main() {
     print!("\n");
@@ -23,10 +16,7 @@ fn main() {
 
     for result in WalkDir::new("kr/tests") {
         let entry = result.unwrap_or_else(|error| {
-            print!(
-                "ERROR: Error walking tests directory: {}",
-                error,
-            );
+            print!("ERROR: Error walking tests directory: {}", error,);
             if let Some(path) = error.path() {
                 print!(" ({})\n", path.display());
             }
@@ -34,28 +24,22 @@ fn main() {
         });
 
         let path = entry.path();
-        let path = path.to_str()
-            .unwrap_or_else(|| {
-                print!(
-                    "ERROR: Cannot convert path to UTF-8: {}\n",
-                    path.to_string_lossy(),
-                );
-                exit(1);
-            });
+        let path = path.to_str().unwrap_or_else(|| {
+            print!(
+                "ERROR: Cannot convert path to UTF-8: {}\n",
+                path.to_string_lossy(),
+            );
+            exit(1);
+        });
 
         if !path.ends_with(".kr") {
             continue;
         }
 
-        let file = File::open(path)
-            .unwrap_or_else(|error| {
-                print!(
-                    "\nERROR: Failed to open file {} ({})\n\n",
-                    path,
-                    error,
-                );
-                exit(1);
-            });
+        let file = File::open(path).unwrap_or_else(|error| {
+            print!("\nERROR: Failed to open file {} ({})\n\n", path, error,);
+            exit(1);
+        });
 
         let stdout = Box::new(stdout());
         let stderr = Box::new(stderr());
@@ -75,16 +59,21 @@ fn main() {
 
     for (success, path) in results {
         if success.is_ok() {
-            print!("       {}{}OK{}{} {}\n",
-                style::Bold, color::Fg(color::LightGreen),
-                color::Fg(color::Reset), style::Reset,
+            print!(
+                "       {}{}OK{}{} {}\n",
+                style::Bold,
+                color::Fg(color::LightGreen),
+                color::Fg(color::Reset),
+                style::Reset,
                 path,
             );
-        }
-        else {
-            print!("    {}{}ERROR{}{} {}\n",
-                style::Bold, color::Fg(color::Red),
-                color::Fg(color::Reset), style::Reset,
+        } else {
+            print!(
+                "    {}{}ERROR{}{} {}\n",
+                style::Bold,
+                color::Fg(color::Red),
+                color::Fg(color::Reset),
+                style::Reset,
                 path,
             );
         }

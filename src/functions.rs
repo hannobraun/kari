@@ -1,40 +1,29 @@
-use std::{
-    collections::HashMap,
-    fmt,
-};
+use std::{collections::HashMap, fmt};
 
 use crate::{
-    context::{
-        self,
-        Context,
-    },
+    context::{self, Context},
     stack::Stack,
     value::{
-        types::{
-            Type,
-            Typed,
-        },
+        types::{Type, Typed},
         v,
     },
 };
 
-
 #[derive(Debug)]
 pub struct Functions<T> {
-    scopes:        HashMap<Scope, HashMap<String, Node<T>>>,
-    root:          Scope,
-    parents:       HashMap<Scope, Scope>,
-    names:         HashMap<Scope, String>,
+    scopes: HashMap<Scope, HashMap<String, Node<T>>>,
+    root: Scope,
+    parents: HashMap<Scope, Scope>,
+    names: HashMap<Scope, String>,
     next_scope_id: u64,
 }
 
 impl<T> Functions<T>
-    where T: Clone
+where
+    T: Clone,
 {
     pub fn new() -> Self {
-        let root = Scope {
-            id: 0,
-        };
+        let root = Scope { id: 0 };
 
         let mut scopes = HashMap::new();
         scopes.insert(root, HashMap::new());
@@ -45,44 +34,39 @@ impl<T> Functions<T>
         Self {
             scopes,
             root,
-            parents:       HashMap::new(),
+            parents: HashMap::new(),
             names,
             next_scope_id: 1,
         }
     }
 
-    pub fn define<S>(&mut self,
+    pub fn define<S>(
+        &mut self,
         scope: Scope,
-        name:  S,
-        args:  &[&'static dyn Type],
-        f:     T,
-    )
-        -> Result<&mut Self, DefineError>
-        where S: Into<String>
+        name: S,
+        args: &[&'static dyn Type],
+        f: T,
+    ) -> Result<&mut Self, DefineError>
+    where
+        S: Into<String>,
     {
         let name = name.into();
 
-        let functions = self.scopes.get_mut(&scope)
-            .expect("Scope not found");
+        let functions = self.scopes.get_mut(&scope).expect("Scope not found");
 
         if args.len() == 0 {
             if let Some(node) = functions.get(&name) {
                 let mut conflicting = Vec::new();
                 node.all_paths(Vec::new(), &mut conflicting);
 
-                return Err(
-                    DefineError {
-                        name,
-                        conflicting,
-                        scope_id: scope.id,
-                    }
-                );
+                return Err(DefineError {
+                    name,
+                    conflicting,
+                    scope_id: scope.id,
+                });
             }
 
-            functions.insert(
-                name,
-                Node::Function(f),
-            );
+            functions.insert(name, Node::Function(f));
             return Ok(self);
         }
 
@@ -90,84 +74,74 @@ impl<T> Functions<T>
             .entry(name.clone())
             .or_insert(Node::Type(HashMap::new()));
 
-        node.insert(args, f)
-            .map_err(|conflicting|
-                DefineError {
-                    name,
-                    conflicting,
-                    scope_id: scope.id,
-                }
-            )?;
+        node.insert(args, f).map_err(|conflicting| DefineError {
+            name,
+            conflicting,
+            scope_id: scope.id,
+        })?;
 
         Ok(self)
     }
 
-    pub fn get(&self, scope: Scope, name: &str, stack: &Stack)
-        -> Result<T, GetError>
-    {
+    pub fn get(
+        &self,
+        scope: Scope,
+        name: &str,
+        stack: &Stack,
+    ) -> Result<T, GetError> {
         let mut scope = scope;
 
         loop {
             match self.get_inner(scope, name, stack) {
                 Ok(function) => return Ok(function),
 
-                Err(error) => {
-                    match self.parents.get(&scope) {
-                        Some(parent) => scope = *parent,
-                        None         => return Err(error),
-                    }
-                }
+                Err(error) => match self.parents.get(&scope) {
+                    Some(parent) => scope = *parent,
+                    None => return Err(error),
+                },
             }
         }
     }
 
-    fn get_inner(&self, scope: Scope, name: &str, stack: &Stack)
-        -> Result<T, GetError>
-    {
-        let functions = self.scopes.get(&scope)
-            .expect("Scope not found");
+    fn get_inner(
+        &self,
+        scope: Scope,
+        name: &str,
+        stack: &Stack,
+    ) -> Result<T, GetError> {
+        let functions = self.scopes.get(&scope).expect("Scope not found");
 
-        let mut node = functions.get(name)
-            .ok_or_else(||
-                GetError {
-                    candidates: self.candidates_for(&functions, name),
-                    scope:      self.scope_name(scope),
-                }
-            )?;
+        let mut node = functions.get(name).ok_or_else(|| GetError {
+            candidates: self.candidates_for(&functions, name),
+            scope: self.scope_name(scope),
+        })?;
 
         for expr in stack.peek() {
             let map = match node {
-                Node::Type(map)   => map,
+                Node::Type(map) => map,
                 Node::Function(f) => return Ok(f.clone()),
             };
 
-            node = map.get(expr.get_type())
-                .ok_or_else(||
-                    GetError {
-                        candidates: self.candidates_for(functions, name),
-                        scope:      self.scope_name(scope),
-                    }
-                )?;
+            node = map.get(expr.get_type()).ok_or_else(|| GetError {
+                candidates: self.candidates_for(functions, name),
+                scope: self.scope_name(scope),
+            })?;
         }
 
         match node {
-            Node::Type(_) => {
-                Err(
-                    GetError {
-                        candidates: self.candidates_for(functions, name),
-                        scope:      self.scope_name(scope),
-                    }
-                )
-            }
-            Node::Function(f) => {
-                Ok(f.clone())
-            }
+            Node::Type(_) => Err(GetError {
+                candidates: self.candidates_for(functions, name),
+                scope: self.scope_name(scope),
+            }),
+            Node::Function(f) => Ok(f.clone()),
         }
     }
 
-    fn candidates_for(&self, functions: &HashMap<String, Node<T>>, name: &str)
-        -> Signatures
-    {
+    fn candidates_for(
+        &self,
+        functions: &HashMap<String, Node<T>>,
+        name: &str,
+    ) -> Signatures {
         let mut candidates = Vec::new();
 
         if let Some(node) = functions.get(name) {
@@ -181,17 +155,17 @@ impl<T> Functions<T>
         self.root
     }
 
-    pub fn new_scope(&mut self, parent: Scope, name: impl Into<String>)
-        -> Scope
-    {
+    pub fn new_scope(
+        &mut self,
+        parent: Scope,
+        name: impl Into<String>,
+    ) -> Scope {
         assert!(self.next_scope_id < u64::max_value());
 
         let id = self.next_scope_id;
         self.next_scope_id += 1;
 
-        let scope = Scope {
-            id
-        };
+        let scope = Scope { id };
         self.scopes.insert(scope, HashMap::new());
         self.parents.insert(scope, parent);
         self.names.insert(scope, name.into());
@@ -202,13 +176,17 @@ impl<T> Functions<T>
     fn scope_name(&self, scope: Scope) -> String {
         let mut scope = scope;
 
-        let mut name = self.names.get(&scope)
+        let mut name = self
+            .names
+            .get(&scope)
             // Shouldn't panic. If the scope exists, the name must exist.
             .unwrap()
             .clone();
 
         while let Some(parent) = self.parents.get(&scope) {
-            let parent_name = &self.names.get(&parent)
+            let parent_name = &self
+                .names
+                .get(&parent)
                 // Shouldn't panic. If the scope exists, the name must exist.
                 .unwrap();
 
@@ -222,12 +200,10 @@ impl<T> Functions<T>
     }
 }
 
-
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Scope {
     id: u64,
 }
-
 
 #[derive(Debug)]
 enum Node<T> {
@@ -236,13 +212,13 @@ enum Node<T> {
 }
 
 impl<T> Node<T> {
-    fn insert(&mut self, args: &[&'static dyn Type], f: T)
-        -> Result<(), Signatures>
-    {
+    fn insert(
+        &mut self,
+        args: &[&'static dyn Type],
+        f: T,
+    ) -> Result<(), Signatures> {
         let map = match self {
-            Node::Type(map) => {
-                map
-            }
+            Node::Type(map) => map,
             Node::Function(_) => {
                 return Err(
                     // We know there is one conflicting function, because we
@@ -250,7 +226,7 @@ impl<T> Node<T> {
                     // `Vec` for it to `conflicting`. Its type will be
                     // backfilled when the recursive `insert` calls return.
                     vec![Vec::new()],
-                )
+                );
             }
         };
 
@@ -270,37 +246,31 @@ impl<T> Node<T> {
         };
 
         if let Some(node) = map.get_mut(t) {
-            return node.insert(args, f)
-                .map_err(|mut conflicting| {
-                    for signature in &mut conflicting {
-                        signature.insert(0, t);
-                    }
-                    conflicting
-                });
+            return node.insert(args, f).map_err(|mut conflicting| {
+                for signature in &mut conflicting {
+                    signature.insert(0, t);
+                }
+                conflicting
+            });
         }
 
         let mut node = Node::Function(f);
 
         for &t in args {
             let mut map = HashMap::new();
-            map.insert(
-                t,
-                node,
-            );
+            map.insert(t, node);
             node = Node::Type(map);
         }
 
-        map.insert(
-            t,
-            node,
-        );
+        map.insert(t, node);
 
         Ok(())
     }
 
-    fn all_paths(&self,
+    fn all_paths(
+        &self,
         current_path: Vec<&'static dyn Type>,
-        paths:        &mut Signatures,
+        paths: &mut Signatures,
     ) {
         match self {
             Node::Type(map) => {
@@ -317,12 +287,11 @@ impl<T> Node<T> {
     }
 }
 
-
 #[derive(Debug, Eq, PartialEq)]
 pub struct DefineError {
-    pub name:        String,
+    pub name: String,
     pub conflicting: Signatures,
-    pub scope_id:    u64,
+    pub scope_id: u64,
 }
 
 impl fmt::Display for DefineError {
@@ -341,34 +310,25 @@ impl fmt::Display for DefineError {
     }
 }
 
-
 #[derive(Debug, Eq, PartialEq)]
 pub struct GetError {
     pub candidates: Signatures,
-    pub scope:      String,
+    pub scope: String,
 }
-
 
 pub type Signatures = Vec<Vec<&'static dyn Type>>;
 
-
 pub enum Function<H> {
     Builtin(Builtin<H>),
-    UserDefined {
-        body: v::List,
-    }
+    UserDefined { body: v::List },
 }
 
 impl<H> Clone for Function<H> {
     fn clone(&self) -> Self {
         match self {
-            Function::Builtin(f) => {
-                Function::Builtin(f.clone())
-            }
+            Function::Builtin(f) => Function::Builtin(f.clone()),
             Function::UserDefined { body } => {
-                Function::UserDefined {
-                    body: body.clone(),
-                }
+                Function::UserDefined { body: body.clone() }
             }
         }
     }
@@ -377,45 +337,33 @@ impl<H> Clone for Function<H> {
 impl<H> fmt::Debug for Function<H> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Function::Builtin(_)           => write!(f, "builtin"),
+            Function::Builtin(_) => write!(f, "builtin"),
             Function::UserDefined { body } => write!(f, "{:?}", body),
         }
     }
 }
 
-
 pub type Builtin<Host> =
-    fn(&mut Host, &mut dyn Context<Host>, Scope)
-        -> Result<(), context::Error>;
-
+    fn(&mut Host, &mut dyn Context<Host>, Scope) -> Result<(), context::Error>;
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        prelude::*,
         pipeline::tokenizer::Source,
+        prelude::*,
         stack::Stack,
-        value::{
-            t,
-            types::Type,
-            v,
-        },
+        value::{t, types::Type, v},
     };
 
-    use super::{
-        DefineError,
-        Functions,
-    };
-
+    use super::{DefineError, Functions};
 
     type Result = std::result::Result<(), DefineError>;
-
 
     #[test]
     fn it_should_return_none_if_function_wasnt_defined() {
         let functions = Functions::<()>::new();
-        let scope     = functions.root_scope();
-        let stack     = Stack::new();
+        let scope = functions.root_scope();
+        let stack = Stack::new();
 
         let result = functions.get(scope, "a", &stack);
 
@@ -425,11 +373,10 @@ mod tests {
     #[test]
     fn it_should_return_functions_that_were_defined() -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
-        let mut stack     = Stack::new();
+        let scope = functions.root_scope();
+        let mut stack = Stack::new();
 
-        functions
-            .define(scope, "a", &[&t::Number, &t::Float], 1)?;
+        functions.define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
             .push(v::Number::new(0, Source::Null))
             .push(v::Float::new(0.0.into(), Source::Null));
@@ -441,15 +388,14 @@ mod tests {
     }
 
     #[test]
-    fn it_should_return_the_function_that_matches_the_types_on_the_stack()
-        -> Result
-    {
+    fn it_should_return_the_function_that_matches_the_types_on_the_stack(
+    ) -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
-        let mut stack     = Stack::new();
+        let scope = functions.root_scope();
+        let mut stack = Stack::new();
 
         functions
-            .define(scope, "a", &[&t::Number, &t::Float ], 1)?
+            .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
             .push(v::Number::new(0, Source::Null))
@@ -464,11 +410,10 @@ mod tests {
     #[test]
     fn it_should_return_function_without_args_regardless_of_stack() -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
-        let mut stack     = Stack::new();
+        let scope = functions.root_scope();
+        let mut stack = Stack::new();
 
-        functions
-            .define(scope, "a", &[], 1)?;
+        functions.define(scope, "a", &[], 1)?;
         stack
             .push(v::Number::new(0, Source::Null))
             .push(v::Float::new(0.0.into(), Source::Null));
@@ -480,31 +425,28 @@ mod tests {
     }
 
     #[test]
-    fn it_should_return_list_of_candidates_if_function_doesnt_match_stack()
-        -> Result
-    {
+    fn it_should_return_list_of_candidates_if_function_doesnt_match_stack(
+    ) -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
-        let mut stack     = Stack::new();
+        let scope = functions.root_scope();
+        let mut stack = Stack::new();
 
         functions
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
-            .define(scope, "a", &[&t::Float, &t::Float],  2)?;
+            .define(scope, "a", &[&t::Float, &t::Float], 2)?;
         stack
             .push(v::Number::new(0, Source::Null))
             .push(v::Number::new(0, Source::Null));
 
         let error = match functions.get(scope, "a", &stack) {
-            Ok(_)      => panic!("Expected error"),
+            Ok(_) => panic!("Expected error"),
             Err(error) => error,
         };
 
-        assert!(
-            error.candidates.contains(&vec![&t::Number as &dyn Type, &t::Float])
-        );
-        assert!(
-            error.candidates.contains(&vec![&t::Float, &t::Float])
-        );
+        assert!(error
+            .candidates
+            .contains(&vec![&t::Number as &dyn Type, &t::Float]));
+        assert!(error.candidates.contains(&vec![&t::Float, &t::Float]));
 
         Ok(())
     }
@@ -512,7 +454,7 @@ mod tests {
     #[test]
     fn it_should_reject_functions_that_are_already_defined() -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
+        let scope = functions.root_scope();
 
         let result = functions
             .define(scope, "a", &[&t::Number, &t::Number], 1)?
@@ -523,11 +465,10 @@ mod tests {
     }
 
     #[test]
-    fn it_should_reject_functions_more_specific_than_a_defined_function()
-        -> Result
-    {
+    fn it_should_reject_functions_more_specific_than_a_defined_function(
+    ) -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
+        let scope = functions.root_scope();
 
         let err = functions
             .define(scope, "a", &[&t::Number, &t::Number], 1)?
@@ -548,7 +489,7 @@ mod tests {
         // special test for them.
 
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
+        let scope = functions.root_scope();
 
         let err = functions
             .define(scope, "a", &[&t::Number], 1)?
@@ -563,11 +504,10 @@ mod tests {
     }
 
     #[test]
-    fn it_should_reject_functions_less_specific_than_a_defined_function()
-        -> Result
-    {
+    fn it_should_reject_functions_less_specific_than_a_defined_function(
+    ) -> Result {
         let mut functions = Functions::new();
-        let     scope     = functions.root_scope();
+        let scope = functions.root_scope();
 
         let err = functions
             .define(scope, "a", &[&t::Number], 1)?
@@ -582,17 +522,14 @@ mod tests {
     }
 
     #[test]
-    fn it_should_find_function_defined_in_parent_scope()
-        -> Result
-    {
+    fn it_should_find_function_defined_in_parent_scope() -> Result {
         let mut functions = Functions::new();
-        let     stack     = Stack::new();
+        let stack = Stack::new();
 
         let parent_scope = functions.root_scope();
-        let child_scope  = functions.new_scope(parent_scope, "child");
+        let child_scope = functions.new_scope(parent_scope, "child");
 
-        functions
-            .define(parent_scope, "a", &[], 1)?;
+        functions.define(parent_scope, "a", &[], 1)?;
 
         let result = functions.get(child_scope, "a", &stack);
 
@@ -601,17 +538,14 @@ mod tests {
     }
 
     #[test]
-    fn it_should_not_find_function_defined_in_child_scope()
-        -> Result
-    {
+    fn it_should_not_find_function_defined_in_child_scope() -> Result {
         let mut functions = Functions::new();
-        let     stack     = Stack::new();
+        let stack = Stack::new();
 
         let parent_scope = functions.root_scope();
-        let child_scope  = functions.new_scope(parent_scope, "child");
+        let child_scope = functions.new_scope(parent_scope, "child");
 
-        functions
-            .define(child_scope, "a", &[], 1)?;
+        functions.define(child_scope, "a", &[], 1)?;
 
         let result = functions.get(parent_scope, "a", &stack);
 

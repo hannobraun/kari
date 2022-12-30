@@ -1,24 +1,11 @@
 use crate::{
+    context::{self, Context},
+    functions::{Function, Functions, Scope},
     prelude::*,
-    context::{
-        self,
-        Context,
-    },
-    functions::{
-        Function,
-        Functions,
-        Scope,
-    },
-    value::{
-        self,
-        t,
-        v,
-    },
+    value::{self, t, v},
 };
 
-
-pub type Result  = std::result::Result<(), context::Error>;
-
+pub type Result = std::result::Result<(), context::Error>;
 
 macro_rules! builtins {
     ($($name:expr, $fn:ident, ($($arg:expr,)*);)*) => {
@@ -78,14 +65,11 @@ builtins!(
     "not", not, (t::Bool,);
 );
 
-
 fn print<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
+    _: Scope,
+) -> Result {
     let value = context.stack().pop::<v::Any>()?;
     write!(context.output(), "{}", value.kind)?;
 
@@ -93,13 +77,12 @@ fn print<Host>(
 }
 
 fn define<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let (body, name) = context.stack()
+    scope: Scope,
+) -> Result {
+    let (body, name) = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::List, t::Symbol))?;
 
@@ -114,15 +97,15 @@ fn define<Host>(
 }
 
 fn define_s<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (body, name, scope) = context.stack()
-        .pop::<(_, _, _)>()?
-        .cast((t::List, t::Symbol, t::Scope))?;
+    _: Scope,
+) -> Result {
+    let (body, name, scope) = context.stack().pop::<(_, _, _)>()?.cast((
+        t::List,
+        t::Symbol,
+        t::Scope,
+    ))?;
 
     context.functions().define(
         scope.inner,
@@ -135,50 +118,37 @@ fn define_s<Host>(
 }
 
 fn caller<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
+    _: Scope,
+) -> Result {
     let caller = match context.call_stack().caller() {
         Some(caller) => caller.clone(),
-        None         => return Err(context::Error::Caller),
+        None => return Err(context::Error::Caller),
     };
 
-    context.stack().push(v::Scope::new(caller.scope, caller.src));
+    context
+        .stack()
+        .push(v::Scope::new(caller.scope, caller.src));
 
     Ok(())
 }
 
-fn fail<Host>(
-    _: &mut Host,
-    _: &mut dyn Context<Host>,
-    _: Scope,
-)
-    -> Result
-{
+fn fail<Host>(_: &mut Host, _: &mut dyn Context<Host>, _: Scope) -> Result {
     Err(context::Error::Failure)
 }
 
 fn eval<Host>(
-    host:    &mut Host,
+    host: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let list = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::List)?;
+    scope: Scope,
+) -> Result {
+    let list = context.stack().pop::<v::Any>()?.cast(t::List)?;
     let span = context.call_stack().operator().clone().src.merge(&list.src);
 
     context.stack().create_substack();
 
-    context.evaluate_list(
-        host,
-        list,
-    )?;
+    context.evaluate_list(host, list)?;
 
     let items = context.stack().destroy_substack();
 
@@ -195,15 +165,11 @@ fn eval<Host>(
 }
 
 fn load<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let path = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::String)?;
+    scope: Scope,
+) -> Result {
+    let path = context.stack().pop::<v::Any>()?.cast(t::String)?;
 
     let list = context.load(path, scope)?;
     context.stack().push(list);
@@ -211,19 +177,15 @@ fn load<Host>(
 }
 
 fn to_list<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let symbol = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::Symbol)?;
+    scope: Scope,
+) -> Result {
+    let symbol = context.stack().pop::<v::Any>()?.cast(t::Symbol)?;
 
     let (word, span) = symbol.open();
-    let list_span    = context.call_stack().operator().src.clone().merge(&span);
-    let word         = value::Any::new(value::Kind::Word(word), span);
+    let list_span = context.call_stack().operator().src.clone().merge(&span);
+    let word = value::Any::new(value::Kind::Word(word), span);
 
     let list = v::List::new(
         value::ListInner::from_values(
@@ -237,29 +199,28 @@ fn to_list<Host>(
     Ok(())
 }
 
-
 fn drop<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
+    _: Scope,
+) -> Result {
     context.stack().pop::<v::Any>()?;
     Ok(())
 }
 
 fn clone<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let mut expression = context.stack()
-        .pop::<v::Any>()?;
+    _: Scope,
+) -> Result {
+    let mut expression = context.stack().pop::<v::Any>()?;
 
-    expression.src = context.call_stack().operator().src.clone().merge(&expression.src);
+    expression.src = context
+        .call_stack()
+        .operator()
+        .src
+        .clone()
+        .merge(&expression.src);
 
     context.stack().push((expression.clone(), expression));
 
@@ -267,80 +228,58 @@ fn clone<Host>(
 }
 
 fn swap<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (a, b) = context.stack()
-        .pop::<(_, _)>()?;
+    _: Scope,
+) -> Result {
+    let (a, b) = context.stack().pop::<(_, _)>()?;
     context.stack().push((b, a));
 
     Ok(())
 }
 
 fn dig<Host>(
-    host:    &mut Host,
+    host: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (item, f) = context.stack()
-        .pop::<(_, _)>()?
-        .cast((t::Any, t::List))?;
+    _: Scope,
+) -> Result {
+    let (item, f) = context.stack().pop::<(_, _)>()?.cast((t::Any, t::List))?;
     context.evaluate_list(host, f)?;
     context.stack().push(item);
     Ok(())
 }
 
-
 fn r#if<Host>(
-    host:    &mut Host,
+    host: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (function, condition) = context.stack()
-        .pop::<(_, _)>()?
-        .cast((t::List, t::List))?;
+    _: Scope,
+) -> Result {
+    let (function, condition) =
+        context.stack().pop::<(_, _)>()?.cast((t::List, t::List))?;
 
     context.evaluate_list(host, condition)?;
 
-    let evaluated_condition = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::Bool)?;
+    let evaluated_condition = context.stack().pop::<v::Any>()?.cast(t::Bool)?;
 
     if evaluated_condition.inner {
-        context.evaluate_list(
-            host,
-            function,
-        )?;
+        context.evaluate_list(host, function)?;
     }
 
     Ok(())
 }
 
-
 fn list<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let len = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::Number)?;
+    scope: Scope,
+) -> Result {
+    let len = context.stack().pop::<v::Any>()?.cast(t::Number)?;
 
     let mut items = Vec::new();
-    let mut span  = len.src;
+    let mut span = len.src;
 
-    for _ in 0 .. len.inner {
-        let item = context.stack()
-            .pop::<v::Any>()?;
+    for _ in 0..len.inner {
+        let item = context.stack().pop::<v::Any>()?;
 
         span = span.merge(&item.src);
         items.insert(0, item);
@@ -360,24 +299,18 @@ fn list<Host>(
 }
 
 fn map<Host>(
-    host:    &mut Host,
+    host: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (list, function) = context.stack()
-        .pop::<(_, _)>()?
-        .cast((t::List, t::List))?;
+    _: Scope,
+) -> Result {
+    let (list, function) =
+        context.stack().pop::<(_, _)>()?.cast((t::List, t::List))?;
 
     context.stack().create_substack();
 
     for item in list.inner.items {
         context.stack().push(item);
-        context.evaluate_list(
-            host,
-            function.clone(),
-        )?;
+        context.evaluate_list(host, function.clone())?;
     }
 
     let result = context.stack().destroy_substack();
@@ -387,7 +320,13 @@ fn map<Host>(
             result,
             context.functions().new_scope(list.inner.scope, "list"),
         ),
-        context.call_stack().operator().src.clone().merge(&list.src).merge(&function.src),
+        context
+            .call_stack()
+            .operator()
+            .src
+            .clone()
+            .merge(&list.src)
+            .merge(&function.src),
     );
     context.stack().push(data);
 
@@ -395,14 +334,11 @@ fn map<Host>(
 }
 
 fn wrap<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    scope:   Scope,
-)
-    -> Result
-{
-    let arg = context.stack()
-        .pop::<v::Any>()?;
+    scope: Scope,
+) -> Result {
+    let arg = context.stack().pop::<v::Any>()?;
 
     let span = context.call_stack().operator().src.clone().merge(&arg.src);
     let list = v::List::new(
@@ -419,15 +355,11 @@ fn wrap<Host>(
 }
 
 fn unwrap<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let list = context.stack()
-        .pop::<v::Any>()?
-        .cast(t::List)?;
+    _: Scope,
+) -> Result {
+    let list = context.stack().pop::<v::Any>()?.cast(t::List)?;
 
     for value in list.inner.items {
         context.stack().push(value);
@@ -437,17 +369,20 @@ fn unwrap<Host>(
 }
 
 fn prepend<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (mut list, arg) = context.stack()
-        .pop::<(_, _)>()?
-        .cast((t::List, t::Any))?;
+    _: Scope,
+) -> Result {
+    let (mut list, arg) =
+        context.stack().pop::<(_, _)>()?.cast((t::List, t::Any))?;
 
-    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
+    list.src = context
+        .call_stack()
+        .operator()
+        .src
+        .clone()
+        .merge(&list.src)
+        .merge(&arg.src);
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -456,17 +391,20 @@ fn prepend<Host>(
 }
 
 fn append<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let (mut list, arg) = context.stack()
-        .pop::<(_, _)>()?
-        .cast((t::List, t::Any))?;
+    _: Scope,
+) -> Result {
+    let (mut list, arg) =
+        context.stack().pop::<(_, _)>()?.cast((t::List, t::Any))?;
 
-    list.src = context.call_stack().operator().src.clone().merge(&list.src).merge(&arg.src);
+    list.src = context
+        .call_stack()
+        .operator()
+        .src
+        .clone()
+        .merge(&list.src)
+        .merge(&arg.src);
     list.inner.items.push(arg);
 
     context.stack().push(list);
@@ -474,15 +412,13 @@ fn append<Host>(
     Ok(())
 }
 
-
 fn add_n<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let sum = context.stack()
+    _: Scope,
+) -> Result {
+    let sum = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a + b);
@@ -493,13 +429,12 @@ fn add_n<Host>(
 }
 
 fn sub_n<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let difference = context.stack()
+    _: Scope,
+) -> Result {
+    let difference = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a - b);
@@ -510,13 +445,12 @@ fn sub_n<Host>(
 }
 
 fn mul_n<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let product = context.stack()
+    _: Scope,
+) -> Result {
+    let product = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a * b);
@@ -527,13 +461,12 @@ fn mul_n<Host>(
 }
 
 fn div_n<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let quotient = context.stack()
+    _: Scope,
+) -> Result {
+    let quotient = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Number, t::Number))?
         .compute::<v::Number, _, _>(|(a, b)| a / b);
@@ -544,13 +477,12 @@ fn div_n<Host>(
 }
 
 fn gt_n<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let is_greater = context.stack()
+    _: Scope,
+) -> Result {
+    let is_greater = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Number, t::Number))?
         .compute::<v::Bool, _, _>(|(a, b)| a > b);
@@ -560,15 +492,13 @@ fn gt_n<Host>(
     Ok(())
 }
 
-
 fn add_f<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let sum = context.stack()
+    _: Scope,
+) -> Result {
+    let sum = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a + b);
@@ -579,13 +509,12 @@ fn add_f<Host>(
 }
 
 fn sub_f<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let sum = context.stack()
+    _: Scope,
+) -> Result {
+    let sum = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a - b);
@@ -596,13 +525,12 @@ fn sub_f<Host>(
 }
 
 fn mul_f<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let product = context.stack()
+    _: Scope,
+) -> Result {
+    let product = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Float, t::Float))?
         .compute::<v::Float, _, _>(|(a, b)| a * b);
@@ -613,13 +541,12 @@ fn mul_f<Host>(
 }
 
 fn gt_f<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let is_greater = context.stack()
+    _: Scope,
+) -> Result {
+    let is_greater = context
+        .stack()
         .pop::<(_, _)>()?
         .cast((t::Float, t::Float))?
         .compute::<v::Bool, _, _>(|(a, b)| a > b);
@@ -629,15 +556,9 @@ fn gt_f<Host>(
     Ok(())
 }
 
-
-fn eq<Host>(
-    _:       &mut Host,
-    context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let is_equal = context.stack()
+fn eq<Host>(_: &mut Host, context: &mut dyn Context<Host>, _: Scope) -> Result {
+    let is_equal = context
+        .stack()
         .pop::<(_, _)>()?
         .compute::<v::Bool, _, _>(|(a, b)| a == b);
 
@@ -647,13 +568,12 @@ fn eq<Host>(
 }
 
 fn not<Host>(
-    _:       &mut Host,
+    _: &mut Host,
     context: &mut dyn Context<Host>,
-    _:       Scope,
-)
-    -> Result
-{
-    let inverted = context.stack()
+    _: Scope,
+) -> Result {
+    let inverted = context
+        .stack()
         .pop::<v::Any>()?
         .cast(t::Bool)?
         .compute::<v::Bool, _, _>(|b| !b);

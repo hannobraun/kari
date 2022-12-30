@@ -1,6 +1,5 @@
 use crate::pipeline::reader::Position;
 
-
 /// A location in the source code
 ///
 /// Used to identify where tokens, values, etc. originate in the source code.
@@ -19,14 +18,10 @@ pub enum Source {
 impl Source {
     pub fn merge(self, other: &Self) -> Self {
         match self {
-            Source::Null => {
-                other.clone()
-            }
+            Source::Null => other.clone(),
             Source::Continuous(mut self_) => {
                 match other {
-                    Source::Null => {
-                        Source::Continuous(self_)
-                    }
+                    Source::Null => Source::Continuous(self_),
                     Source::Continuous(other) => {
                         // The following code obviously assumes something like
                         // the this assertion, but uncommenting the assertion
@@ -48,7 +43,6 @@ impl Source {
         }
     }
 }
-
 
 /// A source that consists of a single region in a single file
 #[derive(Clone, Debug, Default, Eq, PartialEq)]

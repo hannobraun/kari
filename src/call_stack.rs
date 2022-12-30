@@ -1,8 +1,4 @@
-use crate::{
-    functions::Scope,
-    pipeline::tokenizer::Source,
-};
-
+use crate::{functions::Scope, pipeline::tokenizer::Source};
 
 #[derive(Clone, Debug)]
 pub struct CallStack {
@@ -11,13 +7,12 @@ pub struct CallStack {
 
 impl CallStack {
     pub fn new() -> Self {
-        Self {
-            frames: Vec::new(),
-        }
+        Self { frames: Vec::new() }
     }
 
     pub fn operator(&self) -> &StackFrame {
-        self.frames.last()
+        self.frames
+            .last()
             // This shouldn't generally happen, as this is only called by
             // builtins, and when a builtin is executed, there must be a frame
             // on the call stack.
@@ -33,9 +28,8 @@ impl CallStack {
     }
 }
 
-
 #[derive(Clone, Debug)]
 pub struct StackFrame {
     pub scope: Scope,
-    pub src:   Source,
+    pub src: Source,
 }

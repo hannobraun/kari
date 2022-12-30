@@ -2,27 +2,23 @@ pub mod parser;
 pub mod reader;
 pub mod tokenizer;
 
-pub use self::{
-    parser::Parser,
-    reader::Reader,
-    tokenizer::Tokenizer,
-};
-
+pub use self::{parser::Parser, reader::Reader, tokenizer::Tokenizer};
 
 use std::io;
 
-
-pub fn new<Stream>(name: String, stream: Stream)
-    -> Parser<Tokenizer<Reader<Stream>>>
-    where Stream: io::Read
+pub fn new<Stream>(
+    name: String,
+    stream: Stream,
+) -> Parser<Tokenizer<Reader<Stream>>>
+where
+    Stream: io::Read,
 {
-    let reader    = Reader::new(stream);
+    let reader = Reader::new(stream);
     let tokenizer = Tokenizer::new(reader, name);
-    let parser    = Parser::new(tokenizer);
+    let parser = Parser::new(tokenizer);
 
     parser
 }
-
 
 pub trait Stage {
     type Item;
@@ -31,8 +27,11 @@ pub trait Stage {
     fn next(&mut self) -> Result<Self::Item, Self::Error>;
 }
 
-impl<T> Stage for &'_ mut T where T: Stage {
-    type Item  = T::Item;
+impl<T> Stage for &'_ mut T
+where
+    T: Stage,
+{
+    type Item = T::Item;
     type Error = T::Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {

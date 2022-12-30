@@ -2,28 +2,19 @@ pub mod cast;
 pub mod compute;
 pub mod types;
 
-
-use std::{
-    fmt,
-    mem::discriminant,
-    string::String as String_,
-};
+use std::{fmt, mem::discriminant, string::String as String_};
 
 use decorum::R32;
 
 use crate::{
     functions::Scope as Scope_,
     pipeline::{
-        parser::expression::{
-            self,
-            Expression,
-        },
+        parser::expression::{self, Expression},
         tokenizer::Source,
     },
 };
 
-
-pub trait Value : Sized {
+pub trait Value: Sized {
     type Inner;
 
     fn new(_: Self::Inner, _: Source) -> Self;
@@ -32,22 +23,21 @@ pub trait Value : Sized {
     fn into_any(self) -> Any;
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
-    pub src:  Source,
+    pub src: Source,
 }
 
 impl Any {
     pub fn from_expression(expression: Expression, scope: Scope_) -> Self {
         let kind = match expression.kind {
-            expression::Kind::Bool(inner)   => Kind::Bool(inner),
-            expression::Kind::Float(inner)  => Kind::Float(inner),
+            expression::Kind::Bool(inner) => Kind::Bool(inner),
+            expression::Kind::Float(inner) => Kind::Float(inner),
             expression::Kind::Number(inner) => Kind::Number(inner),
             expression::Kind::String(inner) => Kind::String(inner),
             expression::Kind::Symbol(inner) => Kind::Symbol(inner),
-            expression::Kind::Word(inner)   => Kind::Word(inner),
+            expression::Kind::Word(inner) => Kind::Word(inner),
 
             expression::Kind::List(inner) => {
                 Kind::List(ListInner::from_expressions(inner, scope))
@@ -65,10 +55,7 @@ impl Value for Any {
     type Inner = Kind;
 
     fn new(kind: Self::Inner, src: Source) -> Self {
-        Self {
-            kind,
-            src,
-        }
+        Self { kind, src }
     }
 
     fn open(self) -> (Self::Inner, Source) {
@@ -79,7 +66,6 @@ impl Value for Any {
         self
     }
 }
-
 
 macro_rules! kinds {
     (
@@ -197,15 +183,15 @@ macro_rules! kinds {
             $(
                 #[derive(Debug)]
                 pub struct $ty;
-    
+
                 impl Type for $ty {
                     fn name(&self) -> &'static str { $name }
                 }
-    
+
                 impl Downcast for $ty {
                     type Input  = value::Any;
                     type Output = v::$ty;
-    
+
                     fn downcast(&self, any: value::Any)
                         -> Result<Self::Output, TypeError>
                     {
@@ -240,17 +226,16 @@ kinds!(
     Word,   "word",   String_;
 );
 
-
 impl PartialEq for Kind {
     fn eq(&self, other: &Self) -> bool {
         // Determines equality based on data, ignoring spans.
         match (self, other) {
-            (Kind::Bool(a),   Kind::Bool(b))   => return a == b,
-            (Kind::Float(a),  Kind::Float(b))  => return a == b,
+            (Kind::Bool(a), Kind::Bool(b)) => return a == b,
+            (Kind::Float(a), Kind::Float(b)) => return a == b,
             (Kind::Number(a), Kind::Number(b)) => return a == b,
             (Kind::String(a), Kind::String(b)) => return a == b,
             (Kind::Symbol(a), Kind::Symbol(b)) => return a == b,
-            (Kind::Word(a),   Kind::Word(b))   => return a == b,
+            (Kind::Word(a), Kind::Word(b)) => return a == b,
 
             (Kind::List(a), Kind::List(b)) => {
                 if a.items.len() != b.items.len() {
@@ -288,18 +273,17 @@ impl Eq for Kind {}
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::Bool(value)   => value.fmt(f),
-            Kind::Float(value)  => write!(f, "{:?}", value),
+            Kind::Bool(value) => value.fmt(f),
+            Kind::Float(value) => write!(f, "{:?}", value),
             Kind::Number(value) => value.fmt(f),
-            Kind::List(value)   => fmt_list(&value.items, f),
-            Kind::Scope(value)  => write!(f, "{:?}", value),
+            Kind::List(value) => fmt_list(&value.items, f),
+            Kind::Scope(value) => write!(f, "{:?}", value),
             Kind::String(value) => value.fmt(f),
             Kind::Symbol(value) => write!(f, ":{}", value),
-            Kind::Word(value)   => value.fmt(f),
+            Kind::Word(value) => value.fmt(f),
         }
     }
 }
-
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ListInner {
@@ -308,9 +292,10 @@ pub struct ListInner {
 }
 
 impl ListInner {
-    pub fn from_expressions(expressions: Vec<Expression>, scope: Scope_)
-        -> Self
-    {
+    pub fn from_expressions(
+        expressions: Vec<Expression>,
+        scope: Scope_,
+    ) -> Self {
         let items = expressions
             .into_iter()
             .map(|e| Any::from_expression(e, scope))
@@ -327,9 +312,8 @@ impl ListInner {
     }
 }
 
-
 impl IntoIterator for v::List {
-    type Item     = <Vec<Any> as IntoIterator>::Item;
+    type Item = <Vec<Any> as IntoIterator>::Item;
     type IntoIter = <Vec<Any> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -342,7 +326,6 @@ impl fmt::Display for v::List {
         fmt_list(&self.inner.items, f)
     }
 }
-
 
 fn fmt_list(list: &Vec<Any>, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "[ ")?;

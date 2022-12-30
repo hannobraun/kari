@@ -1,18 +1,12 @@
 use std::{
     collections::HashMap,
-    io::{
-        self,
-        SeekFrom,
-    },
     fmt,
+    io::{self, SeekFrom},
     iter::repeat,
     str::from_utf8,
 };
 
-use termion::{
-    color,
-    style,
-};
+use termion::{color, style};
 
 use crate::{
     call_stack::CallStack,
@@ -20,31 +14,27 @@ use crate::{
     interpreter::stream::Stream,
     pipeline::{
         parser,
-        tokenizer::{
-            Source,
-            source,
-        },
+        tokenizer::{source, Source},
     },
 };
 
-
 #[derive(Debug)]
 pub struct Error {
-    pub kind:       ErrorKind,
+    pub kind: ErrorKind,
     pub call_stack: CallStack,
 }
 
 impl Error {
-    pub fn print(self,
+    pub fn print(
+        self,
         streams: &mut HashMap<String, Box<dyn Stream>>,
-        stderr:  &mut dyn io::Write,
-    )
-        -> io::Result<()>
-    {
+        stderr: &mut dyn io::Write,
+    ) -> io::Result<()> {
         write!(
             stderr,
             "\n{}{}ERROR:{} {}{}\n",
-            color::Fg(color::Red), style::Bold,
+            color::Fg(color::Red),
+            style::Bold,
             color::Fg(color::Reset),
             self,
             style::Reset,
@@ -59,11 +49,7 @@ impl Error {
                     panic!("Tried to format a null source");
                 }
                 Source::Continuous(source) => {
-                    print_source(
-                        source,
-                        streams,
-                        stderr,
-                    )?;
+                    print_source(source, streams, stderr)?;
                 }
             }
         }
@@ -82,11 +68,7 @@ impl Error {
                     panic!("Tried to format a null source");
                 }
                 Source::Continuous(src) => {
-                    print_source(
-                        src,
-                        streams,
-                        stderr,
-                    )?;
+                    print_source(src, streams, stderr)?;
                 }
             }
         }
@@ -101,11 +83,10 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.kind {
             ErrorKind::Context(error) => error.fmt(f),
-            ErrorKind::Parser(error)  => error.fmt(f),
+            ErrorKind::Parser(error) => error.fmt(f),
         }
     }
 }
-
 
 #[derive(Debug)]
 pub enum ErrorKind {
@@ -117,14 +98,14 @@ impl ErrorKind {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
             ErrorKind::Context(error) => error.sources(sources),
-            ErrorKind::Parser(error)  => error.sources(sources),
+            ErrorKind::Parser(error) => error.sources(sources),
         }
     }
 
     pub fn write_hint(&self, stderr: &mut dyn io::Write) -> io::Result<()> {
         match self {
             ErrorKind::Context(error) => error.write_hint(stderr),
-            ErrorKind::Parser(_)      => Ok(()),
+            ErrorKind::Parser(_) => Ok(()),
         }
     }
 }
@@ -141,21 +122,18 @@ impl From<parser::Error> for ErrorKind {
     }
 }
 
-
 fn print_source<Stream>(
-    src:     &source::Continuous,
+    src: &source::Continuous,
     streams: &mut HashMap<String, Stream>,
-    stderr:  &mut dyn io::Write,
-)
-    -> io::Result<()>
-    where Stream: io::Read + io::Seek
+    stderr: &mut dyn io::Write,
+) -> io::Result<()>
+where
+    Stream: io::Read + io::Seek,
 {
-    let stream = streams
-        .get_mut(&src.stream)
-        .unwrap();
+    let stream = streams.get_mut(&src.stream).unwrap();
 
     let start = search_backward(src.start.index, stream)?;
-    let end   = search_forward(src.end.index, stream)?;
+    let end = search_forward(src.end.index, stream)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
     stream.seek(SeekFrom::Start(start as u64))?;
@@ -169,7 +147,6 @@ fn print_source<Stream>(
         stderr,
         "  {}=> {}{}:{}:{}{}\n",
         color::Fg(color::Magenta),
-
         color::Fg(color::LightBlue),
         src.stream,
         src.start.line + 1,
@@ -180,31 +157,29 @@ fn print_source<Stream>(
 
     for (i, line) in buffer.lines().enumerate() {
         let line_number = src.start.line + i;
-        let line_len    = line.chars().count();
+        let line_len = line.chars().count();
 
         write!(
             stderr,
             "{}{:5} {}| {}{}{}{}{}\n",
             color::Fg(color::LightBlue),
             line_number + 1,
-
             color::Fg(color::Magenta),
-
-            style::Bold, color::Fg(color::LightWhite),
+            style::Bold,
+            color::Fg(color::LightWhite),
             line.replace("\t", "    "),
-            color::Fg(color::Reset), style::Reset,
+            color::Fg(color::Reset),
+            style::Reset,
         )?;
 
         let start_column = if line_number == src.start.line {
             src.start.column
-        }
-        else {
+        } else {
             0
         };
         let end_column = if line_number == src.end.line {
             src.end.column + 1
-        }
-        else {
+        } else {
             line_len
         };
 
@@ -218,38 +193,33 @@ fn print_source<Stream>(
             color::Fg(color::LightRed),
             style::Bold,
         )?;
-        for column in 0 .. line_len {
-            if column >= start_column && column <  end_column {
+        for column in 0..line_len {
+            if column >= start_column && column < end_column {
                 write!(stderr, "^")?;
-            }
-            else {
+            } else {
                 if line.chars().nth(column) == Some('\t') {
                     // Before we printed the line above, we replaced each tab
                     // with 4 spaces. This means, if we encounter a tab here, we
                     // know that we can just replace it with 4 spaces to make
                     // everything line up.
                     write!(stderr, "    ")?;
-                }
-                else {
+                } else {
                     write!(stderr, " ")?;
                 }
             }
         }
-        write!(
-            stderr,
-            "{}{}\n",
-            style::Reset,
-            color::Fg(color::Reset),
-        )?;
+        write!(stderr, "{}{}\n", style::Reset, color::Fg(color::Reset),)?;
     }
 
     Ok(())
 }
 
-
-fn search_backward<Stream>(from: usize, stream: &mut Stream)
-    -> io::Result<usize>
-    where Stream: io::Read + io::Seek
+fn search_backward<Stream>(
+    from: usize,
+    stream: &mut Stream,
+) -> io::Result<usize>
+where
+    Stream: io::Read + io::Seek,
 {
     stream.seek(SeekFrom::Start(from as u64 + 1))?;
 
@@ -268,9 +238,9 @@ fn search_backward<Stream>(from: usize, stream: &mut Stream)
     Ok(0)
 }
 
-fn search_forward<Stream>(from: usize, stream: &mut Stream)
-    -> io::Result<usize>
-    where Stream: io::Read + io::Seek
+fn search_forward<Stream>(from: usize, stream: &mut Stream) -> io::Result<usize>
+where
+    Stream: io::Read + io::Seek,
 {
     stream.seek(SeekFrom::Start(from as u64))?;
 
@@ -288,8 +258,7 @@ fn search_forward<Stream>(from: usize, stream: &mut Stream)
             Err(error) => {
                 if let io::ErrorKind::UnexpectedEof = error.kind() {
                     return Ok(pos as usize);
-                }
-                else {
+                } else {
                     return Err(error);
                 }
             }

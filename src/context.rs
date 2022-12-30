@@ -1,37 +1,14 @@
-use std::{
-    fmt,
-    io,
-};
+use std::{fmt, io};
 
-use termion::{
-    color,
-    style,
-};
+use termion::{color, style};
 
 use crate::{
     call_stack::CallStack,
-    functions::{
-        self,
-        Function,
-        Functions,
-        Scope,
-        Signatures,
-    },
-    pipeline::{
-        parser,
-        tokenizer::Source,
-    },
-    stack::{
-        self,
-        Stack,
-    },
-    value::{
-        self,
-        cast::TypeError,
-        v,
-    },
+    functions::{self, Function, Functions, Scope, Signatures},
+    pipeline::{parser, tokenizer::Source},
+    stack::{self, Stack},
+    value::{self, cast::TypeError, v},
 };
-
 
 pub trait Context<Host> {
     fn functions(&mut self) -> &mut Functions<Function<Host>>;
@@ -45,20 +22,19 @@ pub trait Context<Host> {
     fn load(&mut self, name: v::String, scope: Scope)
         -> Result<v::List, Error>;
 
-    fn evaluate_value(&mut self,
-        host:  &mut Host,
+    fn evaluate_value(
+        &mut self,
+        host: &mut Host,
         scope: Scope,
         value: value::Any,
-    )
-        -> Result<(), Error>;
+    ) -> Result<(), Error>;
 
-    fn evaluate_list(&mut self,
+    fn evaluate_list(
+        &mut self,
         host: &mut Host,
         list: v::List,
-    )
-        -> Result<(), Error>;
+    ) -> Result<(), Error>;
 }
-
 
 #[derive(Debug)]
 pub enum Error {
@@ -66,10 +42,10 @@ pub enum Error {
     DefineFunction(functions::DefineError),
     Failure,
     FunctionNotFound {
-        name:       String,
-        stack:      Stack,
+        name: String,
+        stack: Stack,
         candidates: Signatures,
-        scope:      String,
+        scope: String,
     },
     ModuleNotFound(String),
     Io(io::Error),
@@ -81,23 +57,28 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::Caller                  => (),
-            Error::DefineFunction(_)       => (),
-            Error::Failure                 => (),
+            Error::Caller => (),
+            Error::DefineFunction(_) => (),
+            Error::Failure => (),
             Error::FunctionNotFound { .. } => (),
-            Error::ModuleNotFound(_)       => (),
+            Error::ModuleNotFound(_) => (),
 
             Error::Parser(error) => error.sources(sources),
-            Error::Stack(error)  => error.sources(sources),
-            Error::Type(error)   => error.sources(sources),
+            Error::Stack(error) => error.sources(sources),
+            Error::Type(error) => error.sources(sources),
 
-            Error::Io(_)    => (),
+            Error::Io(_) => (),
         }
     }
 
     pub fn write_hint(&self, stderr: &mut dyn io::Write) -> io::Result<()> {
         match self {
-            Error::FunctionNotFound { stack, candidates, scope, .. } => {
+            Error::FunctionNotFound {
+                stack,
+                candidates,
+                scope,
+                ..
+            } => {
                 if candidates.len() > 0 {
                     write!(
                         stderr,
@@ -108,9 +89,11 @@ impl Error {
                     write!(
                         stderr,
                         "    {}{}{}{}{}\n\n",
-                        style::Bold, color::Fg(color::LightWhite),
+                        style::Bold,
+                        color::Fg(color::LightWhite),
                         stack,
-                        color::Fg(color::Reset), style::Reset,
+                        color::Fg(color::Reset),
+                        style::Reset,
                     )?;
 
                     write!(
@@ -122,8 +105,7 @@ impl Error {
                     for candidate in candidates {
                         write!(stderr, "    {:?}\n", candidate)?;
                     }
-                }
-                else {
+                } else {
                     write!(
                         stderr,
                         "{}No functions of that name found.{}\n",
@@ -145,10 +127,8 @@ impl Error {
                 )?;
 
                 Ok(())
-            },
-            _ => {
-                Ok(())
             }
+            _ => Ok(()),
         }
     }
 }
@@ -203,9 +183,9 @@ impl fmt::Display for Error {
             }
 
             Error::DefineFunction(error) => error.fmt(f),
-            Error::Parser(error)         => error.fmt(f),
-            Error::Stack(error)          => error.fmt(f),
-            Error::Type(error)           => error.fmt(f),
+            Error::Parser(error) => error.fmt(f),
+            Error::Stack(error) => error.fmt(f),
+            Error::Type(error) => error.fmt(f),
         }
     }
 }

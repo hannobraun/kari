@@ -2,13 +2,8 @@ use std::fmt;
 
 use crate::{
     pipeline::tokenizer::Source,
-    value::{
-        self,
-        Value,
-        cast::TypeError,
-    },
+    value::{self, cast::TypeError, Value},
 };
-
 
 #[derive(Clone, Debug)]
 pub struct Stack {
@@ -31,7 +26,7 @@ impl Stack {
         T::pop(self)
     }
 
-    pub fn peek(&self) -> impl Iterator<Item=&value::Any> + '_ {
+    pub fn peek(&self) -> impl Iterator<Item = &value::Any> + '_ {
         self.substacks.iter().flatten().rev()
     }
 
@@ -81,14 +76,13 @@ impl fmt::Display for Stack {
     }
 }
 
-
 pub trait Push {
     fn push(self, _: &mut Stack);
 }
 
 impl<T> Push for T
-    where
-        T: Value,
+where
+    T: Value,
 {
     fn push(self, stack: &mut Stack) {
         stack.push_raw(self.into_any())
@@ -96,9 +90,9 @@ impl<T> Push for T
 }
 
 impl<A, B> Push for (A, B)
-    where
-        A: Push,
-        B: Push,
+where
+    A: Push,
+    B: Push,
 {
     fn push(self, stack: &mut Stack) {
         stack.push(self.0);
@@ -106,15 +100,13 @@ impl<A, B> Push for (A, B)
     }
 }
 
-
-pub trait Pop : Sized {
+pub trait Pop: Sized {
     fn pop(_: &mut Stack) -> Result<Self, Error>;
 }
 
 impl Pop for value::Any {
     fn pop(stack: &mut Stack) -> Result<Self, Error> {
-        stack.pop_raw()
-            .ok_or(Error::StackEmpty)
+        stack.pop_raw().ok_or(Error::StackEmpty)
     }
 }
 
@@ -135,7 +127,6 @@ impl Pop for (value::Any, value::Any, value::Any) {
     }
 }
 
-
 #[derive(Debug)]
 pub enum Error {
     StackEmpty,
@@ -145,7 +136,7 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::StackEmpty     => (),
+            Error::StackEmpty => (),
             Error::TypeError(err) => err.sources(sources),
         }
     }
