@@ -26,7 +26,7 @@ pub struct Error {
 
 impl Error {
     pub fn print(
-        self,
+        &self,
         streams: &mut HashMap<String, Box<dyn Stream>>,
         stderr: &mut dyn io::Write,
     ) -> io::Result<()> {
