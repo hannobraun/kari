@@ -80,9 +80,9 @@ impl Error {
                 ..
             } => {
                 if !candidates.is_empty() {
-                    write!(
+                    writeln!(
                         stderr,
-                        "{}Values on stack:{}\n",
+                        "{}Values on stack:{}",
                         color::Fg(color::Cyan),
                         color::Fg(color::Reset),
                     )?;
@@ -96,27 +96,27 @@ impl Error {
                         style::Reset,
                     )?;
 
-                    write!(
+                    writeln!(
                         stderr,
-                        "{}Candidate functions:{}\n",
+                        "{}Candidate functions:{}",
                         color::Fg(color::Cyan),
                         color::Fg(color::Reset),
                     )?;
                     for candidate in candidates {
-                        write!(stderr, "    {:?}\n", candidate)?;
+                        writeln!(stderr, "    {:?}", candidate)?;
                     }
                 } else {
-                    write!(
+                    writeln!(
                         stderr,
-                        "{}No functions of that name found.{}\n",
+                        "{}No functions of that name found.{}",
                         color::Fg(color::Cyan),
                         color::Fg(color::Reset),
                     )?;
                 }
 
-                write!(
+                writeln!(
                     stderr,
-                    "{}Scope: {}{}{}`{}`{}{}\n",
+                    "{}Scope: {}{}{}`{}`{}{}",
                     color::Fg(color::Cyan),
                     color::Fg(color::Reset),
                     style::Bold,

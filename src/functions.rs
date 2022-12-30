@@ -305,14 +305,14 @@ pub struct DefineError {
 
 impl fmt::Display for DefineError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
+        writeln!(
             f,
-            "Conflicting function found defining `{}` in scope {}:\n",
+            "Conflicting function found defining `{}` in scope {}:",
             self.name, self.scope_id,
         )?;
 
         for conflicting in &self.conflicting {
-            write!(f, "{:?}\n", conflicting)?;
+            writeln!(f, "{:?}", conflicting)?;
         }
 
         Ok(())

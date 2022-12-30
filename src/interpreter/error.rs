@@ -73,7 +73,7 @@ impl Error {
             }
         }
 
-        write!(stderr, "\n")?;
+        writeln!(stderr)?;
 
         Ok(())
     }
@@ -143,9 +143,9 @@ where
     // where we need to render a span.
     let buffer = from_utf8(&buffer).unwrap();
 
-    write!(
+    writeln!(
         stderr,
-        "  {}=> {}{}:{}:{}{}\n",
+        "  {}=> {}{}:{}:{}{}",
         color::Fg(color::Magenta),
         color::Fg(color::LightBlue),
         src.stream,
@@ -153,15 +153,15 @@ where
         src.start.column + 1,
         color::Fg(color::Reset),
     )?;
-    write!(stderr, "\n")?;
+    writeln!(stderr)?;
 
     for (i, line) in buffer.lines().enumerate() {
         let line_number = src.start.line + i;
         let line_len = line.chars().count();
 
-        write!(
+        writeln!(
             stderr,
-            "{}{:5} {}| {}{}{}{}{}\n",
+            "{}{:5} {}| {}{}{}{}{}",
             color::Fg(color::LightBlue),
             line_number + 1,
             color::Fg(color::Magenta),
@@ -208,7 +208,7 @@ where
                 }
             }
         }
-        write!(stderr, "{}{}\n", style::Reset, color::Fg(color::Reset),)?;
+        writeln!(stderr, "{}{}", style::Reset, color::Fg(color::Reset),)?;
     }
 
     Ok(())
