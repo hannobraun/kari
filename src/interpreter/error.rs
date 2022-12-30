@@ -167,7 +167,7 @@ where
             color::Fg(color::Magenta),
             style::Bold,
             color::Fg(color::LightWhite),
-            line.replace("\t", "    "),
+            line.replace('\t', "    "),
             color::Fg(color::Reset),
             style::Reset,
         )?;
