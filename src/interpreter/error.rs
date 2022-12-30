@@ -223,14 +223,14 @@ where
 {
     stream.seek(SeekFrom::Start(from as u64 + 1))?;
 
-    while stream.seek(SeekFrom::Current(0))? > 1 {
+    while stream.stream_position()? > 1 {
         stream.seek(SeekFrom::Current(-2))?;
 
         let mut buffer = [0];
         stream.read(&mut buffer)?;
 
         if buffer[0] == b'\n' {
-            let pos = stream.seek(SeekFrom::Current(0))?;
+            let pos = stream.stream_position()?;
             return Ok(pos as usize);
         }
     }
@@ -245,13 +245,13 @@ where
     stream.seek(SeekFrom::Start(from as u64))?;
 
     loop {
-        let pos = stream.seek(SeekFrom::Current(0))?;
+        let pos = stream.stream_position()?;
 
         let mut buffer = [0];
         match stream.read(&mut buffer) {
             Ok(_) => {
                 if buffer[0] == b'\n' {
-                    let pos = stream.seek(SeekFrom::Current(0))?;
+                    let pos = stream.stream_position()?;
                     return Ok(pos as usize);
                 }
             }
