@@ -15,9 +15,7 @@ where
 {
     let reader = Reader::new(stream);
     let tokenizer = Tokenizer::new(reader, name);
-    let parser = Parser::new(tokenizer);
-
-    parser
+    Parser::new(tokenizer)
 }
 
 pub trait Stage {
