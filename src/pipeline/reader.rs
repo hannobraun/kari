@@ -62,7 +62,7 @@ where
                         return Err(Error::EndOfStream);
                     }
                     _ => {
-                        return Err(Error::Io(error).into());
+                        return Err(Error::Io(error));
                     }
                 },
             }
@@ -96,7 +96,7 @@ where
                 }
                 Err(error) => match self.buffer_i {
                     i if i == 4 => {
-                        return Err(Error::Utf8(error).into());
+                        return Err(Error::Utf8(error));
                     }
                     i if i < 4 => {
                         continue;
