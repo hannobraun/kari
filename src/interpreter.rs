@@ -105,7 +105,7 @@ impl<Host> Interpreter<Host> {
         host: &mut Host,
         name: Cow<str>,
         mut program: Box<dyn Stream>,
-    ) -> Result<Vec<value::Any>, ()> {
+    ) -> Result<Vec<value::Any>, Error> {
         let pipeline = pipeline::new(name.clone().into_owned(), &mut program);
 
         let result = self.evaluate_expressions(
@@ -121,7 +121,7 @@ impl<Host> Interpreter<Host> {
                 println!("Error printing error: {}", error)
             }
 
-            return Err(());
+            return Err(error);
         }
 
         Ok(self.stack.into_vec())
