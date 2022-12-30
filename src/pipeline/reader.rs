@@ -46,7 +46,7 @@ where
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
         loop {
             if self.buffer_i >= self.buffer.len() {
-                // This can only happen if an error occured before.
+                // This can only happen if an error occurred before.
                 return Err(Error::EndOfStream);
             }
 
