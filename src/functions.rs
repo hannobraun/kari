@@ -200,6 +200,15 @@ where
     }
 }
 
+impl<T> Default for Functions<T>
+where
+    T: Clone,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Scope {
     id: u64,

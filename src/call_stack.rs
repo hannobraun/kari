@@ -1,13 +1,13 @@
 use crate::{functions::Scope, pipeline::tokenizer::Source};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CallStack {
     pub frames: Vec<StackFrame>,
 }
 
 impl CallStack {
     pub fn new() -> Self {
-        Self { frames: Vec::new() }
+        Self::default()
     }
 
     pub fn operator(&self) -> &StackFrame {
