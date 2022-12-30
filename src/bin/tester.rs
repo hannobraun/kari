@@ -10,7 +10,7 @@ use walkdir::WalkDir;
 use kari::Interpreter;
 
 fn main() {
-    print!("\n");
+    println!();
 
     let mut results = Vec::new();
 
@@ -18,15 +18,15 @@ fn main() {
         let entry = result.unwrap_or_else(|error| {
             print!("ERROR: Error walking tests directory: {}", error,);
             if let Some(path) = error.path() {
-                print!(" ({})\n", path.display());
+                println!(" ({})", path.display());
             }
             exit(1);
         });
 
         let path = entry.path();
         let path = path.to_str().unwrap_or_else(|| {
-            print!(
-                "ERROR: Cannot convert path to UTF-8: {}\n",
+            println!(
+                "ERROR: Cannot convert path to UTF-8: {}",
                 path.to_string_lossy(),
             );
             exit(1);
@@ -48,7 +48,7 @@ fn main() {
             .with_default_builtins()
             .with_default_prelude(&mut ())
             .unwrap_or_else(|error| {
-                print!("ERROR: Failed to load prelude: {}\n", error);
+                println!("ERROR: Failed to load prelude: {}", error);
                 exit(1);
             })
             .with_default_modules()
@@ -59,8 +59,8 @@ fn main() {
 
     for (success, path) in results {
         if success.is_ok() {
-            print!(
-                "       {}{}OK{}{} {}\n",
+            println!(
+                "       {}{}OK{}{} {}",
                 style::Bold,
                 color::Fg(color::LightGreen),
                 color::Fg(color::Reset),
@@ -68,8 +68,8 @@ fn main() {
                 path,
             );
         } else {
-            print!(
-                "    {}{}ERROR{}{} {}\n",
+            println!(
+                "    {}{}ERROR{}{} {}",
                 style::Bold,
                 color::Fg(color::Red),
                 color::Fg(color::Reset),
@@ -79,5 +79,5 @@ fn main() {
         }
     }
 
-    print!("\n");
+    println!();
 }

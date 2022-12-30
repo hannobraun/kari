@@ -118,7 +118,7 @@ impl<Host> Interpreter<Host> {
 
             if let Err(error) = error.print(&mut self.streams, &mut self.stderr)
             {
-                print!("Error printing error: {}\n", error)
+                println!("Error printing error: {}", error)
             }
 
             return Err(());

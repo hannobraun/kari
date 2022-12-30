@@ -35,7 +35,7 @@ fn main() {
                 .with_default_builtins()
                 .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {
-                    print!("ERROR: Failed to load prelude: {}\n", error);
+                    println!("ERROR: Failed to load prelude: {}", error);
                     exit(1);
                 })
                 .with_default_modules()
@@ -48,7 +48,7 @@ fn main() {
                 .with_default_builtins()
                 .with_default_prelude(&mut ())
                 .unwrap_or_else(|error| {
-                    print!("ERROR: Failed to load prelude: {}\n", error);
+                    println!("ERROR: Failed to load prelude: {}", error);
                     exit(1);
                 })
                 .with_default_modules()

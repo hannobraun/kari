@@ -49,9 +49,9 @@ fn main() {
         .run(&mut host, "<program>".into(), Box::new(program))
         .expect("Error running Kari program");
 
-    print!("Result of the program:\n");
+    println!("Result of the program:");
     for value in stack {
-        print!("{}\n", value.kind);
+        println!("{}", value.kind);
     }
 }
 
