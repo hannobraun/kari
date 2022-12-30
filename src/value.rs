@@ -230,12 +230,12 @@ impl PartialEq for Kind {
     fn eq(&self, other: &Self) -> bool {
         // Determines equality based on data, ignoring spans.
         match (self, other) {
-            (Kind::Bool(a), Kind::Bool(b)) => return a == b,
-            (Kind::Float(a), Kind::Float(b)) => return a == b,
-            (Kind::Number(a), Kind::Number(b)) => return a == b,
-            (Kind::String(a), Kind::String(b)) => return a == b,
-            (Kind::Symbol(a), Kind::Symbol(b)) => return a == b,
-            (Kind::Word(a), Kind::Word(b)) => return a == b,
+            (Kind::Bool(a), Kind::Bool(b)) => a == b,
+            (Kind::Float(a), Kind::Float(b)) => a == b,
+            (Kind::Number(a), Kind::Number(b)) => a == b,
+            (Kind::String(a), Kind::String(b)) => a == b,
+            (Kind::Symbol(a), Kind::Symbol(b)) => a == b,
+            (Kind::Word(a), Kind::Word(b)) => a == b,
 
             (Kind::List(a), Kind::List(b)) => {
                 if a.items.len() != b.items.len() {
