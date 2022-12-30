@@ -112,7 +112,7 @@ where
         let functions = self.scopes.get(&scope).expect("Scope not found");
 
         let mut node = functions.get(name).ok_or_else(|| GetError {
-            candidates: self.candidates_for(&functions, name),
+            candidates: self.candidates_for(functions, name),
             scope: self.scope_name(scope),
         })?;
 
@@ -186,7 +186,7 @@ where
         while let Some(parent) = self.parents.get(&scope) {
             let parent_name = &self
                 .names
-                .get(&parent)
+                .get(parent)
                 // Shouldn't panic. If the scope exists, the name must exist.
                 .unwrap();
 
