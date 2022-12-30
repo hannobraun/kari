@@ -227,7 +227,7 @@ where
         stream.seek(SeekFrom::Current(-2))?;
 
         let mut buffer = [0];
-        stream.read(&mut buffer)?;
+        stream.read_exact(&mut buffer)?;
 
         if buffer[0] == b'\n' {
             let pos = stream.stream_position()?;
