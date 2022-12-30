@@ -196,16 +196,14 @@ where
         for column in 0..line_len {
             if column >= start_column && column < end_column {
                 write!(stderr, "^")?;
+            } else if line.chars().nth(column) == Some('\t') {
+                // Before we printed the line above, we replaced each tab with 4
+                // spaces. This means, if we encounter a tab here, we know that
+                // we can just replace it with 4 spaces to make everything line
+                // up.
+                write!(stderr, "    ")?;
             } else {
-                if line.chars().nth(column) == Some('\t') {
-                    // Before we printed the line above, we replaced each tab
-                    // with 4 spaces. This means, if we encounter a tab here, we
-                    // know that we can just replace it with 4 spaces to make
-                    // everything line up.
-                    write!(stderr, "    ")?;
-                } else {
-                    write!(stderr, " ")?;
-                }
+                write!(stderr, " ")?;
             }
         }
         writeln!(stderr, "{}{}", style::Reset, color::Fg(color::Reset),)?;
