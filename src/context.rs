@@ -79,7 +79,7 @@ impl Error {
                 scope,
                 ..
             } => {
-                if candidates.len() > 0 {
+                if !candidates.is_empty() {
                     write!(
                         stderr,
                         "{}Values on stack:{}\n",

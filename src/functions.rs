@@ -54,7 +54,7 @@ where
 
         let functions = self.scopes.get_mut(&scope).expect("Scope not found");
 
-        if args.len() == 0 {
+        if args.is_empty() {
             if let Some(node) = functions.get(&name) {
                 let mut conflicting = Vec::new();
                 node.all_paths(Vec::new(), &mut conflicting);
