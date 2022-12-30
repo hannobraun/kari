@@ -335,7 +335,7 @@ pub enum Function<H> {
 impl<H> Clone for Function<H> {
     fn clone(&self) -> Self {
         match self {
-            Function::Builtin(f) => Function::Builtin(f.clone()),
+            Function::Builtin(f) => Function::Builtin(*f),
             Function::UserDefined { body } => {
                 Function::UserDefined { body: body.clone() }
             }
