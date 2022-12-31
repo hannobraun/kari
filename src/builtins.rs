@@ -1,7 +1,6 @@
 use crate::{
     context::{self, Context},
     functions::{Function, Functions, Scope},
-    pipeline::tokenizer::Source,
     prelude::*,
     value::{self, t, v},
 };
@@ -145,7 +144,12 @@ fn eval<Host>(
     scope: Scope,
 ) -> Result {
     let list = context.stack().pop::<v::Any>()?.cast(t::List)?;
-    let span = context.call_stack().operator().clone().src.merge(&list.src);
+    let span = context
+        .call_stack()
+        .operator()
+        .clone()
+        .src
+        .merge(Some(&list.src));
 
     context.stack().create_substack();
 
@@ -185,7 +189,12 @@ fn to_list<Host>(
     let symbol = context.stack().pop::<v::Any>()?.cast(t::Symbol)?;
 
     let (word, span) = symbol.open();
-    let list_span = context.call_stack().operator().src.clone().merge(&span);
+    let list_span = context
+        .call_stack()
+        .operator()
+        .src
+        .clone()
+        .merge(Some(&span));
     let word = value::Any::new(value::Kind::Word(word), span);
 
     let list = v::List::new(
@@ -222,7 +231,7 @@ fn clone<Host>(
             .operator()
             .src
             .clone()
-            .merge(&expression.src.unwrap_or(Source::Null)),
+            .merge(expression.src.as_ref()),
     );
 
     context.stack().push((expression.clone(), expression));
@@ -284,7 +293,7 @@ fn list<Host>(
     for _ in 0..len.inner {
         let item = context.stack().pop::<v::Any>()?;
 
-        span = span.merge(item.src.as_ref().unwrap_or(&Source::Null));
+        span = span.merge(item.src.as_ref());
         items.insert(0, item);
     }
 
@@ -328,8 +337,8 @@ fn map<Host>(
             .operator()
             .src
             .clone()
-            .merge(&list.src)
-            .merge(&function.src),
+            .merge(Some(&list.src))
+            .merge(Some(&function.src)),
     );
     context.stack().push(data);
 
@@ -348,7 +357,7 @@ fn wrap<Host>(
         .operator()
         .src
         .clone()
-        .merge(arg.src.as_ref().unwrap_or(&Source::Null));
+        .merge(arg.src.as_ref());
     let list = v::List::new(
         value::ListInner::from_values(
             vec![arg],
@@ -389,8 +398,8 @@ fn prepend<Host>(
         .operator()
         .src
         .clone()
-        .merge(&list.src)
-        .merge(arg.src.as_ref().unwrap_or(&Source::Null));
+        .merge(Some(&list.src))
+        .merge(arg.src.as_ref());
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -411,8 +420,8 @@ fn append<Host>(
         .operator()
         .src
         .clone()
-        .merge(&list.src)
-        .merge(arg.src.as_ref().unwrap_or(&Source::Null));
+        .merge(Some(&list.src))
+        .merge(arg.src.as_ref());
     list.inner.items.push(arg);
 
     context.stack().push(list);
