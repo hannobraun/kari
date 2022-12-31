@@ -12,10 +12,7 @@ use crate::{
     call_stack::CallStack,
     context,
     interpreter::stream::Stream,
-    pipeline::{
-        parser,
-        tokenizer::{source, Source},
-    },
+    pipeline::{parser, tokenizer::Source},
 };
 
 #[derive(Debug)]
@@ -44,11 +41,7 @@ impl Error {
         self.kind.sources(&mut sources);
 
         for source in sources {
-            match source {
-                Source::Continuous(source) => {
-                    print_source(source, streams, stderr)?;
-                }
-            }
+            print_source(source, streams, stderr)?;
         }
 
         self.kind.write_hint(stderr)?;
@@ -64,7 +57,7 @@ impl Error {
                 None => {
                     panic!("Tried to format a null source");
                 }
-                Some(Source::Continuous(src)) => {
+                Some(src) => {
                     print_source(src, streams, stderr)?;
                 }
             }
@@ -120,7 +113,7 @@ impl From<parser::Error> for ErrorKind {
 }
 
 fn print_source<Stream>(
-    src: &source::Continuous,
+    src: &Source,
     streams: &mut HashMap<String, Stream>,
     stderr: &mut dyn io::Write,
 ) -> io::Result<()>

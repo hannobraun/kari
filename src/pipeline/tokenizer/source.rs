@@ -4,9 +4,15 @@ use crate::pipeline::reader::Position;
 ///
 /// Used to identify where tokens, values, etc. originate in the source code.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Source {
-    /// A source that consists of a single region in a single file
-    Continuous(Continuous),
+pub struct Source {
+    /// The stream this source refers to
+    pub stream: String,
+
+    /// The position in the stream of this source's first character
+    pub start: Position,
+
+    /// The position in the stream of this source's last character
+    pub end: Position,
 }
 
 pub trait Merge {
@@ -17,10 +23,10 @@ impl Merge for Option<Source> {
     fn merge(self, other: Self) -> Self {
         match self {
             None => other.clone(),
-            Some(Source::Continuous(mut self_)) => {
+            Some(mut self_) => {
                 match other {
-                    None => Some(Source::Continuous(self_)),
-                    Some(Source::Continuous(other)) => {
+                    None => Some(self_),
+                    Some(other) => {
                         // The following code obviously assumes something like
                         // the this assertion, but uncommenting the assertion
                         // will result in panics. This has been documented in
@@ -34,29 +40,10 @@ impl Merge for Option<Source> {
                             self_.end = other.end;
                         }
 
-                        Some(Source::Continuous(self_))
+                        Some(self_)
                     }
                 }
             }
         }
-    }
-}
-
-/// A source that consists of a single region in a single file
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub struct Continuous {
-    /// The stream this source refers to
-    pub stream: String,
-
-    /// The position in the stream of this source's first character
-    pub start: Position,
-
-    /// The position in the stream of this source's last character
-    pub end: Position,
-}
-
-impl Continuous {
-    pub fn into_source(self) -> Source {
-        Source::Continuous(self)
     }
 }
