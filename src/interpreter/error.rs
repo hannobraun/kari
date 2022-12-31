@@ -64,10 +64,10 @@ impl Error {
                 color::Fg(color::Reset),
             )?;
             match &stack_frame.src {
-                Source::Null => {
+                None | Some(Source::Null) => {
                     panic!("Tried to format a null source");
                 }
-                Source::Continuous(src) => {
+                Some(Source::Continuous(src)) => {
                     print_source(src, streams, stderr)?;
                 }
             }
