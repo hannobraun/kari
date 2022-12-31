@@ -32,7 +32,7 @@ impl Expression {
 
         Self {
             kind,
-            src: token.src,
+            src: token.src.unwrap_or(Source::Null),
         }
     }
 }

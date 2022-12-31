@@ -32,7 +32,9 @@ where
         let token = self.tokenizer.next()?;
 
         let expr = match token.kind {
-            token::Kind::ListOpen => self.parse_list(token.src)?,
+            token::Kind::ListOpen => {
+                self.parse_list(token.src.unwrap_or(Source::Null))?
+            }
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
@@ -57,11 +59,13 @@ where
             let token = self.tokenizer.next()?;
 
             list_source = Some(list_source)
-                .merge(Some(token.src.clone()))
+                .merge(token.src.clone())
                 .unwrap_or(Source::Null);
 
             let expr = match token.kind {
-                token::Kind::ListOpen => self.parse_list(token.src)?,
+                token::Kind::ListOpen => {
+                    self.parse_list(token.src.unwrap_or(Source::Null))?
+                }
                 token::Kind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
@@ -86,7 +90,9 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::UnexpectedToken(token) => sources.push(&token.src),
+            Error::UnexpectedToken(token) => {
+                sources.push(token.src.as_ref().unwrap_or(&Source::Null))
+            }
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream => (),

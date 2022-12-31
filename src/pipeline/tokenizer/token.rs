@@ -7,7 +7,7 @@ use super::Source;
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub src: Source,
+    pub src: Option<Source>,
 }
 
 #[derive(Clone, Debug)]
