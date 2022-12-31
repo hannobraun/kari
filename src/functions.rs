@@ -369,7 +369,7 @@ mod tests {
     type Result = std::result::Result<(), DefineError>;
 
     #[test]
-    fn it_should_return_none_if_function_wasnt_defined() {
+    fn it_should_return_none_if_function_was_not_defined() {
         let functions = Functions::<()>::new();
         let scope = functions.root_scope();
         let stack = Stack::new();
@@ -434,7 +434,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_return_list_of_candidates_if_function_doesnt_match_stack(
+    fn it_should_return_list_of_candidates_if_function_does_not_match_stack(
     ) -> Result {
         let mut functions = Functions::new();
         let scope = functions.root_scope();
