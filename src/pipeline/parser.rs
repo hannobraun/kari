@@ -9,6 +9,8 @@ use crate::pipeline::{
     tokenizer::{self, token, Source, Token},
 };
 
+use super::tokenizer::source::Merge;
+
 pub struct Parser<Tokenizer> {
     tokenizer: Tokenizer,
 }
@@ -54,7 +56,7 @@ where
         loop {
             let token = self.tokenizer.next()?;
 
-            list_source = list_source
+            list_source = Some(list_source)
                 .merge(Some(token.src.clone()))
                 .unwrap_or(Source::Null);
 

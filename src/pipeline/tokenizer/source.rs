@@ -15,14 +15,20 @@ pub enum Source {
     Continuous(Continuous),
 }
 
-impl Source {
-    pub fn merge(self, other: Option<Self>) -> Option<Self> {
+pub trait Merge {
+    fn merge(self, other: Self) -> Self;
+}
+
+impl Merge for Option<Source> {
+    fn merge(self, other: Self) -> Self {
         match self {
-            Source::Null => other,
-            Source::Continuous(mut self_) => {
-                match other.unwrap_or(Source::Null) {
-                    Source::Null => Some(Source::Continuous(self_)),
-                    Source::Continuous(other) => {
+            None | Some(Source::Null) => other.clone(),
+            Some(Source::Continuous(mut self_)) => {
+                match other {
+                    None | Some(Source::Null) => {
+                        Some(Source::Continuous(self_))
+                    }
+                    Some(Source::Continuous(other)) => {
                         // The following code obviously assumes something like
                         // the this assertion, but uncommenting the assertion
                         // will result in panics. This has been documented in

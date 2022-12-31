@@ -15,7 +15,7 @@ use crate::{
     pipeline::{
         self,
         parser::{self, Expression},
-        tokenizer::Source,
+        tokenizer::{source::Merge, Source},
     },
     prelude::*,
     stack::Stack,
@@ -220,7 +220,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         Ok(v::List::new(
             value::ListInner::from_expressions(expressions, module_scope),
-            start.merge(Some(end)).unwrap_or(Source::Null),
+            Some(start).merge(Some(end)).unwrap_or(Source::Null),
         ))
     }
 
