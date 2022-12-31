@@ -32,9 +32,7 @@ where
         let token = self.tokenizer.next()?;
 
         let expr = match token.kind {
-            token::Kind::ListOpen => {
-                self.parse_list(token.src.unwrap_or(Source::Null))?
-            }
+            token::Kind::ListOpen => self.parse_list(token.src)?,
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
@@ -51,25 +49,21 @@ where
 {
     fn parse_list(
         &mut self,
-        mut list_source: Source,
+        mut list_source: Option<Source>,
     ) -> Result<Expression, Error> {
         let mut expressions = Vec::new();
 
         loop {
             let token = self.tokenizer.next()?;
 
-            list_source = Some(list_source)
-                .merge(token.src.clone())
-                .unwrap_or(Source::Null);
+            list_source = list_source.merge(token.src.clone());
 
             let expr = match token.kind {
-                token::Kind::ListOpen => {
-                    self.parse_list(token.src.unwrap_or(Source::Null))?
-                }
+                token::Kind::ListOpen => self.parse_list(token.src)?,
                 token::Kind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
-                        src: list_source,
+                        src: list_source.unwrap_or(Source::Null),
                     });
                 }
                 _ => Expression::from_token(token),
