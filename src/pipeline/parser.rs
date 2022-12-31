@@ -54,7 +54,7 @@ where
         loop {
             let token = self.tokenizer.next()?;
 
-            list_source = list_source.merge(Some(&token.src));
+            list_source = list_source.merge(Some(token.src.clone()));
 
             let expr = match token.kind {
                 token::Kind::ListOpen => self.parse_list(token.src)?,

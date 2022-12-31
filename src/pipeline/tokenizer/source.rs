@@ -16,11 +16,11 @@ pub enum Source {
 }
 
 impl Source {
-    pub fn merge(self, other: Option<&Self>) -> Self {
+    pub fn merge(self, other: Option<Self>) -> Self {
         match self {
-            Source::Null => other.cloned().unwrap_or(Source::Null),
+            Source::Null => other.unwrap_or(Source::Null),
             Source::Continuous(mut self_) => {
-                match other.unwrap_or(&Source::Null) {
+                match other.unwrap_or(Source::Null) {
                     Source::Null => Source::Continuous(self_),
                     Source::Continuous(other) => {
                         // The following code obviously assumes something like

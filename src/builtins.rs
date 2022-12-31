@@ -151,7 +151,7 @@ fn eval<Host>(
         .operator()
         .clone()
         .src
-        .map(|src| src.merge(Some(&list.src)))
+        .map(|src| src.merge(Some(list.src.clone())))
         .unwrap_or(Source::Null);
 
     context.stack().create_substack();
@@ -197,7 +197,7 @@ fn to_list<Host>(
         .operator()
         .src
         .clone()
-        .map(|src| src.merge(Some(&span)))
+        .map(|src| src.merge(Some(span.clone())))
         .unwrap_or(Source::Null);
     let word = value::Any::new(value::Kind::Word(word), span);
 
@@ -234,7 +234,7 @@ fn clone<Host>(
         .operator()
         .src
         .clone()
-        .map(|src| src.merge(expression.src.as_ref()));
+        .map(|src| src.merge(expression.src));
 
     context.stack().push((expression.clone(), expression));
 
@@ -295,7 +295,7 @@ fn list<Host>(
     for _ in 0..len.inner {
         let item = context.stack().pop::<v::Any>()?;
 
-        span = span.merge(item.src.as_ref());
+        span = span.merge(item.src.clone());
         items.insert(0, item);
     }
 
@@ -339,7 +339,7 @@ fn map<Host>(
             .operator()
             .src
             .clone()
-            .map(|src| src.merge(Some(&list.src)).merge(Some(&function.src)))
+            .map(|src| src.merge(Some(list.src)).merge(Some(function.src)))
             .unwrap_or(Source::Null),
     );
     context.stack().push(data);
@@ -359,7 +359,7 @@ fn wrap<Host>(
         .operator()
         .src
         .clone()
-        .map(|src| src.merge(arg.src.as_ref()))
+        .map(|src| src.merge(arg.src.clone()))
         .unwrap_or(Source::Null);
     let list = v::List::new(
         value::ListInner::from_values(
@@ -401,7 +401,7 @@ fn prepend<Host>(
         .operator()
         .src
         .clone()
-        .map(|src| src.merge(Some(&list.src)).merge(arg.src.as_ref()))
+        .map(|src| src.merge(Some(list.src)).merge(arg.src.clone()))
         .unwrap_or(Source::Null);
     list.inner.items.insert(0, arg);
 
@@ -423,7 +423,7 @@ fn append<Host>(
         .operator()
         .src
         .clone()
-        .map(|src| src.merge(Some(&list.src)).merge(arg.src.as_ref()))
+        .map(|src| src.merge(Some(list.src)).merge(arg.src.clone()))
         .unwrap_or(Source::Null);
     list.inner.items.push(arg);
 
