@@ -23,7 +23,7 @@ where
         F: FnOnce(Self::In) -> R,
     {
         let (inner, span) = self.open();
-        Out::new(f(inner), span)
+        Out::new(f(inner), span.unwrap_or(Source::Null))
     }
 }
 
@@ -43,7 +43,7 @@ where
         let (b_inner, b_span) = self.1.open();
         Out::new(
             f((a_inner, b_inner)),
-            Some(a_span).merge(Some(b_span)).unwrap_or(Source::Null),
+            a_span.merge(b_span).unwrap_or(Source::Null),
         )
     }
 }

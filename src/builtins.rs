@@ -197,9 +197,10 @@ fn to_list<Host>(
         .operator()
         .src
         .clone()
-        .merge(Some(span.clone()))
+        .merge(span.clone())
         .unwrap_or(Source::Null);
-    let word = value::Any::new(value::Kind::Word(word), span);
+    let word =
+        value::Any::new(value::Kind::Word(word), span.unwrap_or(Source::Null));
 
     let list = v::List::new(
         value::ListInner::from_values(

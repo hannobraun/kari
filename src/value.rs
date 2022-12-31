@@ -18,7 +18,7 @@ pub trait Value: Sized {
     type Inner;
 
     fn new(_: Self::Inner, _: Source) -> Self;
-    fn open(self) -> (Self::Inner, Source);
+    fn open(self) -> (Self::Inner, Option<Source>);
 
     fn into_any(self) -> Any;
 }
@@ -61,8 +61,8 @@ impl Value for Any {
         }
     }
 
-    fn open(self) -> (Self::Inner, Source) {
-        (self.kind, self.src.unwrap_or(Source::Null))
+    fn open(self) -> (Self::Inner, Option<Source>) {
+        (self.kind, self.src)
     }
 
     fn into_any(self) -> Any {
@@ -121,8 +121,8 @@ macro_rules! kinds {
                         }
                     }
 
-                    fn open(self) -> (Self::Inner, Source) {
-                        (self.inner, self.src)
+                    fn open(self) -> (Self::Inner, Option<Source>) {
+                        (self.inner, Some(self.src))
                     }
 
                     fn into_any(self) -> Any {
