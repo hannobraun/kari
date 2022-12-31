@@ -84,9 +84,7 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
         match self {
-            Error::UnexpectedToken(token) => {
-                sources.push(token.src.as_ref().unwrap_or(&Source::Null))
-            }
+            Error::UnexpectedToken(token) => sources.extend(token.src.as_ref()),
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream => (),
