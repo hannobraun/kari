@@ -1,20 +1,26 @@
 [package]
-name    = "kari"
+name = "kari"
 version = "0.1.0"
 authors = ["Hanno Braun <hanno@braun-odw.eu>"]
 edition = "2018"
 
-description   = "An embeddable programming language, writting in and for Rust"
+description = "An embeddable programming language, writting in and for Rust"
 documentation = "https://docs.rs/kari"
-repository    = "https://github.com/kari-lang/kari/"
-readme        = "README.md"
-keywords      = ["embeddable", "programming", "language", "scripting", "configuration"]
-categories    = ["command-line-utilities", "config", "development-tools"]
-license       = "0BSD"
+repository = "https://github.com/kari-lang/kari/"
+readme = "README.md"
+keywords = [
+    "embeddable",
+    "programming",
+    "language",
+    "scripting",
+    "configuration",
+]
+categories = ["command-line-utilities", "config", "development-tools"]
+license = "0BSD"
 
 [dependencies]
 acc_reader = "2.0.0"
-decorum    = "0.3.1"
-structopt  = "0.3.15"
-termion    = "1.5.5"
-walkdir    = "2.3.1"
+decorum = "0.3.1"
+structopt = "0.3.15"
+termion = "1.5.5"
+walkdir = "2.3.1"
