@@ -46,7 +46,7 @@ impl Any {
 
         Self {
             kind,
-            src: Some(expression.src),
+            src: expression.src,
         }
     }
 }

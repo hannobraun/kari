@@ -4,7 +4,7 @@ use crate::pipeline::tokenizer::{token, Source, Token};
 
 pub struct Expression {
     pub kind: Kind,
-    pub src: Source,
+    pub src: Option<Source>,
 }
 
 pub enum Kind {
@@ -32,7 +32,7 @@ impl Expression {
 
         Self {
             kind,
-            src: token.src.unwrap_or(Source::Null),
+            src: token.src,
         }
     }
 }

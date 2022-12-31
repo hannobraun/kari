@@ -209,9 +209,12 @@ impl<Host> Context<Host> for Interpreter<Host> {
             }
         }
 
-        let start =
-            expressions.first().map(|expression| expression.src.clone());
-        let end = expressions.last().map(|expression| expression.src.clone());
+        let start = expressions
+            .first()
+            .and_then(|expression| expression.src.clone());
+        let end = expressions
+            .last()
+            .and_then(|expression| expression.src.clone());
 
         Ok(v::List::new(
             value::ListInner::from_expressions(expressions, module_scope),

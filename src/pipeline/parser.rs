@@ -63,7 +63,7 @@ where
                 token::Kind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
-                        src: list_source.unwrap_or(Source::Null),
+                        src: list_source,
                     });
                 }
                 _ => Expression::from_token(token),
