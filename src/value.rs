@@ -26,7 +26,7 @@ pub trait Value: Sized {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
-    pub src: Source,
+    pub src: Option<Source>,
 }
 
 impl Any {
@@ -46,7 +46,7 @@ impl Any {
 
         Self {
             kind,
-            src: expression.src,
+            src: Some(expression.src),
         }
     }
 }
@@ -55,11 +55,14 @@ impl Value for Any {
     type Inner = Kind;
 
     fn new(kind: Self::Inner, src: Source) -> Self {
-        Self { kind, src }
+        Self {
+            kind,
+            src: Some(src),
+        }
     }
 
     fn open(self) -> (Self::Inner, Source) {
-        (self.kind, self.src)
+        (self.kind, self.src.unwrap_or(Source::Null))
     }
 
     fn into_any(self) -> Any {
@@ -125,7 +128,7 @@ macro_rules! kinds {
                     fn into_any(self) -> Any {
                         Any {
                             kind: Kind::$ty(self.inner),
-                            src:  self.src,
+                            src:  Some(self.src),
                         }
                     }
                 }
@@ -144,7 +147,7 @@ macro_rules! kinds {
                     fn from(ty: $ty) -> Self {
                         Any {
                             kind: Kind::$ty(ty.inner),
-                            src:  ty.src,
+                            src:  Some(ty.src),
                         }
                     }
                 }
@@ -152,19 +155,22 @@ macro_rules! kinds {
         }
 
         pub mod t {
-            use crate::value::{
-                self,
-                Value,
-                cast::{
-                    Downcast,
-                    TypeError,
-                },
-                types::{
+            use crate::{
+                pipeline::tokenizer::Source,
+                value::{
                     self,
-                    Type,
-                    Typed,
+                    Value,
+                    cast::{
+                        Downcast,
+                        TypeError,
+                    },
+                    types::{
+                        self,
+                        Type,
+                        Typed,
+                    },
+                    v,
                 },
-                v,
             };
 
 
@@ -197,7 +203,7 @@ macro_rules! kinds {
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {
-                                Ok(Value::new(value, any.src))
+                                Ok(Value::new(value, any.src.unwrap_or(Source::Null)))
                             }
                             _ => {
                                 Err(

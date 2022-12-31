@@ -71,7 +71,7 @@ pub struct TypeError {
 
 impl TypeError {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
-        sources.push(&self.actual.src);
+        sources.push(self.actual.src.as_ref().unwrap_or(&Source::Null));
     }
 }
 
