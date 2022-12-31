@@ -1,3 +1,5 @@
+use crate::pipeline::tokenizer::Source;
+
 use super::Value;
 
 pub trait Compute {
@@ -39,6 +41,9 @@ where
     {
         let (a_inner, a_span) = self.0.open();
         let (b_inner, b_span) = self.1.open();
-        Out::new(f((a_inner, b_inner)), a_span.merge(Some(b_span)))
+        Out::new(
+            f((a_inner, b_inner)),
+            a_span.merge(Some(b_span)).unwrap_or(Source::Null),
+        )
     }
 }

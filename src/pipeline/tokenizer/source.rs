@@ -16,12 +16,12 @@ pub enum Source {
 }
 
 impl Source {
-    pub fn merge(self, other: Option<Self>) -> Self {
+    pub fn merge(self, other: Option<Self>) -> Option<Self> {
         match self {
-            Source::Null => other.unwrap_or(Source::Null),
+            Source::Null => other,
             Source::Continuous(mut self_) => {
                 match other.unwrap_or(Source::Null) {
-                    Source::Null => Source::Continuous(self_),
+                    Source::Null => Some(Source::Continuous(self_)),
                     Source::Continuous(other) => {
                         // The following code obviously assumes something like
                         // the this assertion, but uncommenting the assertion
@@ -36,7 +36,7 @@ impl Source {
                             self_.end = other.end;
                         }
 
-                        Source::Continuous(self_)
+                        Some(Source::Continuous(self_))
                     }
                 }
             }
