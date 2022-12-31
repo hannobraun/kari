@@ -105,7 +105,7 @@ macro_rules! kinds {
                 #[derive(Clone, Debug, Eq, PartialEq)]
                 pub struct $ty {
                     pub inner: $inner,
-                    pub src:   Source,
+                    pub src:   Option<Source>,
                 }
 
                 impl Value for $ty {
@@ -114,18 +114,18 @@ macro_rules! kinds {
                     fn new(inner: $inner, src: Option<Source>) -> Self {
                         Self {
                             inner,
-                            src: src.unwrap_or(Source::Null),
+                            src,
                         }
                     }
 
                     fn open(self) -> (Self::Inner, Option<Source>) {
-                        (self.inner, Some(self.src))
+                        (self.inner, self.src)
                     }
 
                     fn into_any(self) -> Any {
                         Any {
                             kind: Kind::$ty(self.inner),
-                            src:  Some(self.src),
+                            src:  self.src,
                         }
                     }
                 }
@@ -134,7 +134,7 @@ macro_rules! kinds {
                     fn from(inner: $inner) -> Self {
                         $ty {
                             inner,
-                            src: Source::Null,
+                            src: None,
                         }
                     }
                 }
@@ -144,7 +144,7 @@ macro_rules! kinds {
                     fn from(ty: $ty) -> Self {
                         Any {
                             kind: Kind::$ty(ty.inner),
-                            src:  Some(ty.src),
+                            src:  ty.src,
                         }
                     }
                 }

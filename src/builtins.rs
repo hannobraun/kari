@@ -1,7 +1,7 @@
 use crate::{
     context::{self, Context},
     functions::{Function, Functions, Scope},
-    pipeline::tokenizer::{source::Merge, Source},
+    pipeline::tokenizer::source::Merge,
     prelude::*,
     value::{self, t, v},
 };
@@ -150,7 +150,7 @@ fn eval<Host>(
         .operator()
         .clone()
         .src
-        .merge(Some(list.src.clone()));
+        .merge(list.src.clone());
 
     context.stack().create_substack();
 
@@ -292,7 +292,7 @@ fn list<Host>(
     for _ in 0..len.inner {
         let item = context.stack().pop::<v::Any>()?;
 
-        span = Some(span).merge(item.src.clone()).unwrap_or(Source::Null);
+        span = span.merge(item.src.clone());
         items.insert(0, item);
     }
 
@@ -301,7 +301,7 @@ fn list<Host>(
             items,
             context.functions().new_scope(scope, "list"),
         ),
-        Some(span),
+        span,
     );
 
     context.stack().push(list);
@@ -336,7 +336,7 @@ fn map<Host>(
             .operator()
             .src
             .clone()
-            .merge(Some(list.src).merge(Some(function.src))),
+            .merge(list.src.merge(function.src)),
     );
     context.stack().push(data);
 
@@ -396,8 +396,7 @@ fn prepend<Host>(
         .operator()
         .src
         .clone()
-        .merge(Some(list.src).merge(arg.src.clone()))
-        .unwrap_or(Source::Null);
+        .merge(list.src.merge(arg.src.clone()));
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -418,8 +417,7 @@ fn append<Host>(
         .operator()
         .src
         .clone()
-        .merge(Some(list.src).merge(arg.src.clone()))
-        .unwrap_or(Source::Null);
+        .merge(list.src.merge(arg.src.clone()));
     list.inner.items.push(arg);
 
     context.stack().push(list);
