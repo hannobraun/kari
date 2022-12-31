@@ -128,10 +128,9 @@ fn caller<Host>(
         None => return Err(context::Error::Caller),
     };
 
-    context.stack().push(v::Scope::new(
-        caller.scope,
-        caller.src.unwrap_or(Source::Null),
-    ));
+    context
+        .stack()
+        .push(v::Scope::new(caller.scope, caller.src));
 
     Ok(())
 }
@@ -151,8 +150,7 @@ fn eval<Host>(
         .operator()
         .clone()
         .src
-        .merge(Some(list.src.clone()))
-        .unwrap_or(Source::Null);
+        .merge(Some(list.src.clone()));
 
     context.stack().create_substack();
 
@@ -197,10 +195,8 @@ fn to_list<Host>(
         .operator()
         .src
         .clone()
-        .merge(span.clone())
-        .unwrap_or(Source::Null);
-    let word =
-        value::Any::new(value::Kind::Word(word), span.unwrap_or(Source::Null));
+        .merge(span.clone());
+    let word = value::Any::new(value::Kind::Word(word), span);
 
     let list = v::List::new(
         value::ListInner::from_values(
@@ -305,7 +301,7 @@ fn list<Host>(
             items,
             context.functions().new_scope(scope, "list"),
         ),
-        span,
+        Some(span),
     );
 
     context.stack().push(list);
@@ -340,8 +336,7 @@ fn map<Host>(
             .operator()
             .src
             .clone()
-            .merge(Some(list.src).merge(Some(function.src)))
-            .unwrap_or(Source::Null),
+            .merge(Some(list.src).merge(Some(function.src))),
     );
     context.stack().push(data);
 
@@ -360,8 +355,7 @@ fn wrap<Host>(
         .operator()
         .src
         .clone()
-        .merge(arg.src.clone())
-        .unwrap_or(Source::Null);
+        .merge(arg.src.clone());
     let list = v::List::new(
         value::ListInner::from_values(
             vec![arg],

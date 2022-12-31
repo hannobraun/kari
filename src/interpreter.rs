@@ -220,7 +220,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         Ok(v::List::new(
             value::ListInner::from_expressions(expressions, module_scope),
-            Some(start).merge(Some(end)).unwrap_or(Source::Null),
+            Some(start).merge(Some(end)),
         ))
     }
 

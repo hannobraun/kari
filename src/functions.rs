@@ -358,7 +358,6 @@ pub type Builtin<Host> =
 #[cfg(test)]
 mod tests {
     use crate::{
-        pipeline::tokenizer::Source,
         prelude::*,
         stack::Stack,
         value::{t, types::Type, v},
@@ -387,8 +386,8 @@ mod tests {
 
         functions.define(scope, "a", &[&t::Number, &t::Float], 1)?;
         stack
-            .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0.into(), Source::Null));
+            .push(v::Number::new(0, None))
+            .push(v::Float::new(0.0.into(), None));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -407,8 +406,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Number, &t::Number], 2)?;
         stack
-            .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0.into(), Source::Null));
+            .push(v::Number::new(0, None))
+            .push(v::Float::new(0.0.into(), None));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -424,8 +423,8 @@ mod tests {
 
         functions.define(scope, "a", &[], 1)?;
         stack
-            .push(v::Number::new(0, Source::Null))
-            .push(v::Float::new(0.0.into(), Source::Null));
+            .push(v::Number::new(0, None))
+            .push(v::Float::new(0.0.into(), None));
 
         let result = functions.get(scope, "a", &stack);
 
@@ -444,8 +443,8 @@ mod tests {
             .define(scope, "a", &[&t::Number, &t::Float], 1)?
             .define(scope, "a", &[&t::Float, &t::Float], 2)?;
         stack
-            .push(v::Number::new(0, Source::Null))
-            .push(v::Number::new(0, Source::Null));
+            .push(v::Number::new(0, None))
+            .push(v::Number::new(0, None));
 
         let error = match functions.get(scope, "a", &stack) {
             Ok(_) => panic!("Expected error"),

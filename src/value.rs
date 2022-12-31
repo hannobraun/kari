@@ -17,7 +17,7 @@ use crate::{
 pub trait Value: Sized {
     type Inner;
 
-    fn new(_: Self::Inner, _: Source) -> Self;
+    fn new(_: Self::Inner, _: Option<Source>) -> Self;
     fn open(self) -> (Self::Inner, Option<Source>);
 
     fn into_any(self) -> Any;
@@ -54,11 +54,8 @@ impl Any {
 impl Value for Any {
     type Inner = Kind;
 
-    fn new(kind: Self::Inner, src: Source) -> Self {
-        Self {
-            kind,
-            src: Some(src),
-        }
+    fn new(kind: Self::Inner, src: Option<Source>) -> Self {
+        Self { kind, src }
     }
 
     fn open(self) -> (Self::Inner, Option<Source>) {
@@ -114,10 +111,10 @@ macro_rules! kinds {
                 impl Value for $ty {
                     type Inner = $inner;
 
-                    fn new(inner: $inner, src: Source) -> Self {
+                    fn new(inner: $inner, src: Option<Source>) -> Self {
                         Self {
                             inner,
-                            src,
+                            src: src.unwrap_or(Source::Null),
                         }
                     }
 
@@ -156,7 +153,6 @@ macro_rules! kinds {
 
         pub mod t {
             use crate::{
-                pipeline::tokenizer::Source,
                 value::{
                     self,
                     Value,
@@ -203,7 +199,7 @@ macro_rules! kinds {
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {
-                                Ok(Value::new(value, any.src.unwrap_or(Source::Null)))
+                                Ok(Value::new(value, any.src))
                             }
                             _ => {
                                 Err(

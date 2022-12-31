@@ -1,4 +1,4 @@
-use crate::pipeline::tokenizer::{source::Merge, Source};
+use crate::pipeline::tokenizer::source::Merge;
 
 use super::Value;
 
@@ -23,7 +23,7 @@ where
         F: FnOnce(Self::In) -> R,
     {
         let (inner, span) = self.open();
-        Out::new(f(inner), span.unwrap_or(Source::Null))
+        Out::new(f(inner), span)
     }
 }
 
@@ -41,9 +41,6 @@ where
     {
         let (a_inner, a_span) = self.0.open();
         let (b_inner, b_span) = self.1.open();
-        Out::new(
-            f((a_inner, b_inner)),
-            a_span.merge(b_span).unwrap_or(Source::Null),
-        )
+        Out::new(f((a_inner, b_inner)), a_span.merge(b_span))
     }
 }
