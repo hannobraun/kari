@@ -63,7 +63,7 @@ impl<Host> Interpreter<Host> {
         self.evaluate_expressions(
             host,
             self.functions.root_scope(),
-            prelude_pipeline,
+            prelude_pipeline.parser,
         )?;
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -109,7 +109,7 @@ impl<Host> Interpreter<Host> {
         let result = self.evaluate_expressions(
             host,
             self.functions.root_scope(),
-            pipeline,
+            pipeline.parser,
         );
         if let Err(error) = result {
             self.streams.insert(name.into_owned(), program);
@@ -196,11 +196,11 @@ impl<Host> Context<Host> for Interpreter<Host> {
             None => return Err(context::Error::ModuleNotFound(name)),
         };
 
-        let mut parser = pipeline::new(name, stream.as_mut());
+        let mut pipeline = pipeline::new(name, stream.as_mut());
         let mut expressions = Vec::new();
 
         loop {
-            match parser.next_expression() {
+            match pipeline.parser.next_expression() {
                 Ok(expression) => expressions.push(expression),
                 Err(parser::Error::EndOfStream) => break,
                 Err(error) => return Err(error.into()),
