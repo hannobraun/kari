@@ -8,8 +8,6 @@ use std::{
     str::{self, Utf8Error},
 };
 
-use crate::pipeline;
-
 /// Converts a stream of bytes into a stream of UTF-8 characters
 pub struct Reader<R> {
     input: R,
@@ -37,14 +35,12 @@ impl<R> Reader<R> {
     }
 }
 
-impl<R> pipeline::Stage for Reader<R>
+impl<R> Reader<R>
 where
     R: io::Read,
 {
-    type Item = Char;
-    type Error = Error;
-
-    fn next(&mut self) -> Result<Self::Item, Self::Error> {
+    #[allow(clippy::should_implement_trait)]
+    pub fn next(&mut self) -> Result<Char, Error> {
         loop {
             if self.buffer_i >= self.buffer.len() {
                 // This can only happen if an error occurred before.
