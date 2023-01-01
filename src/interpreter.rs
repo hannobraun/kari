@@ -135,7 +135,7 @@ impl<Host> Interpreter<Host> {
         R: io::Read,
     {
         loop {
-            let expression = match parser.next() {
+            let expression = match parser.next_expression() {
                 Ok(expression) => expression,
                 Err(parser::Error::EndOfStream) => {
                     return Ok(());
@@ -200,7 +200,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
         let mut expressions = Vec::new();
 
         loop {
-            match parser.next() {
+            match parser.next_expression() {
                 Ok(expression) => expressions.push(expression),
                 Err(parser::Error::EndOfStream) => break,
                 Err(error) => return Err(error.into()),

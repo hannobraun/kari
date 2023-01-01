@@ -22,8 +22,7 @@ impl<R> Parser<R>
 where
     R: io::Read,
 {
-    #[allow(clippy::should_implement_trait)]
-    pub fn next(&mut self) -> Result<Expression, Error> {
+    pub fn next_expression(&mut self) -> Result<Expression, Error> {
         let token = self.tokenizer.next_token()?;
 
         let expr = match token.kind {
