@@ -7,16 +7,14 @@ use std::{
     io::{self, Cursor},
 };
 
+use parser::Parser;
+
 use crate::{
     builtins::builtins,
     call_stack::{CallStack, StackFrame},
     context::{self, Context},
     functions::{self, Builtin, DefineError, Function, Functions, Scope},
-    pipeline::{
-        self,
-        parser::{self, Expression},
-        tokenizer::source::Merge,
-    },
+    pipeline::{self, parser, tokenizer::source::Merge},
     prelude::*,
     stack::Stack,
     value::{self, types::Type, v},
@@ -127,14 +125,14 @@ impl<Host> Interpreter<Host> {
         Ok(self.stack.into_vec())
     }
 
-    fn evaluate_expressions<Parser>(
+    fn evaluate_expressions<R>(
         &mut self,
         host: &mut Host,
         scope: Scope,
-        mut parser: Parser,
+        mut parser: Parser<R>,
     ) -> Result<(), Error>
     where
-        Parser: pipeline::Stage<Item = Expression, Error = parser::Error>,
+        R: io::Read,
     {
         loop {
             let expression = match parser.next() {
