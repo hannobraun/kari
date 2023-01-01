@@ -9,7 +9,7 @@ use crate::pipeline::{
     tokenizer::{self, token, Source, Token},
 };
 
-use super::{tokenizer::source::Merge, Stage, Tokenizer};
+use super::{tokenizer::source::Merge, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,

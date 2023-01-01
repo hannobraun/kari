@@ -5,10 +5,7 @@ use std::io;
 
 pub use self::{source::Source, token::Token};
 
-use crate::pipeline::{
-    self,
-    reader::{self, Char},
-};
+use crate::pipeline::reader::{self, Char};
 
 use super::Reader;
 
@@ -23,14 +20,12 @@ impl<R> Tokenizer<R> {
     }
 }
 
-impl<R> pipeline::Stage for Tokenizer<R>
+impl<R> Tokenizer<R>
 where
     R: io::Read,
 {
-    type Item = Token;
-    type Error = Error;
-
-    fn next(&mut self) -> Result<Self::Item, Self::Error> {
+    #[allow(clippy::should_implement_trait)]
+    pub fn next(&mut self) -> Result<Token, Error> {
         let mut state = State::Initial;
         let mut builder = TokenBuilder::new(self.stream.clone());
 
