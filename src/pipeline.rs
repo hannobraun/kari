@@ -10,13 +10,15 @@ pub struct Pipeline<R> {
     pub parser: Parser<R>,
 }
 
-pub fn new<R>(name: String, stream: R) -> Pipeline<R>
-where
-    R: io::Read,
-{
-    let reader = Reader::new(stream);
-    let tokenizer = Tokenizer::new(reader, name);
-    let parser = Parser::new(tokenizer);
+impl<R> Pipeline<R> {
+    pub fn new(name: String, stream: R) -> Self
+    where
+        R: io::Read,
+    {
+        let reader = Reader::new(stream);
+        let tokenizer = Tokenizer::new(reader, name);
+        let parser = Parser::new(tokenizer);
 
-    Pipeline { parser }
+        Pipeline { parser }
+    }
 }

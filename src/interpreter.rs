@@ -14,7 +14,7 @@ use crate::{
     call_stack::{CallStack, StackFrame},
     context::{self, Context},
     functions::{self, Builtin, DefineError, Function, Functions, Scope},
-    pipeline::{self, parser, tokenizer::source::Merge},
+    pipeline::{parser, tokenizer::source::Merge, Pipeline},
     prelude::*,
     stack::Stack,
     value::{self, types::Type, v},
@@ -58,7 +58,7 @@ impl<Host> Interpreter<Host> {
         let mut prelude =
             Cursor::new(&include_bytes!("../kr/src/prelude.kr")[..]);
 
-        let prelude_pipeline = pipeline::new(name.into(), &mut prelude);
+        let prelude_pipeline = Pipeline::new(name.into(), &mut prelude);
 
         self.evaluate_expressions(
             host,
@@ -104,7 +104,7 @@ impl<Host> Interpreter<Host> {
         name: Cow<str>,
         mut program: Box<dyn Stream>,
     ) -> Result<Vec<value::Any>, Error> {
-        let pipeline = pipeline::new(name.clone().into_owned(), &mut program);
+        let pipeline = Pipeline::new(name.clone().into_owned(), &mut program);
 
         let result = self.evaluate_expressions(
             host,
@@ -196,7 +196,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
             None => return Err(context::Error::ModuleNotFound(name)),
         };
 
-        let mut pipeline = pipeline::new(name, stream.as_mut());
+        let mut pipeline = Pipeline::new(name, stream.as_mut());
         let mut expressions = Vec::new();
 
         loop {
