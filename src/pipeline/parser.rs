@@ -2,28 +2,28 @@ pub mod expression;
 
 pub use self::expression::Expression;
 
-use std::fmt;
+use std::{fmt, io};
 
 use crate::pipeline::{
     self,
     tokenizer::{self, token, Source, Token},
 };
 
-use super::tokenizer::source::Merge;
+use super::{tokenizer::source::Merge, Stage, Tokenizer};
 
-pub struct Parser<Tokenizer> {
-    tokenizer: Tokenizer,
+pub struct Parser<R> {
+    tokenizer: Tokenizer<R>,
 }
 
-impl<Tokenizer> Parser<Tokenizer> {
-    pub fn new(tokenizer: Tokenizer) -> Self {
+impl<R> Parser<R> {
+    pub fn new(tokenizer: Tokenizer<R>) -> Self {
         Parser { tokenizer }
     }
 }
 
-impl<Tokenizer> pipeline::Stage for Parser<Tokenizer>
+impl<R> pipeline::Stage for Parser<R>
 where
-    Tokenizer: pipeline::Stage<Item = Token, Error = tokenizer::Error>,
+    R: io::Read,
 {
     type Item = Expression;
     type Error = Error;
@@ -43,9 +43,9 @@ where
     }
 }
 
-impl<Tokenizer> Parser<Tokenizer>
+impl<R> Parser<R>
 where
-    Tokenizer: pipeline::Stage<Item = Token, Error = tokenizer::Error>,
+    R: io::Read,
 {
     fn parse_list(
         &mut self,
