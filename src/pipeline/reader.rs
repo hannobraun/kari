@@ -39,8 +39,7 @@ impl<R> Reader<R>
 where
     R: io::Read,
 {
-    #[allow(clippy::should_implement_trait)]
-    pub fn next(&mut self) -> Result<Char, Error> {
+    pub fn next_char(&mut self) -> Result<Char, Error> {
         loop {
             if self.buffer_i >= self.buffer.len() {
                 // This can only happen if an error occurred before.

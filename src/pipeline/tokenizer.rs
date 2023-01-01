@@ -35,7 +35,7 @@ where
         let mut builder = TokenBuilder::new(self.stream.clone());
 
         loop {
-            let c = self.reader.next()?;
+            let c = self.reader.next_char()?;
 
             match state {
                 State::Initial => match c.c {
