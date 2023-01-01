@@ -111,9 +111,14 @@ where
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("End of stream")]
     EndOfStream,
-    Io(io::Error),
-    Utf8(Utf8Error),
+
+    #[error("I/O error")]
+    Io(#[from] io::Error),
+
+    #[error("UTF-8 error")]
+    Utf8(#[from] Utf8Error),
 }
