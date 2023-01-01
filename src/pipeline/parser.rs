@@ -4,10 +4,7 @@ pub use self::expression::Expression;
 
 use std::{fmt, io};
 
-use crate::pipeline::{
-    self,
-    tokenizer::{self, token, Source, Token},
-};
+use crate::pipeline::tokenizer::{self, token, Source, Token};
 
 use super::{tokenizer::source::Merge, Tokenizer};
 
@@ -21,14 +18,12 @@ impl<R> Parser<R> {
     }
 }
 
-impl<R> pipeline::Stage for Parser<R>
+impl<R> Parser<R>
 where
     R: io::Read,
 {
-    type Item = Expression;
-    type Error = Error;
-
-    fn next(&mut self) -> Result<Self::Item, Self::Error> {
+    #[allow(clippy::should_implement_trait)]
+    pub fn next(&mut self) -> Result<Expression, Error> {
         let token = self.tokenizer.next_token()?;
 
         let expr = match token.kind {
