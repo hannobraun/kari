@@ -8,13 +8,10 @@ pub mod stack;
 pub mod value;
 
 pub mod prelude {
-    pub use crate::{
-        pipeline::Stage as _,
-        value::{
-            cast::{Cast, Downcast as _},
-            compute::Compute as _,
-            Value as _,
-        },
+    pub use crate::value::{
+        cast::{Cast, Downcast as _},
+        compute::Compute as _,
+        Value as _,
     };
 }
 
