@@ -24,8 +24,7 @@ impl<R> Tokenizer<R>
 where
     R: io::Read,
 {
-    #[allow(clippy::should_implement_trait)]
-    pub fn next(&mut self) -> Result<Token, Error> {
+    pub fn next_token(&mut self) -> Result<Token, Error> {
         let mut state = State::Initial;
         let mut builder = TokenBuilder::new(self.stream.clone());
 

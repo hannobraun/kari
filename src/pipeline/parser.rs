@@ -29,7 +29,7 @@ where
     type Error = Error;
 
     fn next(&mut self) -> Result<Self::Item, Self::Error> {
-        let token = self.tokenizer.next()?;
+        let token = self.tokenizer.next_token()?;
 
         let expr = match token.kind {
             token::Kind::ListOpen => self.parse_list(token.src)?,
@@ -54,7 +54,7 @@ where
         let mut expressions = Vec::new();
 
         loop {
-            let token = self.tokenizer.next()?;
+            let token = self.tokenizer.next_token()?;
 
             list_source = list_source.merge(token.src.clone());
 
