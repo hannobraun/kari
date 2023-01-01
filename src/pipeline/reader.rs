@@ -70,14 +70,16 @@ where
 
             match str::from_utf8(&self.buffer[..self.buffer_i]) {
                 Ok(s) => {
+                    let mut chars = s.chars();
+
+                    // This shouldn't panic. We just got an `Ok(...)` from the
+                    // parsing method, so there should be a char in there.
+                    let c = chars.next().unwrap();
+
                     // Unless there's a bug in this method that causes multiple
                     // good characters to be in the buffer at once, this should
                     // never panic.
-                    assert_eq!(s.chars().count(), 1);
-
-                    // Can't panic. We just asserted that there is exactly one
-                    // char.
-                    let c = s.chars().next().unwrap();
+                    assert!(chars.next().is_none());
 
                     let c = Char {
                         c,
