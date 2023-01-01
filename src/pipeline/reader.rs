@@ -98,14 +98,13 @@ where
                     return Ok(c);
                 }
                 Err(error) => match self.buffer_i {
-                    i if i == 4 => {
-                        return Err(Error::Utf8(error));
-                    }
                     i if i < 4 => {
+                        // We haven't collected 4 bytes yet, so the next byte
+                        // might give us a valid character.
                         continue;
                     }
                     _ => {
-                        unreachable!();
+                        return Err(Error::Utf8(error));
                     }
                 },
             }
