@@ -10,6 +10,7 @@ use std::{
 
 use crate::pipeline;
 
+/// Converts a stream of bytes into a stream of UTF-8 characters
 pub struct Reader<R> {
     input: R,
 
