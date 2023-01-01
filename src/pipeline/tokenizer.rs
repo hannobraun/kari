@@ -1,6 +1,8 @@
 pub mod source;
 pub mod token;
 
+use std::io;
+
 pub use self::{source::Source, token::Token};
 
 use crate::pipeline::{
@@ -8,20 +10,22 @@ use crate::pipeline::{
     reader::{self, Char},
 };
 
-pub struct Tokenizer<Reader> {
-    reader: Reader,
+use super::Reader;
+
+pub struct Tokenizer<R> {
+    reader: Reader<R>,
     stream: String,
 }
 
-impl<Reader> Tokenizer<Reader> {
-    pub fn new(reader: Reader, stream: String) -> Self {
+impl<R> Tokenizer<R> {
+    pub fn new(reader: Reader<R>, stream: String) -> Self {
         Self { reader, stream }
     }
 }
 
-impl<Reader> pipeline::Stage for Tokenizer<Reader>
+impl<R> pipeline::Stage for Tokenizer<R>
 where
-    Reader: pipeline::Stage<Item = Char, Error = reader::Error>,
+    R: io::Read,
 {
     type Item = Token;
     type Error = Error;
