@@ -6,9 +6,9 @@ pub use self::{parser::Parser, reader::Reader, tokenizer::Tokenizer};
 
 use std::io;
 
-pub fn new<Stream>(name: String, stream: Stream) -> Parser<Stream>
+pub fn new<R>(name: String, stream: R) -> Parser<R>
 where
-    Stream: io::Read,
+    R: io::Read,
 {
     let reader = Reader::new(stream);
     let tokenizer = Tokenizer::new(reader, name);
