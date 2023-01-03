@@ -1,6 +1,7 @@
 pub mod expression;
 
 pub use self::expression::Expression;
+use self::expression::ExpressionKind;
 
 use std::{fmt, io};
 
@@ -63,7 +64,7 @@ where
                 TokenKind::ListOpen => self.parse_list(token.span, source)?,
                 TokenKind::ListClose => {
                     return Ok(Expression {
-                        kind: expression::ExpressionKind::List(expressions),
+                        kind: ExpressionKind::List(expressions),
                         span: list_source,
                     });
                 }
