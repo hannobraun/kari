@@ -108,7 +108,7 @@ enum State {
 
 struct TokenBuilder {
     buffer: String,
-    stream: Option<String>,
+    stream_name: Option<String>,
     span: Option<Span>,
 }
 
@@ -116,7 +116,7 @@ impl TokenBuilder {
     fn new(stream: String) -> Self {
         Self {
             buffer: String::new(),
-            stream: Some(stream),
+            stream_name: Some(stream),
             span: None,
         }
     }
@@ -126,7 +126,7 @@ impl TokenBuilder {
             Some(src) => src.end = c.pos,
             None => {
                 self.span = Some(Span {
-                    stream: self.stream.take().unwrap(),
+                    stream: self.stream_name.take().unwrap(),
                     start: c.pos,
                     end: c.pos,
                 })
