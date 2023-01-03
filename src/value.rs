@@ -54,8 +54,8 @@ impl Any {
 impl Value for Any {
     type Inner = Kind;
 
-    fn new(kind: Self::Inner, src: Option<Span>) -> Self {
-        Self { kind, span: src }
+    fn new(kind: Self::Inner, span: Option<Span>) -> Self {
+        Self { kind, span }
     }
 
     fn open(self) -> (Self::Inner, Option<Span>) {
