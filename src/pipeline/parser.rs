@@ -5,11 +5,11 @@ pub use self::expression::Expression;
 use std::{fmt, io};
 
 use crate::{
-    pipeline::tokenizer::{self, token, Token},
+    pipeline::tokenizer::{self, Token},
     source::{Span, SpanMerge},
 };
 
-use super::{reader, Tokenizer};
+use super::{reader, tokenizer::token::TokenKind, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,
@@ -32,10 +32,8 @@ where
         let token = self.tokenizer.next_token(source)?;
 
         let expr = match token.kind {
-            token::TokenKind::ListOpen => {
-                self.parse_list(token.span, source)?
-            }
-            token::TokenKind::ListClose => {
+            TokenKind::ListOpen => self.parse_list(token.span, source)?,
+            TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             _ => Expression::from_token(token),
@@ -62,10 +60,8 @@ where
             list_source = list_source.merge(token.span.clone());
 
             let expr = match token.kind {
-                token::TokenKind::ListOpen => {
-                    self.parse_list(token.span, source)?
-                }
-                token::TokenKind::ListClose => {
+                TokenKind::ListOpen => self.parse_list(token.span, source)?,
+                TokenKind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
                         span: list_source,
