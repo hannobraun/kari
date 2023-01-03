@@ -3,6 +3,7 @@ pub mod token;
 use std::io;
 
 pub use self::token::Token;
+use self::token::TokenKind;
 
 use crate::{
     pipeline::reader,
@@ -143,24 +144,24 @@ impl TokenBuilder {
 
     fn into_string(self) -> Token {
         Token {
-            kind: token::TokenKind::String(self.buffer),
+            kind: TokenKind::String(self.buffer),
             span: self.span,
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
-            kind: token::TokenKind::Symbol(self.buffer),
+            kind: TokenKind::Symbol(self.buffer),
             span: self.span,
         }
     }
 
     fn into_word(self) -> Token {
         let kind = match self.buffer.as_str() {
-            "[" => token::TokenKind::ListOpen,
-            "]" => token::TokenKind::ListClose,
+            "[" => TokenKind::ListOpen,
+            "]" => TokenKind::ListClose,
 
-            _ => token::TokenKind::parse_word(self.buffer),
+            _ => TokenKind::parse_word(self.buffer),
         };
 
         Token {
