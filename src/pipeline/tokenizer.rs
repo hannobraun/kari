@@ -172,7 +172,6 @@ impl TokenBuilder {
 pub enum Error {
     Reader(reader::Error),
     UnexpectedEscape(char),
-    EndOfStream,
 }
 
 impl From<reader::Error> for Error {
