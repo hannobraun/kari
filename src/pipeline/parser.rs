@@ -6,7 +6,7 @@ use std::{fmt, io};
 
 use crate::pipeline::tokenizer::{self, token, Span, Token};
 
-use super::{reader, tokenizer::span::Merge, Tokenizer};
+use super::{reader, tokenizer::span::MergeSpans, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,

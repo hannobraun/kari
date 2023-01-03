@@ -1,7 +1,7 @@
 use crate::{
     context::{self, Context},
     functions::{Function, Functions, Scope},
-    pipeline::tokenizer::span::Merge,
+    pipeline::tokenizer::span::MergeSpans,
     prelude::*,
     value::{self, t, v},
 };
