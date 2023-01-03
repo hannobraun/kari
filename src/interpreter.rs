@@ -213,10 +213,10 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         let start = expressions
             .first()
-            .and_then(|expression| expression.src.clone());
+            .and_then(|expression| expression.span.clone());
         let end = expressions
             .last()
-            .and_then(|expression| expression.src.clone());
+            .and_then(|expression| expression.span.clone());
 
         Ok(v::List::new(
             value::ListInner::from_expressions(expressions, module_scope),
