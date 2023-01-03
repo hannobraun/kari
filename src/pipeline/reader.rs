@@ -1,7 +1,8 @@
 mod char;
-mod position;
 
-pub use self::{char::Char, position::Position};
+use crate::source::Position;
+
+pub use self::char::Char;
 
 use std::{
     io,

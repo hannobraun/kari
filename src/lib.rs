@@ -4,6 +4,7 @@ pub mod context;
 pub mod functions;
 pub mod interpreter;
 pub mod pipeline;
+pub mod source;
 pub mod stack;
 pub mod value;
 

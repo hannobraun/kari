@@ -1,4 +1,4 @@
-use crate::pipeline::reader::Position;
+use crate::source::Position;
 
 /// A location in the source code
 ///
