@@ -66,7 +66,7 @@ impl Error {
 
             Error::Parser(error) => error.spans(spans),
             Error::Stack(error) => error.spans(spans),
-            Error::Type(error) => error.sources(spans),
+            Error::Type(error) => error.spans(spans),
 
             Error::Io(_) => (),
         }

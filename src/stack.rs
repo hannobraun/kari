@@ -143,7 +143,7 @@ impl Error {
     pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
             Error::StackEmpty => (),
-            Error::TypeError(err) => err.sources(spans),
+            Error::TypeError(err) => err.spans(spans),
         }
     }
 }
