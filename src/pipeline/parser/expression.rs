@@ -3,11 +3,11 @@ use decorum::R32;
 use crate::source::{Span, Token, TokenKind};
 
 pub struct Expression {
-    pub kind: Kind,
+    pub kind: ExpressionKind,
     pub span: Option<Span>,
 }
 
-pub enum Kind {
+pub enum ExpressionKind {
     Bool(bool),
     Float(R32),
     Number(u32),
@@ -20,12 +20,12 @@ pub enum Kind {
 impl Expression {
     pub fn from_token(token: Token) -> Self {
         let kind = match token.kind {
-            TokenKind::Bool(value) => Kind::Bool(value),
-            TokenKind::Float(value) => Kind::Float(value),
-            TokenKind::Number(value) => Kind::Number(value),
-            TokenKind::String(value) => Kind::String(value),
-            TokenKind::Symbol(value) => Kind::Symbol(value),
-            TokenKind::Word(value) => Kind::Word(value),
+            TokenKind::Bool(value) => ExpressionKind::Bool(value),
+            TokenKind::Float(value) => ExpressionKind::Float(value),
+            TokenKind::Number(value) => ExpressionKind::Number(value),
+            TokenKind::String(value) => ExpressionKind::String(value),
+            TokenKind::Symbol(value) => ExpressionKind::Symbol(value),
+            TokenKind::Word(value) => ExpressionKind::Word(value),
 
             kind => panic!("Can convert {} to value", kind),
         };

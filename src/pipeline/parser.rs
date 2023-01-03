@@ -63,7 +63,7 @@ where
                 TokenKind::ListOpen => self.parse_list(token.span, source)?,
                 TokenKind::ListClose => {
                     return Ok(Expression {
-                        kind: expression::Kind::List(expressions),
+                        kind: expression::ExpressionKind::List(expressions),
                         span: list_source,
                     });
                 }

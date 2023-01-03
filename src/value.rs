@@ -30,14 +30,14 @@ pub struct Any {
 impl Any {
     pub fn from_expression(expression: Expression, scope: Scope_) -> Self {
         let kind = match expression.kind {
-            expression::Kind::Bool(inner) => Kind::Bool(inner),
-            expression::Kind::Float(inner) => Kind::Float(inner),
-            expression::Kind::Number(inner) => Kind::Number(inner),
-            expression::Kind::String(inner) => Kind::String(inner),
-            expression::Kind::Symbol(inner) => Kind::Symbol(inner),
-            expression::Kind::Word(inner) => Kind::Word(inner),
+            expression::ExpressionKind::Bool(inner) => Kind::Bool(inner),
+            expression::ExpressionKind::Float(inner) => Kind::Float(inner),
+            expression::ExpressionKind::Number(inner) => Kind::Number(inner),
+            expression::ExpressionKind::String(inner) => Kind::String(inner),
+            expression::ExpressionKind::Symbol(inner) => Kind::Symbol(inner),
+            expression::ExpressionKind::Word(inner) => Kind::Word(inner),
 
-            expression::Kind::List(inner) => {
+            expression::ExpressionKind::List(inner) => {
                 Kind::List(ListInner::from_expressions(inner, scope))
             }
         };
