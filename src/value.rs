@@ -8,8 +8,7 @@ use decorum::R32;
 
 use crate::{
     functions::Scope as Scope_,
-    pipeline::parser::expression::{Expression, ExpressionKind},
-    source::Span,
+    source::{Expression, ExpressionKind, Span},
 };
 
 pub trait Value: Sized {

@@ -1,13 +1,8 @@
-pub mod expression;
-
-pub use self::expression::Expression;
-use self::expression::ExpressionKind;
-
 use std::{fmt, io};
 
 use crate::{
     pipeline::tokenizer,
-    source::{Span, SpanMerge, Token, TokenKind},
+    source::{Expression, ExpressionKind, Span, SpanMerge, Token, TokenKind},
 };
 
 use super::{reader, Tokenizer};
