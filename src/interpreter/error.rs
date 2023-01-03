@@ -83,10 +83,10 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn spans<'r>(&'r self, sources: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
-            ErrorKind::Context(error) => error.sources(sources),
-            ErrorKind::Parser(error) => error.sources(sources),
+            ErrorKind::Context(error) => error.sources(spans),
+            ErrorKind::Parser(error) => error.sources(spans),
         }
     }
 
