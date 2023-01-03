@@ -38,8 +38,8 @@ impl Error {
         let mut spans = Vec::new();
         self.kind.sources(&mut spans);
 
-        for source in spans {
-            print_source(source, streams, stderr)?;
+        for span in spans {
+            print_source(span, streams, stderr)?;
         }
 
         self.kind.write_hint(stderr)?;
