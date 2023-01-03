@@ -29,7 +29,7 @@ where
         let token = self.tokenizer.next_token(source)?;
 
         let expr = match token.kind {
-            token::Kind::ListOpen => self.parse_list(token.src, source)?,
+            token::Kind::ListOpen => self.parse_list(token.span, source)?,
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
@@ -54,10 +54,10 @@ where
         loop {
             let token = self.tokenizer.next_token(source)?;
 
-            list_source = list_source.merge(token.src.clone());
+            list_source = list_source.merge(token.span.clone());
 
             let expr = match token.kind {
-                token::Kind::ListOpen => self.parse_list(token.src, source)?,
+                token::Kind::ListOpen => self.parse_list(token.span, source)?,
                 token::Kind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
@@ -82,7 +82,9 @@ pub enum Error {
 impl Error {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         match self {
-            Error::UnexpectedToken(token) => sources.extend(token.src.as_ref()),
+            Error::UnexpectedToken(token) => {
+                sources.extend(token.span.as_ref())
+            }
 
             Error::Tokenizer(_) => (),
             Error::EndOfStream => (),

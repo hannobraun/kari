@@ -142,14 +142,14 @@ impl TokenBuilder {
     fn into_string(self) -> Token {
         Token {
             kind: token::Kind::String(self.buffer),
-            src: self.span,
+            span: self.span,
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
             kind: token::Kind::Symbol(self.buffer),
-            src: self.span,
+            span: self.span,
         }
     }
 
@@ -163,7 +163,7 @@ impl TokenBuilder {
 
         Token {
             kind,
-            src: self.span,
+            span: self.span,
         }
     }
 }

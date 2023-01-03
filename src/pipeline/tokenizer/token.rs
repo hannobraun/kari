@@ -7,7 +7,7 @@ use super::Span;
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub src: Option<Span>,
+    pub span: Option<Span>,
 }
 
 #[derive(Clone, Debug)]
