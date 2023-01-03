@@ -113,10 +113,10 @@ struct TokenBuilder {
 }
 
 impl TokenBuilder {
-    fn new(stream: String) -> Self {
+    fn new(stream_name: String) -> Self {
         Self {
             buffer: String::new(),
-            stream_name: Some(stream),
+            stream_name: Some(stream_name),
             span: None,
         }
     }
