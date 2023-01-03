@@ -126,7 +126,7 @@ impl TokenBuilder {
             Some(span) => span.end = c.pos,
             None => {
                 self.span = Some(Span {
-                    stream: self.stream_name.take().unwrap(),
+                    stream_name: self.stream_name.take().unwrap(),
                     start: c.pos,
                     end: c.pos,
                 })

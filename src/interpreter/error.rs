@@ -120,7 +120,7 @@ fn print_source<Stream>(
 where
     Stream: io::Read + io::Seek,
 {
-    let stream = streams.get_mut(&src.stream).unwrap();
+    let stream = streams.get_mut(&src.stream_name).unwrap();
 
     let start = search_backward(src.start.index, stream)?;
     let end = search_forward(src.end.index, stream)?;
@@ -138,7 +138,7 @@ where
         "  {}=> {}{}:{}:{}{}",
         color::Fg(color::Magenta),
         color::Fg(color::LightBlue),
-        src.stream,
+        src.stream_name,
         src.start.line + 1,
         src.start.column + 1,
         color::Fg(color::Reset),

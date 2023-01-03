@@ -6,7 +6,7 @@ use crate::pipeline::reader::Position;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Span {
     /// The stream this source refers to
-    pub stream: String,
+    pub stream_name: String,
 
     /// The position in the stream of this source's first character
     pub start: Position,
