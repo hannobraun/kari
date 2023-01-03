@@ -8,7 +8,7 @@ use decorum::R32;
 
 use crate::{
     functions::Scope as Scope_,
-    pipeline::parser::expression::{self, Expression},
+    pipeline::parser::expression::{Expression, ExpressionKind},
     source::Span,
 };
 
@@ -30,14 +30,14 @@ pub struct Any {
 impl Any {
     pub fn from_expression(expression: Expression, scope: Scope_) -> Self {
         let kind = match expression.kind {
-            expression::ExpressionKind::Bool(inner) => Kind::Bool(inner),
-            expression::ExpressionKind::Float(inner) => Kind::Float(inner),
-            expression::ExpressionKind::Number(inner) => Kind::Number(inner),
-            expression::ExpressionKind::String(inner) => Kind::String(inner),
-            expression::ExpressionKind::Symbol(inner) => Kind::Symbol(inner),
-            expression::ExpressionKind::Word(inner) => Kind::Word(inner),
+            ExpressionKind::Bool(inner) => Kind::Bool(inner),
+            ExpressionKind::Float(inner) => Kind::Float(inner),
+            ExpressionKind::Number(inner) => Kind::Number(inner),
+            ExpressionKind::String(inner) => Kind::String(inner),
+            ExpressionKind::Symbol(inner) => Kind::Symbol(inner),
+            ExpressionKind::Word(inner) => Kind::Word(inner),
 
-            expression::ExpressionKind::List(inner) => {
+            ExpressionKind::List(inner) => {
                 Kind::List(ListInner::from_expressions(inner, scope))
             }
         };
