@@ -39,7 +39,7 @@ impl<R> Reader<R>
 where
     R: io::Read,
 {
-    pub fn next_char(&mut self) -> Result<Char, Error> {
+    pub fn next_char(&mut self, source: &mut String) -> Result<Char, Error> {
         loop {
             if self.buffer_i >= self.buffer.len() {
                 // This can only happen if an error occurred before.
@@ -89,6 +89,9 @@ where
 
                     self.next_pos.index += self.buffer_i;
                     self.buffer_i = 0;
+
+                    assert_eq!(source.len(), c.pos.index);
+                    source.push(c.c);
 
                     return Ok(c);
                 }

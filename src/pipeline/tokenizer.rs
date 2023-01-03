@@ -24,12 +24,12 @@ impl<R> Tokenizer<R>
 where
     R: io::Read,
 {
-    pub fn next_token(&mut self) -> Result<Token, Error> {
+    pub fn next_token(&mut self, source: &mut String) -> Result<Token, Error> {
         let mut state = State::Initial;
         let mut builder = TokenBuilder::new(self.stream.clone());
 
         loop {
-            let c = self.reader.next_char()?;
+            let c = self.reader.next_char(source)?;
 
             match state {
                 State::Initial => match c.c {

@@ -6,6 +6,7 @@ pub use self::{parser::Parser, reader::Reader, tokenizer::Tokenizer};
 
 pub struct Pipeline<R> {
     pub parser: Parser<R>,
+    pub source: String,
 }
 
 impl<R> Pipeline<R> {
@@ -14,6 +15,8 @@ impl<R> Pipeline<R> {
         let tokenizer = Tokenizer::new(reader, name);
         let parser = Parser::new(tokenizer);
 
-        Pipeline { parser }
+        let source = String::new();
+
+        Pipeline { parser, source }
     }
 }

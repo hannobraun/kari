@@ -22,11 +22,14 @@ impl<R> Parser<R>
 where
     R: io::Read,
 {
-    pub fn next_expression(&mut self) -> Result<Expression, Error> {
-        let token = self.tokenizer.next_token()?;
+    pub fn next_expression(
+        &mut self,
+        source: &mut String,
+    ) -> Result<Expression, Error> {
+        let token = self.tokenizer.next_token(source)?;
 
         let expr = match token.kind {
-            token::Kind::ListOpen => self.parse_list(token.src)?,
+            token::Kind::ListOpen => self.parse_list(token.src, source)?,
             token::Kind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
@@ -44,16 +47,17 @@ where
     fn parse_list(
         &mut self,
         mut list_source: Option<Span>,
+        source: &mut String,
     ) -> Result<Expression, Error> {
         let mut expressions = Vec::new();
 
         loop {
-            let token = self.tokenizer.next_token()?;
+            let token = self.tokenizer.next_token(source)?;
 
             list_source = list_source.merge(token.src.clone());
 
             let expr = match token.kind {
-                token::Kind::ListOpen => self.parse_list(token.src)?,
+                token::Kind::ListOpen => self.parse_list(token.src, source)?,
                 token::Kind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
