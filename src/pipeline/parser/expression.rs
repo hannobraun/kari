@@ -1,9 +1,6 @@
 use decorum::R32;
 
-use crate::{
-    pipeline::tokenizer::{token::TokenKind, Token},
-    source::Span,
-};
+use crate::source::{Span, Token, TokenKind};
 
 pub struct Expression {
     pub kind: Kind,

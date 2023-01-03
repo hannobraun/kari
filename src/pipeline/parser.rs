@@ -5,11 +5,11 @@ pub use self::expression::Expression;
 use std::{fmt, io};
 
 use crate::{
-    pipeline::tokenizer::{self, Token},
-    source::{Span, SpanMerge},
+    pipeline::tokenizer,
+    source::{Span, SpanMerge, Token, TokenKind},
 };
 
-use super::{reader, tokenizer::token::TokenKind, Tokenizer};
+use super::{reader, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,

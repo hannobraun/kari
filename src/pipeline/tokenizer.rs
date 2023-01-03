@@ -1,13 +1,8 @@
-pub mod token;
-
 use std::io;
-
-pub use self::token::Token;
-use self::token::TokenKind;
 
 use crate::{
     pipeline::reader,
-    source::{Char, Span},
+    source::{Char, Span, Token, TokenKind},
 };
 
 use super::Reader;
