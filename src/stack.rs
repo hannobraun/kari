@@ -140,10 +140,10 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn spans<'r>(&'r self, sources: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, spans: &mut Vec<&'r Span>) {
         match self {
             Error::StackEmpty => (),
-            Error::TypeError(err) => err.sources(sources),
+            Error::TypeError(err) => err.sources(spans),
         }
     }
 }
