@@ -109,7 +109,7 @@ enum State {
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    src: Option<Span>,
+    span: Option<Span>,
 }
 
 impl TokenBuilder {
@@ -117,15 +117,15 @@ impl TokenBuilder {
         Self {
             buffer: String::new(),
             stream: Some(stream),
-            src: None,
+            span: None,
         }
     }
 
     fn process(&mut self, c: Char) {
-        match &mut self.src {
+        match &mut self.span {
             Some(src) => src.end = c.pos,
             None => {
-                self.src = Some(Span {
+                self.span = Some(Span {
                     stream: self.stream.take().unwrap(),
                     start: c.pos,
                     end: c.pos,
@@ -142,14 +142,14 @@ impl TokenBuilder {
     fn into_string(self) -> Token {
         Token {
             kind: token::Kind::String(self.buffer),
-            src: self.src,
+            src: self.span,
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
             kind: token::Kind::Symbol(self.buffer),
-            src: self.src,
+            src: self.span,
         }
     }
 
@@ -163,7 +163,7 @@ impl TokenBuilder {
 
         Token {
             kind,
-            src: self.src,
+            src: self.span,
         }
     }
 }
