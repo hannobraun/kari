@@ -75,7 +75,7 @@ where
                         state = State::String;
                     }
                     c => {
-                        return Err(Error::UnexpectedEscape(c));
+                        return Err(Error::UnexpectedEscapeCode(c));
                     }
                 },
                 State::Symbol => {
@@ -171,7 +171,7 @@ impl TokenBuilder {
 #[derive(Debug)]
 pub enum Error {
     Reader(reader::Error),
-    UnexpectedEscape(char),
+    UnexpectedEscapeCode(char),
 }
 
 impl From<reader::Error> for Error {
