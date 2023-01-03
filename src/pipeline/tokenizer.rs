@@ -1,9 +1,9 @@
-pub mod source;
+pub mod span;
 pub mod token;
 
 use std::io;
 
-pub use self::{source::Span, token::Token};
+pub use self::{span::Span, token::Token};
 
 use crate::pipeline::reader::{self, Char};
 

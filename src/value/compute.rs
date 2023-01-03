@@ -1,4 +1,4 @@
-use crate::pipeline::tokenizer::source::Merge;
+use crate::pipeline::tokenizer::span::Merge;
 
 use super::Value;
 
