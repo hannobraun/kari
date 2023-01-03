@@ -130,7 +130,7 @@ fn caller<Host>(
 
     context
         .stack()
-        .push(v::Scope::new(caller.scope, caller.src));
+        .push(v::Scope::new(caller.scope, caller.span));
 
     Ok(())
 }
@@ -149,7 +149,7 @@ fn eval<Host>(
         .call_stack()
         .operator()
         .clone()
-        .src
+        .span
         .merge(list.src.clone());
 
     context.stack().create_substack();
@@ -193,7 +193,7 @@ fn to_list<Host>(
     let list_span = context
         .call_stack()
         .operator()
-        .src
+        .span
         .clone()
         .merge(span.clone());
     let word = value::Any::new(value::Kind::Word(word), span);
@@ -229,7 +229,7 @@ fn clone<Host>(
     expression.src = context
         .call_stack()
         .operator()
-        .src
+        .span
         .clone()
         .merge(expression.src);
 
@@ -334,7 +334,7 @@ fn map<Host>(
         context
             .call_stack()
             .operator()
-            .src
+            .span
             .clone()
             .merge(list.src.merge(function.src)),
     );
@@ -353,7 +353,7 @@ fn wrap<Host>(
     let span = context
         .call_stack()
         .operator()
-        .src
+        .span
         .clone()
         .merge(arg.src.clone());
     let list = v::List::new(
@@ -394,7 +394,7 @@ fn prepend<Host>(
     list.src = context
         .call_stack()
         .operator()
-        .src
+        .span
         .clone()
         .merge(list.src.merge(arg.src.clone()));
     list.inner.items.insert(0, arg);
@@ -415,7 +415,7 @@ fn append<Host>(
     list.src = context
         .call_stack()
         .operator()
-        .src
+        .span
         .clone()
         .merge(list.src.merge(arg.src.clone()));
     list.inner.items.push(arg);

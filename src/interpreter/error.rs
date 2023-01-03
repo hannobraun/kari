@@ -53,7 +53,7 @@ impl Error {
                 color::Fg(color::Cyan),
                 color::Fg(color::Reset),
             )?;
-            match &stack_frame.src {
+            match &stack_frame.span {
                 None => {
                     panic!("Tried to format a null source");
                 }
