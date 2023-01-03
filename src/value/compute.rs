@@ -1,4 +1,4 @@
-use crate::source::MergeSpans;
+use crate::source::SpanMerge;
 
 use super::Value;
 

@@ -16,7 +16,7 @@ use crate::{
     functions::{self, Builtin, DefineError, Function, Functions, Scope},
     pipeline::{parser, Pipeline},
     prelude::*,
-    source::MergeSpans,
+    source::SpanMerge,
     stack::Stack,
     value::{self, types::Type, v},
 };

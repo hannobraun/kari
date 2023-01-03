@@ -2,7 +2,7 @@ use crate::{
     context::{self, Context},
     functions::{Function, Functions, Scope},
     prelude::*,
-    source::MergeSpans,
+    source::SpanMerge,
     value::{self, t, v},
 };
 

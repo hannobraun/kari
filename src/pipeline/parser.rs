@@ -6,7 +6,7 @@ use std::{fmt, io};
 
 use crate::{
     pipeline::tokenizer::{self, token, Token},
-    source::{MergeSpans, Span},
+    source::{Span, SpanMerge},
 };
 
 use super::{reader, Tokenizer};

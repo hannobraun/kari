@@ -15,11 +15,11 @@ pub struct Span {
     pub end: Position,
 }
 
-pub trait MergeSpans {
+pub trait SpanMerge {
     fn merge(self, other: Self) -> Self;
 }
 
-impl MergeSpans for Option<Span> {
+impl SpanMerge for Option<Span> {
     fn merge(self, other: Self) -> Self {
         match self {
             None => other.clone(),
