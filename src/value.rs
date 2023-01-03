@@ -111,10 +111,10 @@ macro_rules! kinds {
                 impl Value for $ty {
                     type Inner = $inner;
 
-                    fn new(inner: $inner, src: Option<Span>) -> Self {
+                    fn new(inner: $inner, span: Option<Span>) -> Self {
                         Self {
                             inner,
-                            span: src,
+                            span,
                         }
                     }
 
