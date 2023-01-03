@@ -6,12 +6,12 @@ use crate::source::Span;
 
 #[derive(Debug)]
 pub struct Token {
-    pub kind: Kind,
+    pub kind: TokenKind,
     pub span: Option<Span>,
 }
 
 #[derive(Clone, Debug)]
-pub enum Kind {
+pub enum TokenKind {
     ListOpen,
     ListClose,
     Bool(bool),
@@ -22,33 +22,33 @@ pub enum Kind {
     Word(String),
 }
 
-impl Kind {
+impl TokenKind {
     pub fn parse_word(word: String) -> Self {
         if let Ok(value) = word.parse::<bool>() {
-            return Kind::Bool(value);
+            return TokenKind::Bool(value);
         }
         if let Ok(value) = word.parse::<u32>() {
-            return Kind::Number(value);
+            return TokenKind::Number(value);
         }
         if let Ok(value) = word.parse::<R32>() {
-            return Kind::Float(value);
+            return TokenKind::Float(value);
         }
 
-        Kind::Word(word)
+        TokenKind::Word(word)
     }
 }
 
-impl fmt::Display for Kind {
+impl fmt::Display for TokenKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::ListOpen => write!(f, "["),
-            Kind::ListClose => write!(f, "]"),
-            Kind::Bool(value) => value.fmt(f),
-            Kind::Float(value) => write!(f, "{:?}", value),
-            Kind::Number(value) => value.fmt(f),
-            Kind::String(value) => value.fmt(f),
-            Kind::Symbol(value) => write!(f, ":{}", value),
-            Kind::Word(value) => value.fmt(f),
+            TokenKind::ListOpen => write!(f, "["),
+            TokenKind::ListClose => write!(f, "]"),
+            TokenKind::Bool(value) => value.fmt(f),
+            TokenKind::Float(value) => write!(f, "{:?}", value),
+            TokenKind::Number(value) => value.fmt(f),
+            TokenKind::String(value) => value.fmt(f),
+            TokenKind::Symbol(value) => write!(f, ":{}", value),
+            TokenKind::Word(value) => value.fmt(f),
         }
     }
 }

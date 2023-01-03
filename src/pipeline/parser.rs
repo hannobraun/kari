@@ -32,8 +32,10 @@ where
         let token = self.tokenizer.next_token(source)?;
 
         let expr = match token.kind {
-            token::Kind::ListOpen => self.parse_list(token.span, source)?,
-            token::Kind::ListClose => {
+            token::TokenKind::ListOpen => {
+                self.parse_list(token.span, source)?
+            }
+            token::TokenKind::ListClose => {
                 return Err(Error::UnexpectedToken(token));
             }
             _ => Expression::from_token(token),
@@ -60,8 +62,10 @@ where
             list_source = list_source.merge(token.span.clone());
 
             let expr = match token.kind {
-                token::Kind::ListOpen => self.parse_list(token.span, source)?,
-                token::Kind::ListClose => {
+                token::TokenKind::ListOpen => {
+                    self.parse_list(token.span, source)?
+                }
+                token::TokenKind::ListClose => {
                     return Ok(Expression {
                         kind: expression::Kind::List(expressions),
                         span: list_source,

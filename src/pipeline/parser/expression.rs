@@ -23,12 +23,12 @@ pub enum Kind {
 impl Expression {
     pub fn from_token(token: Token) -> Self {
         let kind = match token.kind {
-            token::Kind::Bool(value) => Kind::Bool(value),
-            token::Kind::Float(value) => Kind::Float(value),
-            token::Kind::Number(value) => Kind::Number(value),
-            token::Kind::String(value) => Kind::String(value),
-            token::Kind::Symbol(value) => Kind::Symbol(value),
-            token::Kind::Word(value) => Kind::Word(value),
+            token::TokenKind::Bool(value) => Kind::Bool(value),
+            token::TokenKind::Float(value) => Kind::Float(value),
+            token::TokenKind::Number(value) => Kind::Number(value),
+            token::TokenKind::String(value) => Kind::String(value),
+            token::TokenKind::Symbol(value) => Kind::Symbol(value),
+            token::TokenKind::Word(value) => Kind::Word(value),
 
             kind => panic!("Can convert {} to value", kind),
         };

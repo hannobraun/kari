@@ -4,7 +4,10 @@ use std::io;
 
 pub use self::token::Token;
 
-use crate::{pipeline::reader, source::{Char, Span}};
+use crate::{
+    pipeline::reader,
+    source::{Char, Span},
+};
 
 use super::Reader;
 
@@ -140,24 +143,24 @@ impl TokenBuilder {
 
     fn into_string(self) -> Token {
         Token {
-            kind: token::Kind::String(self.buffer),
+            kind: token::TokenKind::String(self.buffer),
             span: self.span,
         }
     }
 
     fn into_symbol(self) -> Token {
         Token {
-            kind: token::Kind::Symbol(self.buffer),
+            kind: token::TokenKind::Symbol(self.buffer),
             span: self.span,
         }
     }
 
     fn into_word(self) -> Token {
         let kind = match self.buffer.as_str() {
-            "[" => token::Kind::ListOpen,
-            "]" => token::Kind::ListClose,
+            "[" => token::TokenKind::ListOpen,
+            "]" => token::TokenKind::ListClose,
 
-            _ => token::Kind::parse_word(self.buffer),
+            _ => token::TokenKind::parse_word(self.buffer),
         };
 
         Token {
