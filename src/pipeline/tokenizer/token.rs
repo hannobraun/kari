@@ -2,12 +2,12 @@ use std::fmt;
 
 use decorum::R32;
 
-use super::Source;
+use super::Span;
 
 #[derive(Debug)]
 pub struct Token {
     pub kind: Kind,
-    pub src: Option<Source>,
+    pub src: Option<Span>,
 }
 
 #[derive(Clone, Debug)]

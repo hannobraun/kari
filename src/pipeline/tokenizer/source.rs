@@ -4,7 +4,7 @@ use crate::pipeline::reader::Position;
 ///
 /// Used to identify where tokens, values, etc. originate in the source code.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Source {
+pub struct Span {
     /// The stream this source refers to
     pub stream: String,
 
@@ -19,7 +19,7 @@ pub trait Merge {
     fn merge(self, other: Self) -> Self;
 }
 
-impl Merge for Option<Source> {
+impl Merge for Option<Span> {
     fn merge(self, other: Self) -> Self {
         match self {
             None => other.clone(),

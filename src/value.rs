@@ -10,15 +10,15 @@ use crate::{
     functions::Scope as Scope_,
     pipeline::{
         parser::expression::{self, Expression},
-        tokenizer::Source,
+        tokenizer::Span,
     },
 };
 
 pub trait Value: Sized {
     type Inner;
 
-    fn new(_: Self::Inner, _: Option<Source>) -> Self;
-    fn open(self) -> (Self::Inner, Option<Source>);
+    fn new(_: Self::Inner, _: Option<Span>) -> Self;
+    fn open(self) -> (Self::Inner, Option<Span>);
 
     fn into_any(self) -> Any;
 }
@@ -26,7 +26,7 @@ pub trait Value: Sized {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
-    pub src: Option<Source>,
+    pub src: Option<Span>,
 }
 
 impl Any {
@@ -54,11 +54,11 @@ impl Any {
 impl Value for Any {
     type Inner = Kind;
 
-    fn new(kind: Self::Inner, src: Option<Source>) -> Self {
+    fn new(kind: Self::Inner, src: Option<Span>) -> Self {
         Self { kind, src }
     }
 
-    fn open(self) -> (Self::Inner, Option<Source>) {
+    fn open(self) -> (Self::Inner, Option<Span>) {
         (self.kind, self.src)
     }
 
@@ -88,7 +88,7 @@ macro_rules! kinds {
 
             use crate::{
                 functions::Scope as Scope_,
-                pipeline::tokenizer::Source,
+                pipeline::tokenizer::Span,
             };
 
             use super::{
@@ -105,20 +105,20 @@ macro_rules! kinds {
                 #[derive(Clone, Debug, Eq, PartialEq)]
                 pub struct $ty {
                     pub inner: $inner,
-                    pub src:   Option<Source>,
+                    pub src:   Option<Span>,
                 }
 
                 impl Value for $ty {
                     type Inner = $inner;
 
-                    fn new(inner: $inner, src: Option<Source>) -> Self {
+                    fn new(inner: $inner, src: Option<Span>) -> Self {
                         Self {
                             inner,
                             src,
                         }
                     }
 
-                    fn open(self) -> (Self::Inner, Option<Source>) {
+                    fn open(self) -> (Self::Inner, Option<Span>) {
                         (self.inner, self.src)
                     }
 

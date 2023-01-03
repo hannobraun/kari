@@ -1,10 +1,10 @@
 use decorum::R32;
 
-use crate::pipeline::tokenizer::{token, Source, Token};
+use crate::pipeline::tokenizer::{token, Span, Token};
 
 pub struct Expression {
     pub kind: Kind,
-    pub src: Option<Source>,
+    pub src: Option<Span>,
 }
 
 pub enum Kind {

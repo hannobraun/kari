@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{pipeline::tokenizer::Source, value};
+use crate::{pipeline::tokenizer::Span, value};
 
 /// Cast `value::Any` or tuples of `value::Any` to concrete values
 ///
@@ -70,7 +70,7 @@ pub struct TypeError {
 }
 
 impl TypeError {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         sources.extend(self.actual.src.as_ref());
     }
 }

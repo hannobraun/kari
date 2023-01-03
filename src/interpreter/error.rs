@@ -12,7 +12,7 @@ use crate::{
     call_stack::CallStack,
     context,
     interpreter::stream::Stream,
-    pipeline::{parser, tokenizer::Source},
+    pipeline::{parser, tokenizer::Span},
 };
 
 #[derive(Debug)]
@@ -85,7 +85,7 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         match self {
             ErrorKind::Context(error) => error.sources(sources),
             ErrorKind::Parser(error) => error.sources(sources),
@@ -113,7 +113,7 @@ impl From<parser::Error> for ErrorKind {
 }
 
 fn print_source<Stream>(
-    src: &Source,
+    src: &Span,
     streams: &mut HashMap<String, Stream>,
     stderr: &mut dyn io::Write,
 ) -> io::Result<()>

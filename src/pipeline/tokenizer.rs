@@ -3,7 +3,7 @@ pub mod token;
 
 use std::io;
 
-pub use self::{source::Source, token::Token};
+pub use self::{source::Span, token::Token};
 
 use crate::pipeline::reader::{self, Char};
 
@@ -109,7 +109,7 @@ enum State {
 struct TokenBuilder {
     buffer: String,
     stream: Option<String>,
-    src: Option<Source>,
+    src: Option<Span>,
 }
 
 impl TokenBuilder {
@@ -125,7 +125,7 @@ impl TokenBuilder {
         match &mut self.src {
             Some(src) => src.end = c.pos,
             None => {
-                self.src = Some(Source {
+                self.src = Some(Span {
                     stream: self.stream.take().unwrap(),
                     start: c.pos,
                     end: c.pos,

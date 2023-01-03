@@ -4,7 +4,7 @@ pub use self::expression::Expression;
 
 use std::{fmt, io};
 
-use crate::pipeline::tokenizer::{self, token, Source, Token};
+use crate::pipeline::tokenizer::{self, token, Span, Token};
 
 use super::{reader, tokenizer::source::Merge, Tokenizer};
 
@@ -43,7 +43,7 @@ where
 {
     fn parse_list(
         &mut self,
-        mut list_source: Option<Source>,
+        mut list_source: Option<Span>,
     ) -> Result<Expression, Error> {
         let mut expressions = Vec::new();
 
@@ -76,7 +76,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Source>) {
+    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         match self {
             Error::UnexpectedToken(token) => sources.extend(token.src.as_ref()),
 
