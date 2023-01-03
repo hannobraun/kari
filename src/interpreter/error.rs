@@ -36,7 +36,7 @@ impl Error {
         )?;
 
         let mut spans = Vec::new();
-        self.kind.sources(&mut spans);
+        self.kind.spans(&mut spans);
 
         for span in spans {
             print_source(span, streams, stderr)?;
@@ -83,7 +83,7 @@ pub enum ErrorKind {
 }
 
 impl ErrorKind {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         match self {
             ErrorKind::Context(error) => error.sources(sources),
             ErrorKind::Parser(error) => error.sources(sources),
