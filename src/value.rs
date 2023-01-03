@@ -26,7 +26,7 @@ pub trait Value: Sized {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Any {
     pub kind: Kind,
-    pub src: Option<Span>,
+    pub span: Option<Span>,
 }
 
 impl Any {
@@ -46,7 +46,7 @@ impl Any {
 
         Self {
             kind,
-            src: expression.span,
+            span: expression.span,
         }
     }
 }
@@ -55,11 +55,11 @@ impl Value for Any {
     type Inner = Kind;
 
     fn new(kind: Self::Inner, src: Option<Span>) -> Self {
-        Self { kind, src }
+        Self { kind, span: src }
     }
 
     fn open(self) -> (Self::Inner, Option<Span>) {
-        (self.kind, self.src)
+        (self.kind, self.span)
     }
 
     fn into_any(self) -> Any {
@@ -125,7 +125,7 @@ macro_rules! kinds {
                     fn into_any(self) -> Any {
                         Any {
                             kind: Kind::$ty(self.inner),
-                            src:  self.src,
+                            span:  self.src,
                         }
                     }
                 }
@@ -144,7 +144,7 @@ macro_rules! kinds {
                     fn from(ty: $ty) -> Self {
                         Any {
                             kind: Kind::$ty(ty.inner),
-                            src:  ty.src,
+                            span:  ty.src,
                         }
                     }
                 }
@@ -199,7 +199,7 @@ macro_rules! kinds {
                     {
                         match any.kind {
                             value::Kind::$ty(value) => {
-                                Ok(Value::new(value, any.src))
+                                Ok(Value::new(value, any.span))
                             }
                             _ => {
                                 Err(

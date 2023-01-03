@@ -226,12 +226,12 @@ fn clone<Host>(
 ) -> Result {
     let mut expression = context.stack().pop::<v::Any>()?;
 
-    expression.src = context
+    expression.span = context
         .call_stack()
         .operator()
         .span
         .clone()
-        .merge(expression.src);
+        .merge(expression.span);
 
     context.stack().push((expression.clone(), expression));
 
@@ -292,7 +292,7 @@ fn list<Host>(
     for _ in 0..len.inner {
         let item = context.stack().pop::<v::Any>()?;
 
-        span = span.merge(item.src.clone());
+        span = span.merge(item.span.clone());
         items.insert(0, item);
     }
 
@@ -355,7 +355,7 @@ fn wrap<Host>(
         .operator()
         .span
         .clone()
-        .merge(arg.src.clone());
+        .merge(arg.span.clone());
     let list = v::List::new(
         value::ListInner::from_values(
             vec![arg],
@@ -396,7 +396,7 @@ fn prepend<Host>(
         .operator()
         .span
         .clone()
-        .merge(list.src.merge(arg.src.clone()));
+        .merge(list.src.merge(arg.span.clone()));
     list.inner.items.insert(0, arg);
 
     context.stack().push(list);
@@ -417,7 +417,7 @@ fn append<Host>(
         .operator()
         .span
         .clone()
-        .merge(list.src.merge(arg.src.clone()));
+        .merge(list.src.merge(arg.span.clone()));
     list.inner.items.push(arg);
 
     context.stack().push(list);

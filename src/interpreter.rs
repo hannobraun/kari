@@ -233,7 +233,7 @@ impl<Host> Context<Host> for Interpreter<Host> {
         if let value::Kind::Word(word) = value.kind {
             self.call_stack.frames.push(StackFrame {
                 scope,
-                span: value.src,
+                span: value.span,
             });
 
             match self.functions.get(scope, &word, &self.stack) {

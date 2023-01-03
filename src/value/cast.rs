@@ -71,7 +71,7 @@ pub struct TypeError {
 
 impl TypeError {
     pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
-        sources.extend(self.actual.src.as_ref());
+        sources.extend(self.actual.span.as_ref());
     }
 }
 
