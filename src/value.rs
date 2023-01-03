@@ -105,7 +105,7 @@ macro_rules! kinds {
                 #[derive(Clone, Debug, Eq, PartialEq)]
                 pub struct $ty {
                     pub inner: $inner,
-                    pub src:   Option<Span>,
+                    pub span:  Option<Span>,
                 }
 
                 impl Value for $ty {
@@ -114,18 +114,18 @@ macro_rules! kinds {
                     fn new(inner: $inner, src: Option<Span>) -> Self {
                         Self {
                             inner,
-                            src,
+                            span: src,
                         }
                     }
 
                     fn open(self) -> (Self::Inner, Option<Span>) {
-                        (self.inner, self.src)
+                        (self.inner, self.span)
                     }
 
                     fn into_any(self) -> Any {
                         Any {
                             kind: Kind::$ty(self.inner),
-                            span:  self.src,
+                            span: self.span,
                         }
                     }
                 }
@@ -134,7 +134,7 @@ macro_rules! kinds {
                     fn from(inner: $inner) -> Self {
                         $ty {
                             inner,
-                            src: None,
+                            span: None,
                         }
                     }
                 }
@@ -144,7 +144,7 @@ macro_rules! kinds {
                     fn from(ty: $ty) -> Self {
                         Any {
                             kind: Kind::$ty(ty.inner),
-                            span:  ty.src,
+                            span: ty.span,
                         }
                     }
                 }
