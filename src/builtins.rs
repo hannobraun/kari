@@ -1,8 +1,8 @@
 use crate::{
     context::{self, Context},
     functions::{Function, Functions, Scope},
-    pipeline::tokenizer::span::MergeSpans,
     prelude::*,
+    source::MergeSpans,
     value::{self, t, v},
 };
 

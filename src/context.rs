@@ -5,7 +5,8 @@ use termion::{color, style};
 use crate::{
     call_stack::CallStack,
     functions::{self, Function, Functions, Scope, Signatures},
-    pipeline::{parser, tokenizer::Span},
+    pipeline::parser,
+    source::Span,
     stack::{self, Stack},
     value::{self, cast::TypeError, v},
 };

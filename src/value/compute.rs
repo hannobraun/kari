@@ -1,4 +1,4 @@
-use crate::pipeline::tokenizer::span::MergeSpans;
+use crate::source::MergeSpans;
 
 use super::Value;
 

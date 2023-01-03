@@ -2,7 +2,7 @@ use std::fmt;
 
 use decorum::R32;
 
-use super::Span;
+use crate::source::Span;
 
 #[derive(Debug)]
 pub struct Token {

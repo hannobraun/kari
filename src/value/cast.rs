@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{pipeline::tokenizer::Span, value};
+use crate::{source::Span, value};
 
 /// Cast `value::Any` or tuples of `value::Any` to concrete values
 ///

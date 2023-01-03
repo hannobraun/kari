@@ -14,8 +14,9 @@ use crate::{
     call_stack::{CallStack, StackFrame},
     context::{self, Context},
     functions::{self, Builtin, DefineError, Function, Functions, Scope},
-    pipeline::{parser, tokenizer::span::MergeSpans, Pipeline},
+    pipeline::{parser, Pipeline},
     prelude::*,
+    source::MergeSpans,
     stack::Stack,
     value::{self, types::Type, v},
 };

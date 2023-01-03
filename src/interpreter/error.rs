@@ -9,10 +9,8 @@ use std::{
 use termion::{color, style};
 
 use crate::{
-    call_stack::CallStack,
-    context,
-    interpreter::stream::Stream,
-    pipeline::{parser, tokenizer::Span},
+    call_stack::CallStack, context, interpreter::stream::Stream,
+    pipeline::parser, source::Span,
 };
 
 #[derive(Debug)]

@@ -1,4 +1,4 @@
-use crate::{functions::Scope, pipeline::tokenizer::Span};
+use crate::{functions::Scope, source::Span};
 
 #[derive(Clone, Debug, Default)]
 pub struct CallStack {

@@ -8,10 +8,8 @@ use decorum::R32;
 
 use crate::{
     functions::Scope as Scope_,
-    pipeline::{
-        parser::expression::{self, Expression},
-        tokenizer::Span,
-    },
+    pipeline::parser::expression::{self, Expression},
+    source::Span,
 };
 
 pub trait Value: Sized {
@@ -88,7 +86,7 @@ macro_rules! kinds {
 
             use crate::{
                 functions::Scope as Scope_,
-                pipeline::tokenizer::Span,
+                source::Span,
             };
 
             use super::{

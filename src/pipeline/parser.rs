@@ -4,9 +4,12 @@ pub use self::expression::Expression;
 
 use std::{fmt, io};
 
-use crate::pipeline::tokenizer::{self, token, Span, Token};
+use crate::{
+    pipeline::tokenizer::{self, token, Token},
+    source::{MergeSpans, Span},
+};
 
-use super::{reader, tokenizer::span::MergeSpans, Tokenizer};
+use super::{reader, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,
