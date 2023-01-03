@@ -6,7 +6,7 @@ use std::{fmt, io};
 
 use crate::pipeline::tokenizer::{self, token, Source, Token};
 
-use super::{tokenizer::source::Merge, Tokenizer};
+use super::{reader, tokenizer::source::Merge, Tokenizer};
 
 pub struct Parser<R> {
     tokenizer: Tokenizer<R>,
@@ -89,7 +89,9 @@ impl Error {
 impl From<tokenizer::Error> for Error {
     fn from(from: tokenizer::Error) -> Self {
         match from {
-            tokenizer::Error::EndOfStream => Error::EndOfStream,
+            tokenizer::Error::Reader(reader::Error::EndOfStream) => {
+                Error::EndOfStream
+            }
             error => Error::Tokenizer(error),
         }
     }

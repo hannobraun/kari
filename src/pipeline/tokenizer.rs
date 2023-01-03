@@ -177,9 +177,6 @@ pub enum Error {
 
 impl From<reader::Error> for Error {
     fn from(from: reader::Error) -> Self {
-        match from {
-            reader::Error::EndOfStream => Error::EndOfStream,
-            error => Error::Reader(error),
-        }
+        Self::Reader(from)
     }
 }
