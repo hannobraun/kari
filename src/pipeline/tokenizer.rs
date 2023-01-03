@@ -168,14 +168,11 @@ impl TokenBuilder {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
-    Reader(reader::Error),
-    UnexpectedEscapeCode(char),
-}
+    #[error("Reader error")]
+    Reader(#[from] reader::Error),
 
-impl From<reader::Error> for Error {
-    fn from(from: reader::Error) -> Self {
-        Self::Reader(from)
-    }
+    #[error("Unexpected escape code: {0}")]
+    UnexpectedEscapeCode(char),
 }
