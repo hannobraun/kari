@@ -64,7 +64,7 @@ impl Error {
             Error::FunctionNotFound { .. } => (),
             Error::ModuleNotFound(_) => (),
 
-            Error::Parser(error) => error.sources(spans),
+            Error::Parser(error) => error.spans(spans),
             Error::Stack(error) => error.sources(spans),
             Error::Type(error) => error.sources(spans),
 

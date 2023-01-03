@@ -79,7 +79,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn sources<'r>(&'r self, sources: &mut Vec<&'r Span>) {
+    pub fn spans<'r>(&'r self, sources: &mut Vec<&'r Span>) {
         match self {
             Error::UnexpectedToken(token) => {
                 sources.extend(token.span.as_ref())
