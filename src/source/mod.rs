@@ -1,3 +1,4 @@
+mod char;
 mod position;
 
-pub use self::position::Position;
+pub use self::{char::Char, position::Position};

@@ -5,7 +5,7 @@ use std::io;
 
 pub use self::{span::Span, token::Token};
 
-use crate::pipeline::reader::{self, Char};
+use crate::{pipeline::reader, source::Char};
 
 use super::Reader;
 

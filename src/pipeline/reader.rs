@@ -1,8 +1,4 @@
-mod char;
-
-use crate::source::Position;
-
-pub use self::char::Char;
+use crate::source::{Char, Position};
 
 use std::{
     io,
