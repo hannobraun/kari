@@ -1,7 +1,7 @@
 use decorum::R32;
 
 use crate::{
-    pipeline::tokenizer::{token, Token},
+    pipeline::tokenizer::{token::TokenKind, Token},
     source::Span,
 };
 
@@ -23,12 +23,12 @@ pub enum Kind {
 impl Expression {
     pub fn from_token(token: Token) -> Self {
         let kind = match token.kind {
-            token::TokenKind::Bool(value) => Kind::Bool(value),
-            token::TokenKind::Float(value) => Kind::Float(value),
-            token::TokenKind::Number(value) => Kind::Number(value),
-            token::TokenKind::String(value) => Kind::String(value),
-            token::TokenKind::Symbol(value) => Kind::Symbol(value),
-            token::TokenKind::Word(value) => Kind::Word(value),
+            TokenKind::Bool(value) => Kind::Bool(value),
+            TokenKind::Float(value) => Kind::Float(value),
+            TokenKind::Number(value) => Kind::Number(value),
+            TokenKind::String(value) => Kind::String(value),
+            TokenKind::Symbol(value) => Kind::Symbol(value),
+            TokenKind::Word(value) => Kind::Word(value),
 
             kind => panic!("Can convert {} to value", kind),
         };
