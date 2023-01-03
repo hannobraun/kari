@@ -35,10 +35,10 @@ impl Error {
             style::Reset,
         )?;
 
-        let mut sources = Vec::new();
-        self.kind.sources(&mut sources);
+        let mut spans = Vec::new();
+        self.kind.sources(&mut spans);
 
-        for source in sources {
+        for source in spans {
             print_source(source, streams, stderr)?;
         }
 
