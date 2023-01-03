@@ -59,13 +59,14 @@ impl<Host> Interpreter<Host> {
         let mut prelude =
             Cursor::new(&include_bytes!("../kr/src/prelude.kr")[..]);
 
-        let mut prelude_pipeline = Pipeline::new(name.into(), &mut prelude);
+        let prelude_pipeline = Pipeline::new(name.into(), &mut prelude);
 
+        let mut source = String::new();
         self.evaluate_expressions(
             host,
             self.functions.root_scope(),
             prelude_pipeline.parser,
-            &mut prelude_pipeline.source,
+            &mut source,
         )?;
 
         // We panic on errors in the prelude itself, but errors in other modules
@@ -106,14 +107,14 @@ impl<Host> Interpreter<Host> {
         name: Cow<str>,
         mut program: Box<dyn Stream>,
     ) -> Result<Vec<value::Any>, Error> {
-        let mut pipeline =
-            Pipeline::new(name.clone().into_owned(), &mut program);
+        let pipeline = Pipeline::new(name.clone().into_owned(), &mut program);
 
+        let mut source = String::new();
         let result = self.evaluate_expressions(
             host,
             self.functions.root_scope(),
             pipeline.parser,
-            &mut pipeline.source,
+            &mut source,
         );
         if let Err(error) = result {
             self.streams.insert(name.into_owned(), program);
@@ -203,9 +204,10 @@ impl<Host> Context<Host> for Interpreter<Host> {
 
         let mut pipeline = Pipeline::new(name, stream.as_mut());
         let mut expressions = Vec::new();
+        let mut source = String::new();
 
         loop {
-            match pipeline.parser.next_expression(&mut pipeline.source) {
+            match pipeline.parser.next_expression(&mut source) {
                 Ok(expression) => expressions.push(expression),
                 Err(parser::Error::EndOfStream) => break,
                 Err(error) => return Err(error.into()),
