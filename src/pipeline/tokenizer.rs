@@ -123,7 +123,7 @@ impl TokenBuilder {
 
     fn process(&mut self, c: Char) {
         match &mut self.span {
-            Some(src) => src.end = c.pos,
+            Some(span) => span.end = c.pos,
             None => {
                 self.span = Some(Span {
                     stream: self.stream_name.take().unwrap(),
