@@ -124,7 +124,7 @@ where
     let source = sources.get(&span.stream_name).unwrap();
 
     let start = source[..span.start.index].rfind('\n').unwrap_or(0);
-    let end = search_forward(span.end.index, stream)?;
+    let end = search_forward(span.end.index, source)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
     stream.seek(SeekFrom::Start(start as u64))?;
@@ -203,30 +203,7 @@ where
     Ok(())
 }
 
-fn search_forward<Stream>(from: usize, stream: &mut Stream) -> io::Result<usize>
-where
-    Stream: io::Read + io::Seek,
-{
-    stream.seek(SeekFrom::Start(from as u64))?;
-
-    loop {
-        let pos = stream.stream_position()?;
-
-        let mut buffer = [0];
-        match stream.read(&mut buffer) {
-            Ok(_) => {
-                if buffer[0] == b'\n' {
-                    let pos = stream.stream_position()?;
-                    return Ok(pos as usize);
-                }
-            }
-            Err(error) => {
-                if let io::ErrorKind::UnexpectedEof = error.kind() {
-                    return Ok(pos as usize);
-                } else {
-                    return Err(error);
-                }
-            }
-        }
-    }
+fn search_forward(from: usize, source: &str) -> io::Result<usize> {
+    let pos = source[from..].find('\n').unwrap_or(source.len() - 1);
+    Ok(from + pos + 1)
 }
