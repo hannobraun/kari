@@ -23,6 +23,7 @@ impl Error {
     pub fn print(
         &self,
         streams: &mut HashMap<String, Box<dyn Stream>>,
+        sources: &HashMap<String, String>,
         stderr: &mut dyn io::Write,
     ) -> io::Result<()> {
         write!(
@@ -39,7 +40,7 @@ impl Error {
         self.kind.spans(&mut spans);
 
         for span in spans {
-            print_source(span, streams, stderr)?;
+            print_source(span, streams, sources, stderr)?;
         }
 
         self.kind.write_hint(stderr)?;
@@ -56,7 +57,7 @@ impl Error {
                     panic!("Tried to format a null source");
                 }
                 Some(src) => {
-                    print_source(src, streams, stderr)?;
+                    print_source(src, streams, sources, stderr)?;
                 }
             }
         }
@@ -113,14 +114,16 @@ impl From<parser::Error> for ErrorKind {
 fn print_source<Stream>(
     span: &Span,
     streams: &mut HashMap<String, Stream>,
+    sources: &HashMap<String, String>,
     stderr: &mut dyn io::Write,
 ) -> io::Result<()>
 where
     Stream: io::Read + io::Seek,
 {
     let stream = streams.get_mut(&span.stream_name).unwrap();
+    let source = sources.get(&span.stream_name).unwrap();
 
-    let start = search_backward(span.start.index, stream)?;
+    let start = search_backward(span.start.index, source)?;
     let end = search_forward(span.end.index, stream)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
@@ -200,28 +203,9 @@ where
     Ok(())
 }
 
-fn search_backward<Stream>(
-    from: usize,
-    stream: &mut Stream,
-) -> io::Result<usize>
-where
-    Stream: io::Read + io::Seek,
-{
-    stream.seek(SeekFrom::Start(from as u64 + 1))?;
-
-    while stream.stream_position()? > 1 {
-        stream.seek(SeekFrom::Current(-2))?;
-
-        let mut buffer = [0];
-        stream.read_exact(&mut buffer)?;
-
-        if buffer[0] == b'\n' {
-            let pos = stream.stream_position()?;
-            return Ok(pos as usize);
-        }
-    }
-
-    Ok(0)
+fn search_backward(from: usize, source: &str) -> io::Result<usize> {
+    let pos = source[..from].rfind('\n').unwrap_or(0);
+    Ok(pos)
 }
 
 fn search_forward<Stream>(from: usize, stream: &mut Stream) -> io::Result<usize>
