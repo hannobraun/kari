@@ -1,4 +1,4 @@
-use std::io::{stderr, stdout, Cursor};
+use std::io::{stderr, stdout};
 
 use kari::{
     context::Context,
@@ -17,9 +17,7 @@ fn main() {
 
     // Our Kari program. This could also be loaded from a file, input by the
     // user at runtime, or whatever else is appropriate for your application.
-    // We need to wrap this in a `Cursor`, as a string or byte slice by itself
-    // doesn't implement `io::Seek`, which is required by the interpreter.
-    let program = Cursor::new("6 7 * is_42?");
+    let program = "6 7 * is_42?".as_bytes();
 
     // The host is what provides an interface between the Kari interpreter and
     // the outside world. The host will be passed into all the builtin functions
