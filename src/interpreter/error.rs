@@ -1,10 +1,4 @@
-use std::{
-    collections::HashMap,
-    fmt,
-    io::{self, SeekFrom},
-    iter::repeat,
-    str::from_utf8,
-};
+use std::{collections::HashMap, fmt, io};
 
 use termion::{color, style};
 
@@ -113,14 +107,13 @@ impl From<parser::Error> for ErrorKind {
 
 fn print_source<Stream>(
     span: &Span,
-    streams: &mut HashMap<String, Stream>,
+    _: &mut HashMap<String, Stream>,
     sources: &HashMap<String, String>,
     stderr: &mut dyn io::Write,
 ) -> io::Result<()>
 where
     Stream: io::Read + io::Seek,
 {
-    let stream = streams.get_mut(&span.stream_name).unwrap();
     let source = sources.get(&span.stream_name).unwrap();
 
     let start = source[..span.start.index].rfind('\n').unwrap_or(0);
@@ -130,13 +123,7 @@ where
             .unwrap_or(source.len() - 1)
         + 1;
 
-    let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
-    stream.seek(SeekFrom::Start(start as u64))?;
-    stream.read_exact(&mut buffer)?;
-
-    // Can't fail. If this wasn't UTF-8, we never would have gotten to the point
-    // where we need to render a span.
-    let buffer = from_utf8(&buffer).unwrap();
+    let buffer = &source[start..end];
 
     writeln!(
         stderr,
