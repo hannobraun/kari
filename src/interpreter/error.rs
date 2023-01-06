@@ -2,10 +2,7 @@ use std::{collections::HashMap, fmt, io};
 
 use termion::{color, style};
 
-use crate::{
-    call_stack::CallStack, context, interpreter::stream::Stream,
-    pipeline::parser, source::Span,
-};
+use crate::{call_stack::CallStack, context, pipeline::parser, source::Span};
 
 #[derive(Debug)]
 pub struct Error {
@@ -16,7 +13,6 @@ pub struct Error {
 impl Error {
     pub fn print(
         &self,
-        _: &mut HashMap<String, Box<dyn Stream>>,
         sources: &HashMap<String, String>,
         stderr: &mut dyn io::Write,
     ) -> io::Result<()> {

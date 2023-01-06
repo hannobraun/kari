@@ -127,9 +127,7 @@ impl<Host> Interpreter<Host> {
             self.sources.insert(name.clone().into_owned(), source);
             self.streams.insert(name.into_owned(), program);
 
-            if let Err(error) =
-                error.print(&mut self.streams, &self.sources, &mut self.stderr)
-            {
+            if let Err(error) = error.print(&self.sources, &mut self.stderr) {
                 println!("Error printing error: {}", error)
             }
 
