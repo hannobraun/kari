@@ -123,7 +123,7 @@ where
     let stream = streams.get_mut(&span.stream_name).unwrap();
     let source = sources.get(&span.stream_name).unwrap();
 
-    let start = search_backward(span.start.index, source)?;
+    let start = search_backward(span.start.index, source);
     let end = search_forward(span.end.index, stream)?;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
@@ -203,9 +203,8 @@ where
     Ok(())
 }
 
-fn search_backward(from: usize, source: &str) -> io::Result<usize> {
-    let pos = source[..from].rfind('\n').unwrap_or(0);
-    Ok(pos)
+fn search_backward(from: usize, source: &str) -> usize {
+    source[..from].rfind('\n').unwrap_or(0)
 }
 
 fn search_forward<Stream>(from: usize, stream: &mut Stream) -> io::Result<usize>
