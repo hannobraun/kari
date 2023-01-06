@@ -21,10 +21,10 @@ use crate::{
     value::{self, types::Type, v},
 };
 
-use self::{error::Error, stream::Stream};
+use self::error::Error;
 
 pub struct Interpreter<Host> {
-    streams: HashMap<String, Box<dyn Stream>>,
+    streams: HashMap<String, Box<dyn io::Read>>,
     stdout: Box<dyn io::Write>,
     stderr: Box<dyn io::Write>,
 
@@ -112,7 +112,7 @@ impl<Host> Interpreter<Host> {
         mut self,
         host: &mut Host,
         name: Cow<str>,
-        mut program: Box<dyn Stream>,
+        mut program: Box<dyn io::Read>,
     ) -> Result<Vec<value::Any>, Error> {
         let pipeline = Pipeline::new(name.clone().into_owned(), &mut program);
 
