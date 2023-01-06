@@ -59,8 +59,7 @@ impl<Host> Interpreter<Host> {
         host: &mut Host,
     ) -> Result<Self, Error> {
         let name = "<prelude>";
-        let mut prelude =
-            Cursor::new(&include_bytes!("../kr/src/prelude.kr")[..]);
+        let mut prelude = &include_bytes!("../kr/src/prelude.kr")[..];
 
         let prelude_pipeline = Pipeline::new(name.into(), &mut prelude);
 
