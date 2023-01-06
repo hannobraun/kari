@@ -124,7 +124,11 @@ where
     let source = sources.get(&span.stream_name).unwrap();
 
     let start = source[..span.start.index].rfind('\n').unwrap_or(0);
-    let end = search_forward(span.end.index, source);
+    let end = span.end.index
+        + source[span.end.index..]
+            .find('\n')
+            .unwrap_or(source.len() - 1)
+        + 1;
 
     let mut buffer = repeat(0).take(end - start).collect::<Vec<_>>();
     stream.seek(SeekFrom::Start(start as u64))?;
@@ -201,8 +205,4 @@ where
     }
 
     Ok(())
-}
-
-fn search_forward(from: usize, source: &str) -> usize {
-    from + source[from..].find('\n').unwrap_or(source.len() - 1) + 1
 }
