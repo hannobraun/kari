@@ -28,6 +28,8 @@ pub struct Interpreter<Host> {
     stdout: Box<dyn io::Write>,
     stderr: Box<dyn io::Write>,
 
+    sources: HashMap<String, String>,
+
     functions: Functions<Function<Host>>,
     stack: Stack,
     call_stack: CallStack,
@@ -39,6 +41,8 @@ impl<Host> Interpreter<Host> {
             streams: HashMap::new(),
             stdout,
             stderr,
+
+            sources: HashMap::new(),
 
             functions: Functions::new(),
             stack: Stack::new(),
@@ -72,12 +76,15 @@ impl<Host> Interpreter<Host> {
         // We panic on errors in the prelude itself, but errors in other modules
         // might still produce stack traces with spans that refer to the
         // prelude.
+        self.sources.insert(name.into(), source);
         self.streams.insert(name.into(), Box::new(prelude));
 
         Ok(self)
     }
 
     pub fn with_default_modules(mut self) -> Self {
+        self.sources
+            .insert("std".into(), include_str!("../kr/src/std.kr").into());
         self.streams.insert(
             "std".into(),
             Box::new(Cursor::new(&include_bytes!("../kr/src/std.kr")[..])),
@@ -117,6 +124,7 @@ impl<Host> Interpreter<Host> {
             &mut source,
         );
         if let Err(error) = result {
+            self.sources.insert(name.clone().into_owned(), source);
             self.streams.insert(name.into_owned(), program);
 
             if let Err(error) = error.print(&mut self.streams, &mut self.stderr)
