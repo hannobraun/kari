@@ -123,7 +123,7 @@ where
             .unwrap_or(source.len() - 1)
         + 1;
 
-    let buffer = &source[start..end];
+    let source = &source[start..end];
 
     writeln!(
         stderr,
@@ -137,7 +137,7 @@ where
     )?;
     writeln!(stderr)?;
 
-    for (i, line) in buffer.lines().enumerate() {
+    for (i, line) in source.lines().enumerate() {
         let line_number = span.start.line + i;
         let line_len = line.chars().count();
 
