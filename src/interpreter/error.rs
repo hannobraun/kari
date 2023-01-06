@@ -16,7 +16,7 @@ pub struct Error {
 impl Error {
     pub fn print(
         &self,
-        streams: &mut HashMap<String, Box<dyn Stream>>,
+        _: &mut HashMap<String, Box<dyn Stream>>,
         sources: &HashMap<String, String>,
         stderr: &mut dyn io::Write,
     ) -> io::Result<()> {
@@ -34,7 +34,7 @@ impl Error {
         self.kind.spans(&mut spans);
 
         for span in spans {
-            print_source(span, streams, sources, stderr)?;
+            print_source(span, sources, stderr)?;
         }
 
         self.kind.write_hint(stderr)?;
@@ -51,7 +51,7 @@ impl Error {
                     panic!("Tried to format a null source");
                 }
                 Some(src) => {
-                    print_source(src, streams, sources, stderr)?;
+                    print_source(src, sources, stderr)?;
                 }
             }
         }
@@ -105,15 +105,11 @@ impl From<parser::Error> for ErrorKind {
     }
 }
 
-fn print_source<Stream>(
+fn print_source(
     span: &Span,
-    _: &mut HashMap<String, Stream>,
     sources: &HashMap<String, String>,
     stderr: &mut dyn io::Write,
-) -> io::Result<()>
-where
-    Stream: io::Read + io::Seek,
-{
+) -> io::Result<()> {
     let source = sources.get(&span.stream_name).unwrap();
 
     let start = source[..span.start.index].rfind('\n').unwrap_or(0);
