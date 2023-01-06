@@ -4,7 +4,6 @@ use std::{
     process::exit,
 };
 
-use acc_reader::AccReader;
 use structopt::StructOpt;
 
 use kari::Interpreter;
@@ -42,7 +41,7 @@ fn main() {
                 .run(&mut (), path.into(), Box::new(file));
         }
         None => {
-            let stdin = Box::new(AccReader::new(stdin()));
+            let stdin = Box::new(stdin());
 
             let _ = Interpreter::new(stdout, stderr)
                 .with_default_builtins()
