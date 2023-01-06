@@ -204,6 +204,5 @@ where
 }
 
 fn search_forward(from: usize, source: &str) -> usize {
-    let pos = source[from..].find('\n').unwrap_or(source.len() - 1);
-    from + pos + 1
+    from + source[from..].find('\n').unwrap_or(source.len() - 1) + 1
 }
