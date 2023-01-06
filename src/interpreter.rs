@@ -1,10 +1,6 @@
 pub mod error;
 
-use std::{
-    borrow::Cow,
-    collections::HashMap,
-    io::{self, Cursor},
-};
+use std::{borrow::Cow, collections::HashMap, io};
 
 use parser::Parser;
 
@@ -85,7 +81,7 @@ impl<Host> Interpreter<Host> {
             .insert("std".into(), include_str!("../kr/src/std.kr").into());
         self.streams.insert(
             "std".into(),
-            Box::new(Cursor::new(&include_bytes!("../kr/src/std.kr")[..])),
+            Box::new(&include_bytes!("../kr/src/std.kr")[..]),
         );
 
         self
