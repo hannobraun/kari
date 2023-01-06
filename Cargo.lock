@@ -3,12 +3,6 @@
 version = 3
 
 [[package]]
-name = "acc_reader"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fd023affea2bbda90ae32be0563f64ada6d4666d90e60c20277ae4ce08e2799"
-
-[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -98,7 +92,6 @@ dependencies = [
 name = "kari"
 version = "0.1.0"
 dependencies = [
- "acc_reader",
  "decorum",
  "structopt",
  "termion",
