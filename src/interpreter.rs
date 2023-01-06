@@ -1,5 +1,4 @@
 pub mod error;
-pub mod stream;
 
 use std::{
     borrow::Cow,
